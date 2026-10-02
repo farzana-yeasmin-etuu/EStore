@@ -1,8 +1,215 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<section class="es-hero">
+
+    <!-- Slide 1 -->
+    <div class="es-hero-slide active">
+        <img src="~/images/hero/hero-1.jpg"
+             alt="Ever Spring Collection 1"
+             class="es-hero-image" />
+
+        <div class="es-hero-overlay"></div>
+
+        <div class="es-hero-content">
+            <span class="es-hero-eyebrow">WELCOME TO EVER SPRING</span>
+            <h1>A Little Love<br />For Yourself</h1>
+            <p>Discover your everyday essentials and bring a little freshness into your life.</p>
+            <a href="#new-arrivals" class="es-hero-button">
+                EXPLORE COLLECTION <span>→</span>
+            </a>
+        </div>
+
+        <span class="es-hero-brand">EVER SPRING</span>
+    </div>
+
+
+    <!-- Slide 2 -->
+    <div class="es-hero-slide">
+        <img src="~/images/hero/hero-2.jpg"
+             alt="Ever Spring Collection 2"
+             class="es-hero-image" />
+
+        <div class="es-hero-overlay"></div>
+
+        <div class="es-hero-content">
+            <span class="es-hero-eyebrow">YOUR BEAUTY, YOUR WAY</span>
+            <h1>Find Your<br />Everyday Glow</h1>
+            <p>Discover beauty essentials that make every day feel special.</p>
+            <a href="#makeup" class="es-hero-button">
+                DISCOVER MORE <span>→</span>
+            </a>
+        </div>
+
+        <span class="es-hero-brand">EVER SPRING</span>
+    </div>
+
+
+    <!-- Slide 3 -->
+    <div class="es-hero-slide">
+        <img src="~/images/hero/hero-3.jpg"
+             alt="Ever Spring Collection 3"
+             class="es-hero-image" />
+
+        <div class="es-hero-overlay"></div>
+
+        <div class="es-hero-content">
+            <span class="es-hero-eyebrow">MADE FOR YOUR MOMENTS</span>
+            <h1>Your Style,<br />Your Story</h1>
+            <p>Explore beautiful picks for your everyday style and special moments.</p>
+            <a href="#women-collection" class="es-hero-button">
+                SHOP COLLECTION <span>→</span>
+            </a>
+        </div>
+
+        <span class="es-hero-brand">EVER SPRING</span>
+    </div>
+
+
+    <!-- Slide 4 -->
+    <div class="es-hero-slide">
+        <img src="~/images/hero/hero-4.jpg"
+             alt="Ever Spring Collection 4"
+             class="es-hero-image" />
+
+        <div class="es-hero-overlay"></div>
+
+        <div class="es-hero-content">
+            <span class="es-hero-eyebrow">A LITTLE SOMETHING SPECIAL</span>
+            <h1>Find Your<br />New Favourite</h1>
+            <p>Explore our latest picks, thoughtfully selected for you.</p>
+            <a href="#new-arrivals" class="es-hero-button">
+                VIEW NEW ARRIVALS <span>→</span>
+            </a>
+        </div>
+
+        <span class="es-hero-brand">EVER SPRING</span>
+    </div>
+
+
+    <!-- Slide 5 -->
+    <div class="es-hero-slide">
+        <img src="~/images/hero/hero-5.jpg"
+             alt="Ever Spring Collection 5"
+             class="es-hero-image" />
+
+        <div class="es-hero-overlay"></div>
+
+        <div class="es-hero-content">
+            <span class="es-hero-eyebrow">YOUR EVERYDAY WISH LIST</span>
+            <h1>Little Things,<br />Lovely Moments</h1>
+            <p>Find something lovely for yourself or someone special.</p>
+            <a href="#new-arrivals" class="es-hero-button">
+                EXPLORE NOW <span>→</span>
+            </a>
+        </div>
+
+        <span class="es-hero-brand">EVER SPRING</span>
+    </div>
+
+
+    <!-- Slider indicators -->
+    <div class="es-hero-dots">
+        <button class="es-hero-dot active"
+                type="button" aria-label="Show slide 1"
+                data-slide="0"></button>
+
+        <button class="es-hero-dot"
+                type="button" aria-label="Show slide 2"
+                data-slide="1"></button>
+
+        <button class="es-hero-dot"
+                type="button" aria-label="Show slide 3"
+                data-slide="2"></button>
+
+        <button class="es-hero-dot"
+                type="button" aria-label="Show slide 4"
+                data-slide="3"></button>
+
+        <button class="es-hero-dot"
+                type="button" aria-label="Show slide 5"
+                data-slide="4"></button>
+    </div>
+
+    
+</section>
+
+
+<!-- Collection section anchors -->
+<div class="es-home-anchors" aria-hidden="true">
+    <span id="new-arrivals"></span>
+    <span id="makeup"></span>
+    <span id="women-collection"></span>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const hero = document.querySelector(".es-hero");
+            const slides = document.querySelectorAll(".es-hero-slide");
+            const dots = document.querySelectorAll(".es-hero-dot");
+
+            // Stop if the hero slider does not exist
+            if (!hero || slides.length === 0) return;
+
+            let currentIndex = 0;
+            let sliderTimer;
+
+            // Show a specific slide
+            function showSlide(index) {
+
+                slides.forEach((slide, i) => {
+                    slide.classList.toggle("active", i === index);
+                });
+
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle("active", i === index);
+                });
+
+                currentIndex = index;
+            }
+
+            // Move to the next slide
+            function nextSlide() {
+                const nextIndex = (currentIndex + 1) % slides.length;
+                showSlide(nextIndex);
+            }
+
+            // Start automatic sliding
+            function startSlider() {
+                clearInterval(sliderTimer);
+                sliderTimer = setInterval(nextSlide, 2000);
+            }
+
+            // Click dots to change slides
+            dots.forEach((dot) => {
+                dot.addEventListener("click", function () {
+                    const index = Number(this.dataset.slide);
+
+                    if (index >= 0 && index < slides.length) {
+                        showSlide(index);
+                        startSlider();
+                    }
+                });
+            });
+
+            // Pause while hovering over the slider
+            hero.addEventListener("mouseenter", function () {
+                clearInterval(sliderTimer);
+            });
+
+            // Resume when the mouse leaves
+            hero.addEventListener("mouseleave", function () {
+                startSlider();
+            });
+
+            // Initialize the slider
+            showSlide(0);
+            startSlider();
+
+        });
+    </script>
+}
+}

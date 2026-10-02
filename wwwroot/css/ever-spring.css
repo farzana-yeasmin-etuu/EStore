@@ -1,0 +1,827 @@
+﻿/* =========================================
+   EVER SPRING - GLOBAL THEME
+   ========================================= */
+
+:root {
+    --es-pink: #f6dde3;
+    --es-pink-light: #fff7f8;
+    --es-pink-dark: #e8bfc9;
+    --es-rose: #b85f75;
+    --es-rose-dark: #98475c;
+    --es-text: #33272b;
+    --es-muted: #796970;
+    --es-white: #ffffff;
+    --es-border: #ecdde1;
+    --es-transition: 0.25s ease;
+}
+
+
+/* =========================================
+   GLOBAL
+   ========================================= */
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background: var(--es-white);
+    color: var(--es-text);
+    font-family: "Segoe UI", Arial, sans-serif;
+    line-height: 1.6;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+    a:hover {
+        color: var(--es-rose);
+    }
+
+button,
+input {
+    font: inherit;
+}
+
+
+/* =========================================
+   TOP NAVBAR
+   ========================================= */
+
+.ever-navbar {
+    width: 100%;
+    padding: 15px 0;
+    background-color: var(--es-pink);
+    border-bottom: 1px solid var(--es-pink-dark);
+}
+
+
+/* Logo | Center Brand | Actions */
+
+.ever-navbar-top {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 48px;
+}
+
+
+/* =========================================
+   LEFT LOGO
+   ========================================= */
+
+.ever-logo {
+    display: flex;
+    align-items: center;
+    flex: 0 0 150px;
+    min-width: 0;
+    z-index: 2;
+}
+
+    .ever-logo img {
+        display: block;
+        width: 100%;
+        max-width: 160px;
+        max-height: 60px;
+        object-fit: contain;
+        object-position: left center;
+    }
+
+
+/* =========================================
+   CENTER BRAND NAME
+   ========================================= */
+
+.ever-brand-centered {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--es-text);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 29px;
+    font-weight: 500;
+    letter-spacing: 4px;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: color var(--es-transition);
+}
+
+    .ever-brand-centered:hover {
+        color: var(--es-rose);
+    }
+
+
+/* =========================================
+   RIGHT ACTIONS
+   ========================================= */
+
+.ever-nav-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 0 0 190px;
+    gap: 13px;
+    z-index: 2;
+}
+
+.ever-icon-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 5px;
+    border: 0;
+    background: transparent;
+    color: var(--es-text);
+    font-size: 14px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color var(--es-transition), opacity var(--es-transition);
+}
+
+    .ever-icon-link:hover {
+        color: var(--es-rose);
+    }
+
+.ever-icon {
+    display: inline-block;
+    font-size: 22px;
+    line-height: 1;
+}
+
+.ever-logout-form {
+    display: inline-flex;
+    margin: 0;
+}
+
+
+/* =========================================
+   CATEGORY BAR
+   ========================================= */
+
+.ever-category-bar {
+    width: 100%;
+    background-color: var(--es-pink-light);
+    border-bottom: 1px solid var(--es-border);
+}
+
+.ever-category-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    padding: 14px 0;
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+    .ever-category-links a {
+        flex-shrink: 0;
+        color: var(--es-text);
+        font-size: 13px;
+        white-space: nowrap;
+        text-decoration: none;
+        transition: color var(--es-transition);
+    }
+
+        .ever-category-links a:hover {
+            color: var(--es-rose);
+        }
+
+    .ever-category-links .ever-category-offer {
+        color: var(--es-rose);
+        font-weight: 600;
+    }
+
+
+/* =========================================
+   MAIN CONTENT
+   ========================================= */
+
+main {
+    min-height: 60vh;
+}
+
+
+/* =========================================
+   FOOTER
+   ========================================= */
+
+.ever-footer {
+    margin-top: 50px;
+    padding: 40px 0 25px;
+    background-color: var(--es-pink-light);
+    border-top: 1px solid var(--es-border);
+    text-align: center;
+}
+
+.ever-footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.ever-footer-brand {
+    color: var(--es-text);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 25px;
+    letter-spacing: 3px;
+}
+
+.ever-footer-tagline {
+    margin: 0;
+    color: var(--es-muted);
+    font-size: 14px;
+}
+
+.ever-footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 22px;
+    margin: 8px 0;
+    font-size: 13px;
+}
+
+.ever-footer-content small {
+    color: var(--es-muted);
+    font-size: 12px;
+}
+
+
+/* =========================================
+   RESPONSIVE: TABLETS
+   ========================================= */
+
+@media (max-width: 767.98px) {
+
+    .ever-navbar {
+        padding: 12px 0;
+    }
+
+    .ever-navbar-top {
+        min-height: 42px;
+    }
+
+    .ever-logo {
+        flex-basis: 80px;
+    }
+
+        .ever-logo img {
+            max-width: 75px;
+            max-height: 38px;
+        }
+
+    .ever-brand-centered {
+        font-size: 22px;
+        letter-spacing: 2px;
+    }
+
+    .ever-nav-actions {
+        flex-basis: 100px;
+        gap: 7px;
+    }
+
+        .ever-nav-actions .action-label {
+            display: none;
+        }
+
+    .ever-icon-link {
+        padding: 4px;
+    }
+
+    .ever-icon {
+        font-size: 20px;
+    }
+
+    .ever-category-links {
+        justify-content: flex-start;
+        gap: 22px;
+        padding: 12px 0;
+    }
+
+        .ever-category-links a {
+            font-size: 12px;
+        }
+}
+
+
+/* =========================================
+   RESPONSIVE: SMALL PHONES
+   ========================================= */
+
+@media (max-width: 380px) {
+
+    .ever-logo {
+        flex-basis: 45px;
+    }
+
+        .ever-logo img {
+            max-width: 42px;
+        }
+
+    .ever-brand-centered {
+        font-size: 17px;
+        letter-spacing: 1px;
+    }
+
+    .ever-nav-actions {
+        flex-basis: 65px;
+        gap: 2px;
+    }
+
+    .ever-icon {
+        font-size: 18px;
+    }
+
+    .ever-category-links {
+        gap: 18px;
+    }
+}
+
+/* =========================================
+   EVER SPRING - HOMEPAGE HERO SLIDER
+========================================= */
+
+.es-hero {
+    position: relative;
+    width: 100%;
+    height: clamp(420px, 38vw, 600px);
+    min-height: 420px;
+    overflow: hidden;
+    background: #f6e5e5;
+    isolation: isolate;
+}
+
+/* Individual slides */
+.es-hero-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+    .es-hero-slide.active {
+        opacity: 1;
+        visibility: visible;
+        z-index: 1;
+    }
+
+/* Background product image */
+.es-hero-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: -2;
+}
+
+/* Soft overlay helps the text remain readable */
+.es-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient( 90deg, rgba(30, 20, 24, 0.66) 0%, rgba(30, 20, 24, 0.40) 42%, rgba(30, 20, 24, 0.05) 100% );
+    z-index: -1;
+}
+
+/* Text content */
+.es-hero-content {
+    position: absolute;
+    top: 50%;
+    left: clamp(28px, 8vw, 140px);
+    transform: translateY(-50%);
+    width: min(530px, 48%);
+    color: #fff;
+    z-index: 2;
+}
+
+.es-hero-eyebrow {
+    display: inline-block;
+    margin-bottom: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #ffe5eb;
+}
+
+.es-hero-content h1 {
+    margin: 0 0 20px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(38px, 4.5vw, 70px);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -1.5px;
+    color: #fff;
+}
+
+.es-hero-content p {
+    max-width: 420px;
+    margin: 0 0 30px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+/* CTA button */
+.es-hero-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    min-height: 50px;
+    padding: 0 25px;
+    border: 1px solid #fff;
+    border-radius: 3px;
+    background: #fff;
+    color: #292027;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-decoration: none;
+    transition: background 0.25s ease, color 0.25s ease;
+}
+
+    .es-hero-button span {
+        font-size: 20px;
+        line-height: 1;
+    }
+
+    .es-hero-button:hover {
+        background: #f6dde3;
+        border-color: #f6dde3;
+        color: #292027;
+    }
+
+/* Brand text in the top-right corner */
+.es-hero-brand {
+    position: absolute;
+    top: 28px;
+    right: clamp(25px, 4vw, 65px);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    z-index: 3;
+}
+
+/* Slider dots */
+.es-hero-dots {
+    position: absolute;
+    left: clamp(28px, 8vw, 140px);
+    bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 4;
+}
+
+.es-hero-dot {
+    width: 24px;
+    height: 4px;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.55);
+    cursor: pointer;
+    transition: width 0.3s ease, background 0.3s ease;
+}
+
+    .es-hero-dot.active {
+        width: 42px;
+        background: #fff;
+    }
+
+/* Slide number */
+.es-hero-counter {
+    position: absolute;
+    right: clamp(25px, 4vw, 65px);
+    bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #fff;
+    font-size: 12px;
+    letter-spacing: 1px;
+    z-index: 4;
+}
+
+.es-counter-line {
+    width: 35px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.es-home-anchors {
+    height: 1px;
+    overflow: hidden;
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 768px) {
+    .es-hero {
+        height: 540px;
+        min-height: 0;
+    }
+
+    .es-hero-image {
+        object-position: 60% center;
+    }
+
+    .es-hero-overlay {
+        background: linear-gradient( 90deg, rgba(30, 20, 24, 0.68) 0%, rgba(30, 20, 24, 0.42) 65%, rgba(30, 20, 24, 0.18) 100% );
+    }
+
+    .es-hero-content {
+        left: 30px;
+        width: calc(100% - 60px);
+        max-width: 480px;
+    }
+
+        .es-hero-content h1 {
+            font-size: clamp(38px, 8vw, 56px);
+        }
+
+        .es-hero-content p {
+            max-width: 360px;
+            font-size: 14px;
+        }
+
+    .es-hero-brand {
+        top: 22px;
+        right: 25px;
+        font-size: 12px;
+        letter-spacing: 3px;
+    }
+
+    .es-hero-dots {
+        left: 30px;
+        bottom: 28px;
+    }
+
+    .es-hero-counter {
+        right: 25px;
+        bottom: 26px;
+    }
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 480px) {
+    .es-hero {
+        height: 500px;
+    }
+
+    .es-hero-image {
+        object-position: 58% center;
+    }
+
+    .es-hero-content {
+        left: 22px;
+        width: calc(100% - 44px);
+    }
+
+    .es-hero-eyebrow {
+        margin-bottom: 15px;
+        font-size: 10px;
+        letter-spacing: 2px;
+    }
+
+    .es-hero-content h1 {
+        margin-bottom: 16px;
+        font-size: 39px;
+        letter-spacing: -0.8px;
+    }
+
+    .es-hero-content p {
+        max-width: 300px;
+        margin-bottom: 24px;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .es-hero-button {
+        min-height: 46px;
+        gap: 16px;
+        padding: 0 17px;
+        font-size: 10px;
+    }
+
+    .es-hero-brand {
+        top: 20px;
+        right: 20px;
+        font-size: 10px;
+        letter-spacing: 2px;
+    }
+
+    .es-hero-dots {
+        left: 22px;
+        bottom: 25px;
+    }
+
+    .es-hero-counter {
+        right: 20px;
+        bottom: 23px;
+        gap: 8px;
+        font-size: 10px;
+    }
+
+    .es-counter-line {
+        width: 22px;
+    }
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .es-hero-slide {
+        transition: none;
+    }
+}
+
+
+/* =====================================
+   EVER SPRING - MOBILE HAMBURGER MENU
+===================================== */
+
+/* Hidden on desktop */
+.ever-menu-toggle,
+.ever-mobile-menu {
+    display: none;
+}
+
+.ever-menu-toggle {
+    border: 0;
+    background: transparent;
+    padding: 8px;
+    cursor: pointer;
+    color: #573a43;
+}
+
+    /* Hamburger icon */
+    .ever-menu-toggle span {
+        display: block;
+        width: 25px;
+        height: 2px;
+        margin: 5px 0;
+        border-radius: 2px;
+        background: currentColor;
+        transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    /* Animate hamburger into X */
+    .ever-menu-toggle.is-open span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+    .ever-menu-toggle.is-open span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .ever-menu-toggle.is-open span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
+
+
+/* =====================================
+   MOBILE VIEW
+===================================== */
+
+@media (max-width: 768px) {
+
+    /* Hide the centered Ever Spring text */
+    .ever-brand-centered {
+        display: none !important;
+    }
+
+    /* Keep logo on the left and burger on the right */
+    .ever-navbar-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .ever-logo {
+        flex: 0 1 auto;
+        min-width: 0;
+    }
+
+        .ever-logo img {
+            max-width: 130px;
+            max-height: 48px;
+        }
+
+    .ever-menu-toggle {
+        display: block;
+        flex-shrink: 0;
+        margin-left: auto;
+    }
+
+    /* Hide desktop actions and category bar */
+    .ever-navbar-top > .ever-nav-actions {
+        display: none !important;
+    }
+
+    .ever-category-bar {
+        display: none !important;
+    }
+
+    /* Mobile dropdown panel */
+    .ever-mobile-menu {
+        display: none;
+        width: 100%;
+        margin-top: 10px;
+        padding: 18px 0 22px;
+        border-top: 1px solid rgba(87, 58, 67, 0.15);
+        background: #fff7f8;
+    }
+
+        .ever-mobile-menu.is-open {
+            display: block;
+        }
+
+    .ever-mobile-menu-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        padding-bottom: 14px;
+        border-bottom: 1px solid #ead5da;
+    }
+
+    .ever-mobile-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding: 12px 8px;
+        border: 0;
+        background: transparent;
+        color: #573a43;
+        font: inherit;
+        font-size: 15px;
+        text-align: left;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+        .ever-mobile-link:hover {
+            color: #a65f78;
+        }
+
+        .ever-mobile-link span {
+            width: 20px;
+            font-size: 20px;
+            text-align: center;
+        }
+
+    .ever-mobile-menu-actions form {
+        margin: 0;
+    }
+
+    .ever-mobile-menu-heading {
+        margin: 18px 8px 10px;
+        color: #9b6878;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+    }
+
+    .ever-mobile-categories {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .ever-mobile-categories > a {
+            display: block;
+            padding: 11px 8px;
+            color: #573a43;
+            font-size: 14px;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(87, 58, 67, 0.07);
+        }
+
+            .ever-mobile-categories > a:hover {
+                color: #a65f78;
+                padding-left: 13px;
+            }
+
+        .ever-mobile-categories > .ever-mobile-offer {
+            color: #b44c70;
+            font-weight: 600;
+        }
+}

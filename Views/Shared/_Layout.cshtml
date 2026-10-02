@@ -3,48 +3,356 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - EStore</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/EStore.styles.css" asp-append-version="true" />
+
+    <title>@ViewData["Title"] - Ever Spring</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Existing project CSS -->
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/EStore.styles.css"
+          asp-append-version="true" />
+
+    <!-- Ever Spring CSS: keep this LAST -->
+    <link rel="stylesheet"
+          href="~/css/ever-spring.css"
+          asp-append-version="true" />
 </head>
+
 <body>
+
+    <!-- =========================
+         HEADER
+         ========================= -->
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">EStore</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+
+        <!-- TOP NAVBAR -->
+        <nav class="ever-navbar">
+            <div class="container">
+
+                <div class="ever-navbar-top">
+
+                    <!-- LEFT: LOGO IMAGE -->
+                    <a class="ever-logo"
+                       asp-controller="Home"
+                       asp-action="Index"
+                       aria-label="Ever Spring Home">
+
+                        <img src="~/images/ever-spring-logo.png"
+                             alt="Ever Spring Logo" />
+                    </a>
+
+
+                    <!-- CENTER: BRAND NAME -->
+                    <a class="ever-brand-centered"
+                       asp-controller="Home"
+                       asp-action="Index">
+                        Ever Spring
+                    </a>
+
+                    <!-- MOBILE HAMBURGER BUTTON -->
+                    <button class="ever-menu-toggle"
+                            type="button"
+                            id="everMenuToggle"
+                            aria-label="Open navigation menu"
+                            aria-controls="everMobileMenu"
+                            aria-expanded="false">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+
+
+
+                    <!-- RIGHT: NAVIGATION ACTIONS -->
+                    <div class="ever-nav-actions">
+
+                        <!-- Search -->
+                        <a class="ever-icon-link"
+                           asp-controller="Home"
+                           asp-action="Index"
+                           aria-label="Search">
+
+                            <span class="ever-icon">⌕</span>
+                            <span class="action-label">Search</span>
+                        </a>
+
+
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <!-- Logged-in user -->
+                            <a class="ever-icon-link"
+                               asp-controller="Account"
+                               asp-action="Profile"
+                               aria-label="My Account">
+
+                                <span class="ever-icon">♙</span>
+                                <span class="action-label">Account</span>
+                            </a>
+
+                            <!-- Logout -->
+                            <form asp-controller="Account"
+                                  asp-action="Logout"
+                                  method="post"
+                                  class="ever-logout-form">
+
+                                <button type="submit"
+                                        class="ever-icon-link">
+
+                                    <span class="action-label">Logout</span>
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <!-- Guest user -->
+                            <a class="ever-icon-link"
+                               asp-controller="Account"
+                               asp-action="Login"
+                               aria-label="Login">
+
+                                <span class="ever-icon">♙</span>
+                                <span class="action-label">Login</span>
+                            </a>
+                        }
+
+
+                        <!-- Wishlist: UI placeholder -->
+                        <a class="ever-icon-link"
+                           href="#wishlist"
+                           aria-label="Wishlist">
+
+                            <span class="ever-icon">♡</span>
+                        </a>
+
+
+                        <!-- Shopping bag: UI placeholder -->
+                        <a class="ever-icon-link"
+                           href="#cart"
+                           aria-label="Shopping Bag">
+
+                            <span class="ever-icon">♧</span>
+                        </a>
+
+                    </div>
+
+                    <!-- MOBILE MENU -->
+                    <div class="ever-mobile-menu" id="everMobileMenu">
+
+                        <div class="ever-mobile-menu-actions">
+
+                            <!-- Search -->
+                            <a class="ever-mobile-link"
+                               asp-controller="Home"
+                               asp-action="Index">
+                                <span>⌕</span> Search
+                            </a>
+
+                            @if (User.Identity?.IsAuthenticated == true)
+                            {
+                                <a class="ever-mobile-link"
+                                   asp-controller="Account"
+                                   asp-action="Profile">
+                                    <span>♙</span> My Account
+                                </a>
+
+                                <form asp-controller="Account"
+                                      asp-action="Logout"
+                                      method="post">
+                                    <button type="submit" class="ever-mobile-link">
+                                        Logout
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <a class="ever-mobile-link"
+                                   asp-controller="Account"
+                                   asp-action="Login">
+                                    <span>♙</span> Login
+                                </a>
+                            }
+
+                            <a class="ever-mobile-link" href="#wishlist">
+                                <span>♡</span> Wishlist
+                            </a>
+
+                            <a class="ever-mobile-link" href="#cart">
+                                <span>♧</span> Shopping Bag
+                            </a>
+
+                        </div>
+
+                        <div class="ever-mobile-categories">
+                            <p class="ever-mobile-menu-heading">SHOP BY CATEGORY</p>
+
+                            <a href="#new-arrivals">New Arrivals</a>
+                            <a href="#women-collection">Women's Collection</a>
+                            <a href="#men-collection">Men's Collection</a>
+                            <a href="#kurti-collection">Kurti</a>
+                            <a href="#saree-collection">Saree</a>
+                            <a href="#accessories">Accessories</a>
+                            <a href="#skincare">Skincare</a>
+                            <a href="#makeup">Makeup</a>
+                            <a href="#offers" class="ever-mobile-offer">Offers</a>
+                        </div>
+
+                    </div>
+
+
                 </div>
             </div>
         </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
+
+        <!-- SECOND LINE: CATEGORIES -->
+        <div class="ever-category-bar">
+            <div class="container">
+
+                <nav class="ever-category-links"
+                     aria-label="Shop categories">
+
+                    <a href="#new-arrivals">New Arrivals</a>
+
+                    <a href="#women-collection">
+                        Women's Collection
+                    </a>
+
+                    <a href="#men-collection">
+                        Men's Collection
+                    </a>
+
+                    <a href="#kurti-collection">Kurti</a>
+
+                    <a href="#saree-collection">Saree</a>
+
+                    <a href="#accessories">Accessories</a>
+
+                    <a href="#skincare">Skincare</a>
+
+                    <a href="#makeup">Makeup</a>
+
+                    <a href="#offers" class="ever-category-offer">
+                        Offers
+                    </a>
+
+                </nav>
+            </div>
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         MAIN PAGE CONTENT
+         Keep RenderBody exactly once
+         ========================= -->
+    <main role="main">
+        @RenderBody()
+    </main>
+
+
+    <!-- =========================
+         FOOTER
+         ========================= -->
+    <footer class="ever-footer">
         <div class="container">
-            &copy; 2026 - EStore - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+
+            <div class="ever-footer-content">
+
+                <a class="ever-footer-brand"
+                   asp-controller="Home"
+                   asp-action="Index">
+                    Ever Spring
+                </a>
+
+                <p class="ever-footer-tagline">
+                    A little beauty, a little joy,
+                    a little something for you.
+                </p>
+
+                <div class="ever-footer-links">
+
+                    <a asp-controller="Home"
+                       asp-action="Index">
+                        Home
+                    </a>
+
+                    <a asp-controller="Home"
+                       asp-action="Privacy">
+                        Privacy
+                    </a>
+
+                    <a asp-controller="Account"
+                       asp-action="Login">
+                        My Account
+                    </a>
+
+                </div>
+
+                <small>
+                    &copy; @DateTime.Now.Year Ever Spring.
+                    All rights reserved.
+                </small>
+
+            </div>
         </div>
     </footer>
+
+
+    <!-- JavaScript -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const toggle = document.getElementById("everMenuToggle");
+                const menu = document.getElementById("everMobileMenu");
+
+                if (!toggle || !menu) return;
+
+                function closeMenu() {
+                    menu.classList.remove("is-open");
+                    toggle.classList.remove("is-open");
+                    toggle.setAttribute("aria-expanded", "false");
+                    toggle.setAttribute("aria-label", "Open navigation menu");
+                }
+
+                toggle.addEventListener("click", function () {
+                    const isOpen = menu.classList.toggle("is-open");
+
+                    toggle.classList.toggle("is-open", isOpen);
+                    toggle.setAttribute("aria-expanded", String(isOpen));
+                    toggle.setAttribute(
+                        "aria-label",
+                        isOpen ? "Close navigation menu" : "Open navigation menu"
+                    );
+                });
+
+                // Close the menu after selecting a link
+                menu.querySelectorAll("a").forEach(function (link) {
+                    link.addEventListener("click", closeMenu);
+                });
+
+                // Close the menu when switching back to desktop
+                window.addEventListener("resize", function () {
+                    if (window.innerWidth > 768) {
+                        closeMenu();
+                    }
+                });
+            });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>
