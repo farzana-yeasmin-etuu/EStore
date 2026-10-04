@@ -1,8 +1,9 @@
-﻿@page
+﻿
 @model List<EStore.ViewModels.ProductViewModel>
 
 @{
-    ViewData["Title"] = ViewBag.CategoryName + " | Ever Spring";
+    var categoryName = ViewBag.CategoryName as string ?? "Products";
+    ViewData["Title"] = categoryName + " | Ever Spring";
 }
 
 <div class="es-products-page">

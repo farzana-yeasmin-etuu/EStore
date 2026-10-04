@@ -17,18 +17,24 @@ namespace EStore.Controllers
         {
             var categories = GetCategories();
 
-            var category = categories.FirstOrDefault(
-                x => x.Key.Equals(id, StringComparison.OrdinalIgnoreCase)
+            var selectedCategory = categories.FirstOrDefault(
+                x => x.Key.Equals(
+                    id,
+                    StringComparison.OrdinalIgnoreCase
+                )
             );
 
-            if (category.Key == null)
+            if (selectedCategory.Key == null)
             {
                 return NotFound();
             }
 
-            var products = GetProducts(category.Key, category.Value);
+            var products = GetProducts(
+                selectedCategory.Key,
+                selectedCategory.Value
+            );
 
-            ViewBag.CategoryName = category.Value;
+            ViewBag.CategoryName = selectedCategory.Value;
 
             return View(products);
         }
