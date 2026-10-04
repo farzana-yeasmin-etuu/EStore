@@ -1,0 +1,160 @@
+﻿@page
+@model List<EStore.ViewModels.ProductViewModel>
+
+@{
+    ViewData["Title"] = "Search | Ever Spring";
+}
+
+<div class="es-products-page">
+
+    <div class="es-products-header">
+
+        <div>
+
+            <p class="es-products-small-title">
+                EVER SPRING
+            </p>
+
+            <h1>
+                Search Results
+            </h1>
+
+            <p>
+                Search results for:
+                <strong>"@ViewBag.SearchQuery"</strong>
+            </p>
+
+        </div>
+
+    </div>
+
+
+    @if (Model != null && Model.Count > 0)
+    {
+        <div class="es-product-grid">
+
+            @foreach (var product in Model)
+            {
+                <div class="es-product-card">
+
+                    <div class="es-product-image-wrapper">
+
+                        <img src="@product.ImageUrl"
+                             alt="@product.Name"
+                             class="es-product-image" />
+
+                        <button type="button"
+                                class="es-product-wishlist"
+                                onclick="addToWishlist(
+                                    '@product.ProductId',
+                                    '@product.Name',
+                                    '@product.ImageUrl'
+                                )">
+
+                            <svg viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="1.8">
+
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z">
+                                </path>
+
+                            </svg>
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="es-product-info">
+
+                        <p class="es-product-category">
+                            @product.Category
+                        </p>
+
+                        <h3>
+                            @product.Name
+                        </h3>
+
+                        <div class="es-product-bottom">
+
+                            <span class="es-product-price">
+                                Coming Soon
+                            </span>
+
+                            <button type="button"
+                                    class="es-add-bag-btn"
+                                    onclick="addToCart(
+                                        '@product.ProductId',
+                                        '@product.Name',
+                                        '@product.ImageUrl'
+                                    )">
+
+                                Add to Bag
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+    else
+    {
+        <div class="es-no-products">
+
+            <h3>
+                No products found
+            </h3>
+
+            <p>
+                Try searching with another product name or category.
+            </p>
+
+        </div>
+    }
+
+</div>
+
+
+@section Scripts {
+
+    <script>
+
+        function addToWishlist(id, name, image) {
+
+            if (window.EverSpringWishlist) {
+
+                window.EverSpringWishlist.add({
+                    id: id,
+                    name: name,
+                    image: image
+                });
+
+            }
+
+        }
+
+
+        function addToCart(id, name, image) {
+
+            if (window.EverSpringCart) {
+
+                window.EverSpringCart.add({
+                    id: id,
+                    name: name,
+                    image: image,
+                    quantity: 1
+                });
+
+            }
+
+        }
+
+    </script>
+
+}

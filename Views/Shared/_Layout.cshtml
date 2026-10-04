@@ -1,44 +1,64 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
 
     <title>@ViewData["Title"] - Ever Spring</title>
+
 
     <!-- Bootstrap -->
     <link rel="stylesheet"
           href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
 
     <!-- Existing project CSS -->
     <link rel="stylesheet"
           href="~/css/site.css"
           asp-append-version="true" />
 
+
     <link rel="stylesheet"
           href="~/EStore.styles.css"
           asp-append-version="true" />
 
-    <!-- Ever Spring CSS: keep this LAST -->
+
+    <!-- Ever Spring CSS - MUST BE LAST -->
     <link rel="stylesheet"
           href="~/css/ever-spring.css"
           asp-append-version="true" />
+
 </head>
+
 
 <body>
 
-    <!-- =========================
+
+    <!-- =====================================================
          HEADER
-         ========================= -->
+         ===================================================== -->
+
     <header>
 
-        <!-- TOP NAVBAR -->
+        <!-- =================================================
+             TOP NAVBAR
+             ================================================= -->
+
         <nav class="ever-navbar">
+
             <div class="container">
 
                 <div class="ever-navbar-top">
 
-                    <!-- LEFT: LOGO IMAGE -->
+
+                    <!-- ================================
+                         LEFT - LOGO
+                         ================================ -->
+
                     <a class="ever-logo"
                        asp-controller="Home"
                        asp-action="Index"
@@ -46,57 +66,162 @@
 
                         <img src="~/images/ever-spring-logo.png"
                              alt="Ever Spring Logo" />
+
                     </a>
 
 
-                    <!-- CENTER: BRAND NAME -->
+                    <!-- ================================
+                         CENTER - BRAND
+                         ================================ -->
+
                     <a class="ever-brand-centered"
                        asp-controller="Home"
                        asp-action="Index">
+
                         Ever Spring
+
                     </a>
 
-                    <!-- MOBILE HAMBURGER BUTTON -->
+
+                    <!-- ================================
+                         MOBILE HAMBURGER
+                         ================================ -->
+
                     <button class="ever-menu-toggle"
                             type="button"
                             id="everMenuToggle"
                             aria-label="Open navigation menu"
                             aria-controls="everMobileMenu"
                             aria-expanded="false">
+
                         <span></span>
                         <span></span>
                         <span></span>
+
                     </button>
 
 
+                    <!-- =================================================
+                         DESKTOP NAVIGATION ACTIONS
+                         ================================================= -->
 
-                    <!-- RIGHT: NAVIGATION ACTIONS -->
                     <div class="ever-nav-actions">
 
-                        <!-- Search -->
-                        <a class="ever-icon-link"
-                           asp-controller="Home"
-                           asp-action="Index"
-                           aria-label="Search">
 
-                            <span class="ever-icon">⌕</span>
-                            <span class="action-label">Search</span>
+                        <!-- SEARCH -->
+
+                        <a class="ever-icon-link"
+                        asp-controller="Products"
+                        asp-action="Search"
+                        aria-label="Search">
+
+                            <span class="ever-icon">
+                                ⌕
+                            </span>
+
+                            <span class="action-label">
+                                Search
+                            </span>
+
                         </a>
 
 
+                        <!-- =========================================
+                             WISHLIST
+                             ========================================= -->
+
+                        <a class="ever-icon-link es-nav-icon-link"
+                           href="#wishlist"
+                           aria-label="Wishlist">
+
+                            <span class="es-nav-icon">
+
+
+                                <!-- Heart -->
+
+                                <svg viewBox="0 0 24 24"
+                                     aria-hidden="true">
+
+                                    <path d="M20.8 8.7c0 5.2-8.8 10.2-8.8 10.2S3.2 13.9 3.2 8.7A4.7 4.7 0 0 1 12 6.3a4.7 4.7 0 0 1 8.8 2.4Z">
+                                    </path>
+
+                                </svg>
+
+
+                                <!-- Wishlist Number -->
+
+                                <span class="es-nav-badge"
+                                      id="wishlistCount">
+                                </span>
+
+                            </span>
+
+                        </a>
+
+
+                        <!-- =========================================
+                             SHOPPING BAG
+                             ========================================= -->
+
+                        <a class="ever-icon-link es-nav-icon-link"
+                           href="#cart"
+                           aria-label="Shopping Bag">
+
+                            <span class="es-nav-icon">
+
+
+                                <!-- Shopping Bag -->
+
+                                <svg viewBox="0 0 24 24"
+                                     aria-hidden="true">
+
+                                    <path d="M6 8h12l1 13H5L6 8Z">
+                                    </path>
+
+                                    <path d="M9 8a3 3 0 0 1 6 0">
+                                    </path>
+
+                                </svg>
+
+
+                                <!-- Cart Number -->
+
+                                <span class="es-nav-badge"
+                                      id="cartCount">
+                                </span>
+
+                            </span>
+
+                        </a>
+
+
+                        <!-- =========================================
+                             LOGIN / ACCOUNT
+                             ========================================= -->
+
                         @if (User.Identity?.IsAuthenticated == true)
                         {
-                            <!-- Logged-in user -->
+
+                            <!-- ACCOUNT -->
+
                             <a class="ever-icon-link"
                                asp-controller="Account"
                                asp-action="Profile"
                                aria-label="My Account">
 
-                                <span class="ever-icon">♙</span>
-                                <span class="action-label">Account</span>
+                                <span class="ever-icon">
+                                    ♙
+                                </span>
+
+                                <span class="action-label">
+                                    Account
+                                </span>
+
                             </a>
 
-                            <!-- Logout -->
+
+                            <!-- LOGOUT -->
+
                             <form asp-controller="Account"
                                   asp-action="Logout"
                                   method="post"
@@ -105,254 +230,725 @@
                                 <button type="submit"
                                         class="ever-icon-link">
 
-                                    <span class="action-label">Logout</span>
+                                    <span class="action-label">
+                                        Logout
+                                    </span>
+
                                 </button>
+
                             </form>
+
                         }
                         else
                         {
-                            <!-- Guest user -->
+
+                            <!-- LOGIN -->
+
                             <a class="ever-icon-link"
                                asp-controller="Account"
                                asp-action="Login"
                                aria-label="Login">
 
-                                <span class="ever-icon">♙</span>
-                                <span class="action-label">Login</span>
+                                <span class="ever-icon">
+                                    ♙
+                                </span>
+
+                                <span class="action-label">
+                                    Login
+                                </span>
+
                             </a>
+
                         }
-
-
-                        <!-- Wishlist: UI placeholder -->
-                        <a class="ever-icon-link"
-                           href="#wishlist"
-                           aria-label="Wishlist">
-
-                            <span class="ever-icon">♡</span>
-                        </a>
-
-
-                        <!-- Shopping bag: UI placeholder -->
-                        <a class="ever-icon-link"
-                           href="#cart"
-                           aria-label="Shopping Bag">
-
-                            <span class="ever-icon">♧</span>
-                        </a>
 
                     </div>
 
-                    <!-- MOBILE MENU -->
-                    <div class="ever-mobile-menu" id="everMobileMenu">
+
+                    <!-- =================================================
+                         MOBILE MENU
+                         ================================================= -->
+
+                    <div class="ever-mobile-menu"
+                         id="everMobileMenu">
+
+
+                        <!-- MOBILE ACTIONS -->
 
                         <div class="ever-mobile-menu-actions">
 
-                            <!-- Search -->
+
+                            <!-- SEARCH -->
+
+                          <a class="ever-mobile-link"
+   asp-controller="Products"
+   asp-action="Search">
+
+    <span class="ever-mobile-icon">
+        ⌕
+    </span>
+
+    Search
+
+</a>
+
+
+                            <!-- WISHLIST -->
+
                             <a class="ever-mobile-link"
-                               asp-controller="Home"
-                               asp-action="Index">
-                                <span>⌕</span> Search
+                               href="#wishlist">
+
+                                <span class="ever-mobile-icon">
+                                    ♡
+                                </span>
+
+                                Wishlist
+
+                                <span class="ever-mobile-count"
+                                      id="mobileWishlistCount">
+                                </span>
+
                             </a>
+
+
+                            <!-- SHOPPING BAG -->
+
+                            <a class="ever-mobile-link"
+                               href="#cart">
+
+                                <span class="ever-mobile-icon">
+                                    🛍
+                                </span>
+
+                                Shopping Bag
+
+                                <span class="ever-mobile-count"
+                                      id="mobileCartCount">
+                                </span>
+
+                            </a>
+
 
                             @if (User.Identity?.IsAuthenticated == true)
                             {
+
+                                <!-- ACCOUNT -->
+
                                 <a class="ever-mobile-link"
                                    asp-controller="Account"
                                    asp-action="Profile">
-                                    <span>♙</span> My Account
+
+                                    <span class="ever-mobile-icon">
+                                        ♙
+                                    </span>
+
+                                    My Account
+
                                 </a>
+
+
+                                <!-- LOGOUT -->
 
                                 <form asp-controller="Account"
                                       asp-action="Logout"
                                       method="post">
-                                    <button type="submit" class="ever-mobile-link">
+
+                                    <button type="submit"
+                                            class="ever-mobile-link">
+
+                                        <span class="ever-mobile-icon">
+                                            ↪
+                                        </span>
+
                                         Logout
+
                                     </button>
+
                                 </form>
+
                             }
                             else
                             {
+
+                                <!-- LOGIN -->
+
                                 <a class="ever-mobile-link"
                                    asp-controller="Account"
                                    asp-action="Login">
-                                    <span>♙</span> Login
+
+                                    <span class="ever-mobile-icon">
+                                        ♙
+                                    </span>
+
+                                    Login
+
                                 </a>
+
                             }
-
-                            <a class="ever-mobile-link" href="#wishlist">
-                                <span>♡</span> Wishlist
-                            </a>
-
-                            <a class="ever-mobile-link" href="#cart">
-                                <span>♧</span> Shopping Bag
-                            </a>
 
                         </div>
 
-                        <div class="ever-mobile-categories">
-                            <p class="ever-mobile-menu-heading">SHOP BY CATEGORY</p>
 
-                            <a href="#new-arrivals">New Arrivals</a>
-                            <a href="#women-collection">Women's Collection</a>
-                            <a href="#men-collection">Men's Collection</a>
-                            <a href="#kurti-collection">Kurti</a>
-                            <a href="#saree-collection">Saree</a>
-                            <a href="#accessories">Accessories</a>
-                            <a href="#skincare">Skincare</a>
-                            <a href="#makeup">Makeup</a>
-                            <a href="#offers" class="ever-mobile-offer">Offers</a>
+                        <!-- =========================================
+                             MOBILE CATEGORIES
+                             ========================================= -->
+
+                        <div class="ever-mobile-categories">
+
+                            <p class="ever-mobile-menu-heading">
+                                SHOP BY CATEGORY
+                            </p>
+                            <a asp-controller="Products"
+   asp-action="Category"
+   asp-route-id="new-arrivals">
+    New Arrivals
+</a>
+
+<a asp-controller="Products"
+   asp-action="Category"
+   asp-route-id="women">
+    Women's Collection
+</a>
+
+<a asp-controller="Products"
+   asp-action="Category"
+   asp-route-id="men">
+    Men's Collection
+</a>
+
+<a asp-controller="Products"
+   asp-action="Category"
+   asp-route-id="kurti">
+    Kurti
+</a>
+
+<a asp-controller="Products"
+   asp-action="Category"
+   asp-route-id="saree">
+    Saree
+</a>
+
+<a asp-controller="Products"
+   asp-action="Category"
+   asp-route-id="accessories">
+    Accessories
+</a>
+
+<a asp-controller="Products"
+   asp-action="Category"
+   asp-route-id="skincare">
+    Skincare
+</a>
+
+<a asp-controller="Products"
+   asp-action="Category"
+   asp-route-id="makeup">
+    Makeup
+</a>
+
+<a asp-controller="Products"
+   asp-action="Category"
+   asp-route-id="offers">
+    Offers
+</a>
+
                         </div>
 
                     </div>
 
-
                 </div>
+
             </div>
+
         </nav>
 
 
-        <!-- SECOND LINE: CATEGORIES -->
+        <!-- =====================================================
+             DESKTOP CATEGORY BAR
+             ===================================================== -->
+
         <div class="ever-category-bar">
+
             <div class="container">
 
                 <nav class="ever-category-links"
                      aria-label="Shop categories">
 
-                    <a href="#new-arrivals">New Arrivals</a>
 
-                    <a href="#women-collection">
-                        Women's Collection
-                    </a>
+                   <a asp-controller="Products"
+   asp-action="Category"
+   asp-route-id="new-arrivals">
+    New Arrivals
+</a>
 
-                    <a href="#men-collection">
-                        Men's Collection
-                    </a>
+<a asp-controller="Products"
+   asp-action="Category"
+   asp-route-id="women">
+    Women's Collection
+</a>
 
-                    <a href="#kurti-collection">Kurti</a>
+<a asp-controller="Products"
+   asp-action="Category"
+   asp-route-id="men">
+    Men's Collection
+</a>
 
-                    <a href="#saree-collection">Saree</a>
+<a asp-controller="Products"
+   asp-action="Category"
+   asp-route-id="kurti">
+    Kurti
+</a>
 
-                    <a href="#accessories">Accessories</a>
+<a asp-controller="Products"
+   asp-action="Category"
+   asp-route-id="saree">
+    Saree
+</a>
 
-                    <a href="#skincare">Skincare</a>
+<a asp-controller="Products"
+   asp-action="Category"
+   asp-route-id="accessories">
+    Accessories
+</a>
 
-                    <a href="#makeup">Makeup</a>
+<a asp-controller="Products"
+   asp-action="Category"
+   asp-route-id="skincare">
+    Skincare
+</a>
 
-                    <a href="#offers" class="ever-category-offer">
-                        Offers
-                    </a>
+<a asp-controller="Products"
+   asp-action="Category"
+   asp-route-id="makeup">
+    Makeup
+</a>
+
+<a asp-controller="Products"
+   asp-action="Category"
+   asp-route-id="offers">
+    Offers
+</a>
 
                 </nav>
+
             </div>
+
         </div>
 
     </header>
 
 
-    <!-- =========================
-         MAIN PAGE CONTENT
-         Keep RenderBody exactly once
-         ========================= -->
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
+
     <main role="main">
+
         @RenderBody()
+
     </main>
 
 
-    <!-- =========================
+    <!-- =====================================================
          FOOTER
-         ========================= -->
+         ===================================================== -->
+
     <footer class="ever-footer">
+
         <div class="container">
 
             <div class="ever-footer-content">
 
+
                 <a class="ever-footer-brand"
                    asp-controller="Home"
                    asp-action="Index">
+
                     Ever Spring
+
                 </a>
 
+
                 <p class="ever-footer-tagline">
+
                     A little beauty, a little joy,
                     a little something for you.
+
                 </p>
+
 
                 <div class="ever-footer-links">
 
+
                     <a asp-controller="Home"
                        asp-action="Index">
+
                         Home
+
                     </a>
+
 
                     <a asp-controller="Home"
                        asp-action="Privacy">
+
                         Privacy
+
                     </a>
+
 
                     <a asp-controller="Account"
                        asp-action="Login">
+
                         My Account
+
                     </a>
 
                 </div>
 
+
                 <small>
+
                     &copy; @DateTime.Now.Year Ever Spring.
                     All rights reserved.
+
                 </small>
 
             </div>
+
         </div>
+
     </footer>
 
 
-    <!-- JavaScript -->
+    <!-- =====================================================
+         JAVASCRIPT LIBRARIES
+         ===================================================== -->
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/site.js"
+            asp-append-version="true"></script>
+
+
+    <!-- =====================================================
+         MOBILE MENU + WISHLIST/CART COUNTER
+         ===================================================== -->
 
     <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const toggle = document.getElementById("everMenuToggle");
-                const menu = document.getElementById("everMobileMenu");
 
-                if (!toggle || !menu) return;
+        document.addEventListener("DOMContentLoaded", function () {
+
+
+            /* =================================================
+               MOBILE MENU
+               ================================================= */
+
+            const toggle =
+                document.getElementById("everMenuToggle");
+
+            const menu =
+                document.getElementById("everMobileMenu");
+
+
+            if (toggle && menu) {
+
 
                 function closeMenu() {
+
                     menu.classList.remove("is-open");
+
                     toggle.classList.remove("is-open");
-                    toggle.setAttribute("aria-expanded", "false");
-                    toggle.setAttribute("aria-label", "Open navigation menu");
-                }
 
-                toggle.addEventListener("click", function () {
-                    const isOpen = menu.classList.toggle("is-open");
+                    toggle.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
 
-                    toggle.classList.toggle("is-open", isOpen);
-                    toggle.setAttribute("aria-expanded", String(isOpen));
                     toggle.setAttribute(
                         "aria-label",
-                        isOpen ? "Close navigation menu" : "Open navigation menu"
+                        "Open navigation menu"
                     );
-                });
+                }
 
-                // Close the menu after selecting a link
-                menu.querySelectorAll("a").forEach(function (link) {
-                    link.addEventListener("click", closeMenu);
-                });
 
-                // Close the menu when switching back to desktop
-                window.addEventListener("resize", function () {
-                    if (window.innerWidth > 768) {
-                        closeMenu();
+                toggle.addEventListener(
+                    "click",
+                    function () {
+
+                        const isOpen =
+                            menu.classList.toggle("is-open");
+
+
+                        toggle.classList.toggle(
+                            "is-open",
+                            isOpen
+                        );
+
+
+                        toggle.setAttribute(
+                            "aria-expanded",
+                            String(isOpen)
+                        );
+
+
+                        toggle.setAttribute(
+                            "aria-label",
+                            isOpen
+                                ? "Close navigation menu"
+                                : "Open navigation menu"
+                        );
+
                     }
-                });
-            });
+                );
+
+
+                /* Close menu after clicking a link */
+
+                menu.querySelectorAll("a")
+                    .forEach(function (link) {
+
+                        link.addEventListener(
+                            "click",
+                            closeMenu
+                        );
+
+                    });
+
+
+                /* Close menu when returning to desktop */
+
+                window.addEventListener(
+                    "resize",
+                    function () {
+
+                        if (window.innerWidth > 768) {
+
+                            closeMenu();
+
+                        }
+
+                    }
+                );
+
+            }
+
+
+            /* =================================================
+               WISHLIST + CART
+               ================================================= */
+
+            const wishlistCount =
+                document.getElementById("wishlistCount");
+
+            const cartCount =
+                document.getElementById("cartCount");
+
+            const mobileWishlistCount =
+                document.getElementById(
+                    "mobileWishlistCount"
+                );
+
+            const mobileCartCount =
+                document.getElementById(
+                    "mobileCartCount"
+                );
+
+
+            /* Get existing data */
+
+            let wishlist =
+                JSON.parse(
+                    localStorage.getItem(
+                        "everSpringWishlist"
+                    )
+                ) || [];
+
+
+            let cart =
+                JSON.parse(
+                    localStorage.getItem(
+                        "everSpringCart"
+                    )
+                ) || [];
+
+
+            /* =================================================
+               UPDATE COUNTERS
+               ================================================= */
+
+            function updateCounters() {
+
+
+                /* -----------------------------
+                   Wishlist
+                   ----------------------------- */
+
+                if (wishlistCount) {
+
+                    wishlistCount.textContent =
+                        wishlist.length > 0
+                            ? wishlist.length
+                            : "";
+
+                }
+
+
+                if (mobileWishlistCount) {
+
+                    mobileWishlistCount.textContent =
+                        wishlist.length > 0
+                            ? wishlist.length
+                            : "";
+
+                }
+
+
+                /* -----------------------------
+                   Shopping Bag
+                   ----------------------------- */
+
+                if (cartCount) {
+
+                    cartCount.textContent =
+                        cart.length > 0
+                            ? cart.length
+                            : "";
+
+                }
+
+
+                if (mobileCartCount) {
+
+                    mobileCartCount.textContent =
+                        cart.length > 0
+                            ? cart.length
+                            : "";
+
+                }
+
+            }
+
+
+            /* Initial counter update */
+
+            updateCounters();
+
+
+            /* =================================================
+               GLOBAL FUNCTIONS
+               
+               Product cards can use these later.
+               ================================================= */
+
+            window.EverSpringWishlist = {
+
+
+                add: function (product) {
+
+                    wishlist.push(product);
+
+                    localStorage.setItem(
+                        "everSpringWishlist",
+                        JSON.stringify(wishlist)
+                    );
+
+                    updateCounters();
+
+                },
+
+
+                remove: function (productId) {
+
+                    wishlist =
+                        wishlist.filter(
+                            function (item) {
+
+                                return item.id !== productId;
+
+                            }
+                        );
+
+
+                    localStorage.setItem(
+                        "everSpringWishlist",
+                        JSON.stringify(wishlist)
+                    );
+
+                    updateCounters();
+
+                },
+
+
+                getAll: function () {
+
+                    return wishlist;
+
+                }
+
+            };
+
+
+            window.EverSpringCart = {
+
+
+                add: function (product) {
+
+                    cart.push(product);
+
+                    localStorage.setItem(
+                        "everSpringCart",
+                        JSON.stringify(cart)
+                    );
+
+                    updateCounters();
+
+                },
+
+
+                remove: function (productId) {
+
+                    cart =
+                        cart.filter(
+                            function (item) {
+
+                                return item.id !== productId;
+
+                            }
+                        );
+
+
+                    localStorage.setItem(
+                        "everSpringCart",
+                        JSON.stringify(cart)
+                    );
+
+                    updateCounters();
+
+                },
+
+
+                getAll: function () {
+
+                    return cart;
+
+                }
+
+            };
+
+
+        });
+
     </script>
 
-    @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- Page-specific scripts -->
+
+    @await RenderSectionAsync(
+        "Scripts",
+        required: false
+    )
 
 </body>
+
 </html>

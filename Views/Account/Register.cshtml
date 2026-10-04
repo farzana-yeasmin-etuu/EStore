@@ -1,89 +1,127 @@
 ﻿@model EStore.ViewModels.RegisterViewModel
 
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Create Account";
 }
 
-<div class="container mt-5" style="max-width: 500px;">
+<div class="es-auth-page">
 
-    <h2 class="mb-4">Create Account</h2>
+    <div class="es-auth-card es-register-card">
 
-    <form asp-action="Register" method="post">
+       
 
-        <div asp-validation-summary="All"
-             class="text-danger mb-3">
+        <!-- Heading -->
+        <div class="es-auth-header">
+
+            <h1>Create Your Account</h1>
+
+            <p>
+                Join Ever Spring and discover something lovely.
+            </p>
+
         </div>
 
-        <div class="mb-3">
-            <label asp-for="FullName"
-                   class="form-label">
-            </label>
+        <form asp-action="Register"
+              method="post"
+              class="es-auth-form">
 
-            <input asp-for="FullName"
-                   class="form-control" />
+            <!-- Validation Summary -->
+            <div asp-validation-summary="All"
+                 class="es-auth-validation-summary">
+            </div>
 
-            <span asp-validation-for="FullName"
-                  class="text-danger">
-            </span>
+            <!-- Full Name -->
+            <div class="es-form-group">
+
+                <label asp-for="FullName"
+                       class="es-form-label">
+                </label>
+
+                <input asp-for="FullName"
+                       class="es-form-control"
+                       placeholder="Enter your full name"
+                       autocomplete="name" />
+
+                <span asp-validation-for="FullName"
+                      class="es-validation-message">
+                </span>
+
+            </div>
+
+            <!-- Email -->
+            <div class="es-form-group">
+
+                <label asp-for="Email"
+                       class="es-form-label">
+                </label>
+
+                <input asp-for="Email"
+                       class="es-form-control"
+                       placeholder="Enter your email"
+                       autocomplete="email" />
+
+                <span asp-validation-for="Email"
+                      class="es-validation-message">
+                </span>
+
+            </div>
+
+            <!-- Password -->
+            <div class="es-form-group">
+
+                <label asp-for="Password"
+                       class="es-form-label">
+                </label>
+
+                <input asp-for="Password"
+                       class="es-form-control"
+                       placeholder="Create a password"
+                       autocomplete="new-password" />
+
+                <span asp-validation-for="Password"
+                      class="es-validation-message">
+                </span>
+
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="es-form-group">
+
+                <label asp-for="ConfirmPassword"
+                       class="es-form-label">
+                </label>
+
+                <input asp-for="ConfirmPassword"
+                       class="es-form-control"
+                       placeholder="Confirm your password"
+                       autocomplete="new-password" />
+
+                <span asp-validation-for="ConfirmPassword"
+                      class="es-validation-message">
+                </span>
+
+            </div>
+
+            <!-- Register Button -->
+            <button type="submit"
+                    class="es-auth-button">
+                Create Account
+                <span>→</span>
+            </button>
+
+        </form>
+
+        <!-- Login Link -->
+        <div class="es-auth-switch">
+
+            <span>Already have an account?</span>
+
+            <a asp-action="Login">
+                Login
+            </a>
+
         </div>
 
-
-        <div class="mb-3">
-            <label asp-for="Email"
-                   class="form-label">
-            </label>
-
-            <input asp-for="Email"
-                   class="form-control" />
-
-            <span asp-validation-for="Email"
-                  class="text-danger">
-            </span>
-        </div>
-
-
-        <div class="mb-3">
-            <label asp-for="Password"
-                   class="form-label">
-            </label>
-
-            <input asp-for="Password"
-                   class="form-control" />
-
-            <span asp-validation-for="Password"
-                  class="text-danger">
-            </span>
-        </div>
-
-
-        <div class="mb-3">
-            <label asp-for="ConfirmPassword"
-                   class="form-label">
-            </label>
-
-            <input asp-for="ConfirmPassword"
-                   class="form-control" />
-
-            <span asp-validation-for="ConfirmPassword"
-                  class="text-danger">
-            </span>
-        </div>
-
-
-        <button type="submit"
-                class="btn btn-primary w-100">
-            Register
-        </button>
-
-    </form>
-
-
-    <div class="mt-3 text-center">
-        Already have an account?
-
-        <a asp-action="Login">
-            Login
-        </a>
     </div>
 
 </div>

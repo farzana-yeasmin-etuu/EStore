@@ -825,3 +825,1063 @@ main {
             font-weight: 600;
         }
 }
+
+
+/* =========================================================
+   EVER SPRING - AUTHENTICATION PAGES
+   Login & Register
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   AUTH PAGE BACKGROUND
+   --------------------------------------------------------- */
+
+.es-auth-page {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    background: radial-gradient( circle at 15% 20%, rgba(239, 193, 204, 0.35), transparent 35% ), radial-gradient( circle at 85% 80%, rgba(245, 215, 222, 0.45), transparent 35% ), #fff7f8;
+    box-sizing: border-box;
+}
+
+
+/* ---------------------------------------------------------
+   AUTH CARD
+   --------------------------------------------------------- */
+
+.es-auth-card {
+    width: 100%;
+    max-width: 440px;
+    padding: 42px 42px 34px;
+    background: #ffffff;
+    border: 1px solid #f1dfe3;
+    border-radius: 22px;
+    box-shadow: 0 20px 55px rgba(91, 55, 65, 0.08), 0 4px 15px rgba(91, 55, 65, 0.04);
+    box-sizing: border-box;
+}
+
+
+/* Slightly wider card for Register */
+
+.es-register-card {
+    max-width: 480px;
+}
+
+
+/* ---------------------------------------------------------
+   HEADER
+   --------------------------------------------------------- */
+
+.es-auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+    .es-auth-header h1 {
+        margin: 0 0 9px;
+        color: #573a43;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 30px;
+        font-weight: 500;
+        line-height: 1.25;
+    }
+
+    .es-auth-header p {
+        margin: 0 auto;
+        max-width: 330px;
+        color: #987b83;
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+
+/* ---------------------------------------------------------
+   FORM
+   --------------------------------------------------------- */
+
+.es-auth-form {
+    width: 100%;
+}
+
+.es-form-group {
+    margin-bottom: 20px;
+}
+
+
+/* ---------------------------------------------------------
+   LABEL
+   --------------------------------------------------------- */
+
+.es-form-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #573a43;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+
+/* ---------------------------------------------------------
+   INPUT
+   --------------------------------------------------------- */
+
+.es-form-control {
+    display: block;
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 15px;
+    box-sizing: border-box;
+    color: #573a43;
+    background: #fffafb;
+    border: 1px solid #ead6db;
+    border-radius: 10px;
+    outline: none;
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+
+    /* Placeholder */
+
+    .es-form-control::placeholder {
+        color: #b99ba4;
+        opacity: 1;
+    }
+
+
+    /* Focus */
+
+    .es-form-control:focus {
+        background: #ffffff;
+        border-color: #d994a7;
+        box-shadow: 0 0 0 3px rgba(217, 148, 167, 0.13);
+    }
+
+
+    /* Autofill */
+
+    .es-form-control:-webkit-autofill {
+        -webkit-text-fill-color: #573a43;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
+
+/* ---------------------------------------------------------
+   REMEMBER ME
+   --------------------------------------------------------- */
+
+.es-remember-row {
+    display: flex;
+    align-items: center;
+    margin: 4px 0 23px;
+}
+
+.es-custom-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.es-check-input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: #c9788e;
+    cursor: pointer;
+}
+
+.es-check-label {
+    color: #80666e;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+
+/* ---------------------------------------------------------
+   BUTTON
+   --------------------------------------------------------- */
+
+.es-auth-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 50px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    background: #c9788e;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .es-auth-button span {
+        font-size: 18px;
+        line-height: 1;
+        transition: transform 0.2s ease;
+    }
+
+    .es-auth-button:hover {
+        background: #b9657c;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(185, 101, 124, 0.20);
+    }
+
+        .es-auth-button:hover span {
+            transform: translateX(4px);
+        }
+
+    .es-auth-button:active {
+        transform: translateY(0);
+        box-shadow: none;
+    }
+
+
+/* ---------------------------------------------------------
+   VALIDATION
+   --------------------------------------------------------- */
+
+.es-validation-message {
+    display: block;
+    margin-top: 6px;
+    color: #b84f68;
+    font-size: 12px;
+}
+
+.es-auth-validation-summary {
+    margin-bottom: 18px;
+    padding: 0;
+    color: #b84f68;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    font-size: 13px;
+}
+
+    .es-auth-validation-summary:empty {
+        display: none;
+    }
+
+    .es-auth-validation-summary ul {
+        margin: 0;
+        padding-left: 18px;
+    }
+
+
+/* ---------------------------------------------------------
+   LOGIN / REGISTER SWITCH
+   --------------------------------------------------------- */
+
+.es-auth-switch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid #f0e1e4;
+    color: #8f737c;
+    font-size: 13px;
+    text-align: center;
+}
+
+    .es-auth-switch a {
+        color: #b45f76;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+        .es-auth-switch a:hover {
+            color: #8f435a;
+            text-decoration: underline;
+        }
+
+
+/* ---------------------------------------------------------
+   RESPONSIVE - TABLET
+   --------------------------------------------------------- */
+
+@media (max-width: 576px) {
+
+    .es-auth-page {
+        min-height: calc(100vh - 80px);
+        padding: 35px 16px;
+    }
+
+    .es-auth-card {
+        padding: 34px 25px 28px;
+        border-radius: 18px;
+    }
+
+    .es-auth-header h1 {
+        font-size: 26px;
+    }
+
+    .es-auth-header p {
+        font-size: 13px;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   RESPONSIVE - SMALL MOBILE
+   --------------------------------------------------------- */
+
+@media (max-width: 380px) {
+
+    .es-auth-page {
+        padding: 25px 12px;
+    }
+
+    .es-auth-card {
+        padding: 30px 20px 25px;
+        border-radius: 16px;
+    }
+
+    .es-auth-brand-name {
+        font-size: 22px;
+    }
+
+    .es-auth-header h1 {
+        font-size: 24px;
+    }
+
+    .es-form-control {
+        min-height: 46px;
+        font-size: 13px;
+    }
+
+    .es-auth-button {
+        min-height: 48px;
+    }
+}
+
+/* ============================================================
+   EVER SPRING
+   WISHLIST + SHOPPING BAG + RESPONSIVE NAVBAR
+   ============================================================ */
+
+
+/* ============================================================
+   DESKTOP NAVIGATION ICONS
+   ============================================================ */
+
+.es-nav-icon-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #573a43;
+    text-decoration: none;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+
+    .es-nav-icon-link:hover {
+        color: #b45f76;
+        transform: translateY(-1px);
+    }
+
+
+/* ============================================================
+   ICON WRAPPER
+   ============================================================ */
+
+.es-nav-icon {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+    /* ============================================================
+   HEART + SHOPPING BAG SVG
+   ============================================================ */
+
+    .es-nav-icon svg {
+        width: 22px;
+        height: 22px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.7;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+
+/* ============================================================
+   RED NOTIFICATION BADGE
+   ============================================================ */
+
+.es-nav-badge {
+    position: absolute;
+    top: -8px;
+    right: -9px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: #d83f59;
+    color: #ffffff;
+    border-radius: 50%;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1;
+    box-sizing: border-box;
+    z-index: 5;
+}
+
+
+    /* Show badge only when number exists */
+
+    .es-nav-badge:not(:empty) {
+        display: flex;
+    }
+
+
+/* ============================================================
+   MOBILE COUNT
+   ============================================================ */
+
+.ever-mobile-count {
+    margin-left: auto;
+    min-width: 19px;
+    height: 19px;
+    padding: 0 5px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: #d83f59;
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+
+    .ever-mobile-count:not(:empty) {
+        display: flex;
+    }
+
+
+/* ============================================================
+   MOBILE HAMBURGER
+   ============================================================ */
+
+.ever-menu-toggle {
+    display: none;
+    border: 0;
+    background: transparent;
+    padding: 8px;
+    cursor: pointer;
+    color: #573a43;
+}
+
+
+    /* Hamburger lines */
+
+    .ever-menu-toggle span {
+        display: block;
+        width: 25px;
+        height: 2px;
+        margin: 5px 0;
+        border-radius: 2px;
+        background: currentColor;
+        transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+
+    /* Hamburger -> X */
+
+    .ever-menu-toggle.is-open
+    span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+
+    .ever-menu-toggle.is-open
+    span:nth-child(2) {
+        opacity: 0;
+    }
+
+
+    .ever-menu-toggle.is-open
+    span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
+
+
+/* ============================================================
+   MOBILE MENU DEFAULT
+   ============================================================ */
+
+.ever-mobile-menu {
+    display: none;
+}
+
+
+/* ============================================================
+   MOBILE VIEW
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+
+    /* --------------------------------------------
+       Navbar top
+       -------------------------------------------- */
+
+    .ever-navbar-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+
+    /* --------------------------------------------
+       Logo
+       -------------------------------------------- */
+
+    .ever-logo {
+        flex: 0 1 auto;
+        min-width: 0;
+    }
+
+
+        .ever-logo img {
+            display: block;
+            width: auto;
+            max-width: 130px;
+            max-height: 48px;
+            object-fit: contain;
+            object-position: left center;
+        }
+
+
+    /* --------------------------------------------
+       Hide center brand on mobile
+       -------------------------------------------- */
+
+    .ever-brand-centered {
+        display: none !important;
+    }
+
+
+    /* --------------------------------------------
+       Hide desktop actions
+       -------------------------------------------- */
+
+    .ever-nav-actions {
+        display: none !important;
+    }
+
+
+    /* --------------------------------------------
+       Show hamburger
+       -------------------------------------------- */
+
+    .ever-menu-toggle {
+        display: block;
+        flex-shrink: 0;
+        margin-left: auto;
+    }
+
+
+    /* --------------------------------------------
+       Hide desktop category bar
+       -------------------------------------------- */
+
+    .ever-category-bar {
+        display: none !important;
+    }
+
+
+    /* --------------------------------------------
+       Mobile menu
+       -------------------------------------------- */
+
+    .ever-mobile-menu {
+        display: none;
+        width: 100%;
+        margin-top: 10px;
+        padding: 18px 0 22px;
+        border-top: 1px solid rgba(87, 58, 67, 0.15);
+        background: #fff7f8;
+    }
+
+
+        .ever-mobile-menu.is-open {
+            display: block;
+        }
+
+
+    /* --------------------------------------------
+       Mobile action section
+       -------------------------------------------- */
+
+    .ever-mobile-menu-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        padding-bottom: 14px;
+        border-bottom: 1px solid #ead5da;
+    }
+
+
+    /* --------------------------------------------
+       Mobile action link
+       -------------------------------------------- */
+
+    .ever-mobile-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding: 12px 8px;
+        border: 0;
+        background: transparent;
+        color: #573a43;
+        font: inherit;
+        font-size: 15px;
+        text-align: left;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+
+        .ever-mobile-link:hover {
+            color: #a65f78;
+        }
+
+
+    /* --------------------------------------------
+       Mobile icon
+       -------------------------------------------- */
+
+    .ever-mobile-icon {
+        width: 24px;
+        font-size: 20px;
+        text-align: center;
+        flex-shrink: 0;
+    }
+
+
+    /* --------------------------------------------
+       Logout form
+       -------------------------------------------- */
+
+    .ever-mobile-menu-actions form {
+        margin: 0;
+    }
+
+
+        .ever-mobile-menu-actions form
+        .ever-mobile-link {
+            font-family: inherit;
+        }
+
+
+    /* --------------------------------------------
+       Mobile category title
+       -------------------------------------------- */
+
+    .ever-mobile-menu-heading {
+        margin: 18px 8px 10px;
+        color: #9b6878;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+    }
+
+
+    /* --------------------------------------------
+       Mobile categories
+       -------------------------------------------- */
+
+    .ever-mobile-categories {
+        display: flex;
+        flex-direction: column;
+    }
+
+
+        .ever-mobile-categories > a {
+            display: block;
+            padding: 11px 8px;
+            color: #573a43;
+            font-size: 14px;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(87, 58, 67, 0.07);
+            transition: color 0.2s ease, padding-left 0.2s ease;
+        }
+
+
+            .ever-mobile-categories > a:hover {
+                color: #a65f78;
+                padding-left: 13px;
+            }
+
+
+        /* Offers */
+
+        .ever-mobile-categories > .ever-mobile-offer {
+            color: #b44c70;
+            font-weight: 600;
+        }
+}
+
+
+/* ============================================================
+   SMALL MOBILE
+   ============================================================ */
+
+@media (max-width: 480px) {
+
+
+    .ever-logo img {
+        max-width: 115px;
+        max-height: 44px;
+    }
+
+
+    .ever-menu-toggle {
+        padding: 6px;
+    }
+
+
+        .ever-menu-toggle span {
+            width: 23px;
+        }
+
+
+    .ever-mobile-menu {
+        padding-top: 15px;
+    }
+}
+
+
+/* ============================================================
+   VERY SMALL SCREEN
+   ============================================================ */
+
+@media (max-width: 360px) {
+
+
+    .ever-logo img {
+        max-width: 105px;
+    }
+
+
+    .ever-mobile-link {
+        font-size: 14px;
+    }
+}
+
+
+/* =========================================================
+   EVER SPRING PRODUCT PAGE
+   ========================================================= */
+
+.es-products-page {
+    padding: 55px 6%;
+    background: #fffafb;
+    min-height: 70vh;
+}
+
+
+/* Header */
+
+.es-products-header {
+    text-align: center;
+    margin-bottom: 45px;
+}
+
+.es-products-small-title {
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: #c48a9b;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.es-products-header h1 {
+    font-family: Georgia, serif;
+    font-size: 38px;
+    font-weight: 500;
+    color: #3d3034;
+    margin-bottom: 10px;
+}
+
+.es-products-header p {
+    color: #8c777c;
+    font-size: 14px;
+}
+
+
+/* Product Grid */
+
+.es-product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px 20px;
+}
+
+
+/* Product Card */
+
+.es-product-card {
+    background: #ffffff;
+    border: 1px solid #f2e4e8;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+    .es-product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(110, 70, 80, 0.10);
+    }
+
+
+/* Image */
+
+.es-product-image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: #f8eef1;
+}
+
+.es-product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.es-product-card:hover .es-product-image {
+    transform: scale(1.04);
+}
+
+
+/* Wishlist */
+
+.es-product-wishlist {
+    position: absolute;
+    top: 13px;
+    right: 13px;
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.94);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: all 0.25s ease;
+}
+
+.es-product-card:hover .es-product-wishlist {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.es-product-wishlist svg {
+    width: 20px;
+    height: 20px;
+    color: #8f5366;
+}
+
+.es-product-wishlist:hover {
+    background: #f7dfe6;
+}
+
+
+/* Product Information */
+
+.es-product-info {
+    padding: 16px;
+}
+
+.es-product-category {
+    margin: 0 0 5px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #b98b98;
+}
+
+.es-product-info h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: #44363a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* Bottom */
+
+.es-product-bottom {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.es-product-price {
+    font-size: 13px;
+    color: #a47a86;
+}
+
+
+/* Add to Bag */
+
+.es-add-bag-btn {
+    border: none;
+    background: #f3d5de;
+    color: #5d3c45;
+    padding: 8px 12px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+    .es-add-bag-btn:hover {
+        background: #e8becb;
+        color: #3f292f;
+    }
+
+
+/* No Products */
+
+.es-no-products {
+    text-align: center;
+    padding: 70px 20px;
+}
+
+    .es-no-products h3 {
+        font-family: Georgia, serif;
+        color: #554146;
+        font-size: 24px;
+    }
+
+    .es-no-products p {
+        color: #97848a;
+        font-size: 14px;
+    }
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 992px) {
+
+    .es-product-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    .es-products-page {
+        padding: 40px 18px;
+    }
+
+    .es-products-header {
+        margin-bottom: 30px;
+    }
+
+        .es-products-header h1 {
+            font-size: 30px;
+        }
+
+    .es-product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px 12px;
+    }
+
+    .es-product-info {
+        padding: 12px;
+    }
+
+        .es-product-info h3 {
+            font-size: 13px;
+        }
+
+    .es-product-bottom {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .es-product-price {
+        font-size: 12px;
+    }
+
+    .es-add-bag-btn {
+        width: 100%;
+    }
+
+    .es-product-wishlist {
+        opacity: 1;
+        transform: none;
+        width: 34px;
+        height: 34px;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 400px) {
+
+    .es-products-page {
+        padding: 30px 12px;
+    }
+
+    .es-product-grid {
+        gap: 14px 9px;
+    }
+
+    .es-product-info {
+        padding: 10px;
+    }
+
+    .es-product-wishlist {
+        width: 31px;
+        height: 31px;
+        top: 8px;
+        right: 8px;
+    }
+}

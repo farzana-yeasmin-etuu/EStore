@@ -18,6 +18,15 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\hero\" />
+    <Folder Include="wwwroot\images\products\new-arrivals\" />
+    <Folder Include="wwwroot\images\products\men\" />
+    <Folder Include="wwwroot\images\products\kurti\" />
+    <Folder Include="wwwroot\images\products\accessories\" />
+    <Folder Include="wwwroot\images\products\makeup\" />
+    <Folder Include="wwwroot\images\products\offers\" />
+    <Folder Include="wwwroot\images\products\skincare\" />
+    <Folder Include="wwwroot\images\products\saree\" />
+    <Folder Include="wwwroot\images\products\women\" />
   </ItemGroup>
 
 </Project>
