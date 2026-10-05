@@ -12,5 +12,9 @@ namespace EStore.Data
             : base(options)
         {
         }
+
+        public DbSet<Product> Products { get; set; }
+
+        public DbSet<PageVisit> PageVisits { get; set; }
     }
 }
