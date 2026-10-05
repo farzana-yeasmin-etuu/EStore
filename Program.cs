@@ -84,6 +84,17 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 
+// Seed database
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    await DbInitializer.SeedRolesAsync(services);
+
+    await DbInitializer.SeedProductsAsync(services);
+}
+
+
 // ======================================================
 // 10. MVC Route
 // ======================================================

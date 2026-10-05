@@ -1,19 +1,24 @@
-﻿using EStore.ViewModels;
+﻿using EStore.Data;
+using EStore.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EStore.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly IWebHostEnvironment _environment;
+        private readonly ApplicationDbContext _context;
 
-        public ProductsController(IWebHostEnvironment environment)
+        public ProductsController(ApplicationDbContext context)
         {
-            _environment = environment;
+            _context = context;
         }
 
-        // Category pages
-        public IActionResult Category(string id)
+
+        // =========================================================
+        // CATEGORY PAGE
+        // =========================================================
+        public async Task<IActionResult> Category(string id)
         {
             var categories = GetCategories();
 
@@ -29,10 +34,28 @@ namespace EStore.Controllers
                 return NotFound();
             }
 
-            var products = GetProducts(
-                selectedCategory.Key,
-                selectedCategory.Value
-            );
+
+            var products = await _context.Products
+                .Where(p =>
+                    p.Category == selectedCategory.Value &&
+                    p.IsActive
+                )
+                .OrderBy(p => p.Id)
+                .Select(p => new ProductViewModel
+                {
+                    Id = p.Id,
+                    ProductId = p.Id.ToString(),
+
+                    Name = p.Name,
+
+                    Category = p.Category,
+
+                    ImageUrl = p.ImageUrl,
+
+                    Price = p.Price
+                })
+                .ToListAsync();
+
 
             ViewBag.CategoryName = selectedCategory.Value;
 
@@ -40,100 +63,80 @@ namespace EStore.Controllers
         }
 
 
-        // Global product search
-        public IActionResult Search(string q)
+        // =========================================================
+        // PRODUCT SEARCH
+        // =========================================================
+        public async Task<IActionResult> Search(
+            string q,
+            string category = "")
         {
-            if (string.IsNullOrWhiteSpace(q))
+            var query = _context.Products
+                .Where(p => p.IsActive)
+                .AsQueryable();
+
+
+            // Category-specific search
+            if (!string.IsNullOrWhiteSpace(category))
             {
-                return RedirectToAction("Index", "Home");
+                var categories = GetCategories();
+
+                var selectedCategory = categories.FirstOrDefault(
+                    x => x.Key.Equals(
+                        category,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                );
+
+                if (selectedCategory.Key == null)
+                {
+                    return NotFound();
+                }
+
+                query = query.Where(
+                    p => p.Category == selectedCategory.Value
+                );
             }
 
-            var allProducts = new List<ProductViewModel>();
 
-            foreach (var category in GetCategories())
+            // Search product name/category
+            if (!string.IsNullOrWhiteSpace(q))
             {
-                var products = GetProducts(category.Key, category.Value);
-
-                allProducts.AddRange(products);
+                query = query.Where(
+                    p =>
+                        p.Name.Contains(q) ||
+                        p.Category.Contains(q)
+                );
             }
 
-            var results = allProducts
-                .Where(p =>
-                    p.Name.Contains(q, StringComparison.OrdinalIgnoreCase) ||
-                    p.Category.Contains(q, StringComparison.OrdinalIgnoreCase)
-                )
-                .ToList();
+
+            var results = await query
+                .OrderBy(p => p.Id)
+                .Select(p => new ProductViewModel
+                {
+                    Id = p.Id,
+                    ProductId = p.Id.ToString(),
+
+                    Name = p.Name,
+
+                    Category = p.Category,
+
+                    ImageUrl = p.ImageUrl,
+
+                    Price = p.Price
+                })
+                .ToListAsync();
+
 
             ViewBag.SearchQuery = q;
+            ViewBag.SearchCategory = category;
 
             return View(results);
         }
 
 
-        // Get products from folder
-        private List<ProductViewModel> GetProducts(
-            string folderName,
-            string categoryName)
-        {
-            var products = new List<ProductViewModel>();
-
-            var folderPath = Path.Combine(
-                _environment.WebRootPath,
-                "images",
-                "products",
-                folderName
-            );
-
-            if (!Directory.Exists(folderPath))
-            {
-                return products;
-            }
-
-            var files = Directory
-                .GetFiles(folderPath)
-                .Where(file =>
-                    file.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
-                    file.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase) ||
-                    file.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
-                    file.EndsWith(".webp", StringComparison.OrdinalIgnoreCase)
-                )
-                .OrderBy(file => file)
-                .ToList();
-
-            int id = 1;
-
-            foreach (var file in files)
-            {
-                var fileName = Path.GetFileName(file);
-
-                var productName = Path.GetFileNameWithoutExtension(fileName);
-
-                products.Add(new ProductViewModel
-                {
-                    Id = id,
-                    ProductId = $"{folderName}-{id}",
-
-                    Name = FormatProductName(
-                        productName,
-                        categoryName
-                    ),
-
-                    Category = categoryName,
-
-                    ImageUrl =
-                        $"/images/products/{folderName}/{Uri.EscapeDataString(fileName)}",
-
-                    Price = 0
-                });
-
-                id++;
-            }
-
-            return products;
-        }
-
-
-        // Category list
+        // =========================================================
+        // CATEGORY LIST
+        // =========================================================
         private Dictionary<string, string> GetCategories()
         {
             return new Dictionary<string, string>(
@@ -149,22 +152,6 @@ namespace EStore.Controllers
                 { "makeup", "Makeup" },
                 { "offers", "Offers" }
             };
-        }
-
-
-        // Convert filename into product name
-        private string FormatProductName(
-            string fileName,
-            string categoryName)
-        {
-            if (string.IsNullOrWhiteSpace(fileName))
-            {
-                return categoryName;
-            }
-
-            return fileName
-                .Replace("_", " ")
-                .Replace("-", " ");
         }
     }
 }
