@@ -1,17 +1,46 @@
-﻿using EStore.Data;
+﻿
+using EStore.Data;
 using EStore.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+ 
 namespace EStore.Controllers
 {
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public ProductsController(ApplicationDbContext context)
+        public ProductsController(
+            ApplicationDbContext context,
+            IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
+        }
+
+
+        // =========================================================
+        // Check if the image file still exists in wwwroot
+        // =========================================================
+        private bool ImageExists(string imageUrl)
+        {
+            if (string.IsNullOrWhiteSpace(imageUrl))
+            {
+                return false;
+            }
+
+            var relativePath = Uri
+                .UnescapeDataString(imageUrl)
+                .TrimStart('/')
+                .Replace('/', Path.DirectorySeparatorChar);
+
+            var fullPath = Path.Combine(
+                _environment.WebRootPath,
+                relativePath
+            );
+
+            return System.IO.File.Exists(fullPath);
         }
 
 
@@ -55,6 +84,11 @@ namespace EStore.Controllers
                     Price = p.Price
                 })
                 .ToListAsync();
+
+            // Hide products whose image was deleted
+            products = products
+                .Where(p => ImageExists(p.ImageUrl))
+                .ToList();
 
 
             ViewBag.CategoryName = selectedCategory.Value;
@@ -125,6 +159,11 @@ namespace EStore.Controllers
                     Price = p.Price
                 })
                 .ToListAsync();
+
+            // Hide products whose image was deleted
+            results = results
+                .Where(p => ImageExists(p.ImageUrl))
+                .ToList();
 
 
             ViewBag.SearchQuery = q;

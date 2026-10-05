@@ -37,12 +37,7 @@ var app = builder.Build();
 // ======================================================
 // Create default roles
 // ======================================================
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
 
-    await DbInitializer.SeedRolesAsync(services);
-}
 
 // ======================================================
 // 4. Error Handling

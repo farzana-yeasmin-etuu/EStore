@@ -40,11 +40,7 @@ namespace EStore.Data
             var environment =
                 serviceProvider.GetRequiredService<IWebHostEnvironment>();
 
-            // If products already exist, don't create duplicates
-            if (await context.Products.AnyAsync())
-            {
-                return;
-            }
+
 
             var categories = new Dictionary<string, (string Name, decimal Price)>(
                 StringComparer.OrdinalIgnoreCase)
