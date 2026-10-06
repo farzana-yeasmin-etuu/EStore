@@ -6,6 +6,9 @@ namespace EStore.Data
 {
     public static class DbInitializer
     {
+        // ============================================================
+        // SEED ROLES
+        // ============================================================
         public static async Task SeedRolesAsync(
             IServiceProvider serviceProvider)
         {
@@ -30,7 +33,78 @@ namespace EStore.Data
         }
 
 
-        // Seed existing products from image folders
+        // ============================================================
+        // SEED ADMIN ACCOUNT
+        // ============================================================
+        public static async Task SeedAdminAsync(
+            IServiceProvider serviceProvider,
+            IConfiguration configuration)
+        {
+            var userManager =
+                serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+            var adminEmail =
+                configuration["AdminSettings:Email"];
+
+            var adminPassword =
+                configuration["AdminSettings:Password"];
+
+            // Safety check
+            if (string.IsNullOrWhiteSpace(adminEmail) ||
+                string.IsNullOrWhiteSpace(adminPassword))
+            {
+                throw new Exception(
+                    "Admin email or password is missing in appsettings.json."
+                );
+            }
+
+            // Check whether Admin user already exists
+            var adminUser =
+                await userManager.FindByEmailAsync(adminEmail);
+
+            // If Admin user doesn't exist, create one
+            if (adminUser == null)
+            {
+                adminUser = new ApplicationUser
+                {
+                    UserName = adminEmail,
+                    Email = adminEmail,
+                    EmailConfirmed = true
+                };
+
+                var createResult =
+                    await userManager.CreateAsync(
+                        adminUser,
+                        adminPassword
+                    );
+
+                if (!createResult.Succeeded)
+                {
+                    var errors = string.Join(
+                        ", ",
+                        createResult.Errors.Select(e => e.Description)
+                    );
+
+                    throw new Exception(
+                        $"Admin account creation failed: {errors}"
+                    );
+                }
+            }
+
+            // Make sure Admin role exists
+            if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
+            {
+                await userManager.AddToRoleAsync(
+                    adminUser,
+                    "Admin"
+                );
+            }
+        }
+
+
+        // ============================================================
+        // SEED PRODUCTS
+        // ============================================================
         public static async Task SeedProductsAsync(
             IServiceProvider serviceProvider)
         {
@@ -40,22 +114,20 @@ namespace EStore.Data
             var environment =
                 serviceProvider.GetRequiredService<IWebHostEnvironment>();
 
-
-
-            var categories = new Dictionary<string, (string Name, decimal Price)>(
-                StringComparer.OrdinalIgnoreCase)
-            {
-                { "new-arrivals", ("New Arrivals", 1200) },
-                { "women", ("Women's Collection", 1500) },
-                { "men", ("Men's Collection", 1200) },
-                { "kurti", ("Kurti", 1400) },
-                { "saree", ("Saree", 2000) },
-                { "accessories", ("Accessories", 500) },
-                { "skincare", ("Skincare", 800) },
-                { "makeup", ("Makeup", 700) },
-                { "offers", ("Offers", 1000) }
-            };
-
+            var categories =
+                new Dictionary<string, (string Name, decimal Price)>(
+                    StringComparer.OrdinalIgnoreCase)
+                {
+                    { "new-arrivals", ("New Arrivals", 1200) },
+                    { "women", ("Women's Collection", 1500) },
+                    { "men", ("Men's Collection", 1200) },
+                    { "kurti", ("Kurti", 1400) },
+                    { "saree", ("Saree", 2000) },
+                    { "accessories", ("Accessories", 500) },
+                    { "skincare", ("Skincare", 800) },
+                    { "makeup", ("Makeup", 700) },
+                    { "offers", ("Offers", 1000) }
+                };
 
             foreach (var category in categories)
             {
@@ -74,7 +146,6 @@ namespace EStore.Data
                 {
                     continue;
                 }
-
 
                 var files = Directory
                     .GetFiles(folderPath)
@@ -102,7 +173,6 @@ namespace EStore.Data
                     .OrderBy(file => file)
                     .ToList();
 
-
                 foreach (var file in files)
                 {
                     var fileName =
@@ -113,10 +183,8 @@ namespace EStore.Data
                             .Replace("_", " ")
                             .Replace("-", " ");
 
-
                     var imageUrl =
                         $"/images/products/{folderName}/{Uri.EscapeDataString(fileName)}";
-
 
                     var productExists =
                         await context.Products.AnyAsync(
@@ -128,32 +196,22 @@ namespace EStore.Data
                         continue;
                     }
 
-
                     var product = new Product
                     {
                         Name = productName,
-
                         Category = categoryName,
-
                         ImageUrl = imageUrl,
-
                         Price = defaultPrice,
-
                         Stock = 10,
-
                         Description =
                             $"Beautiful {categoryName} product from Ever Spring.",
-
                         IsActive = true,
-
                         CreatedAt = DateTime.UtcNow
                     };
-
 
                     context.Products.Add(product);
                 }
             }
-
 
             await context.SaveChangesAsync();
         }

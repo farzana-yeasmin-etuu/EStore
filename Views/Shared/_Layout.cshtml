@@ -22,6 +22,7 @@
           asp-append-version="true" />
 
 
+    <!-- EStore generated CSS -->
     <link rel="stylesheet"
           href="~/EStore.styles.css"
           asp-append-version="true" />
@@ -111,9 +112,9 @@
                         <!-- SEARCH -->
 
                         <a class="ever-icon-link"
-                        asp-controller="Products"
-                        asp-action="Search"
-                        aria-label="Search">
+                           asp-controller="Products"
+                           asp-action="Search"
+                           aria-label="Search">
 
                             <span class="ever-icon">
                                 ⌕
@@ -135,7 +136,6 @@
                            aria-label="Wishlist">
 
                             <span class="es-nav-icon">
-
 
                                 <!-- Heart -->
 
@@ -169,7 +169,6 @@
 
                             <span class="es-nav-icon">
 
-
                                 <!-- Shopping Bag -->
 
                                 <svg viewBox="0 0 24 24"
@@ -196,11 +195,32 @@
 
 
                         <!-- =========================================
-                             LOGIN / ACCOUNT
+                             ADMIN / ACCOUNT / LOGIN
                              ========================================= -->
 
                         @if (User.Identity?.IsAuthenticated == true)
                         {
+
+                            <!-- ADMIN -->
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a class="ever-icon-link"
+                                   asp-controller="Admin"
+                                   asp-action="Index"
+                                   aria-label="Admin Dashboard">
+
+                                    <span class="ever-icon">
+                                        ⚙
+                                    </span>
+
+                                    <span class="action-label">
+                                        Admin
+                                    </span>
+
+                                </a>
+                            }
+
 
                             <!-- ACCOUNT -->
 
@@ -261,6 +281,7 @@
 
                         }
 
+
                     </div>
 
 
@@ -279,17 +300,17 @@
 
                             <!-- SEARCH -->
 
-                          <a class="ever-mobile-link"
-   asp-controller="Products"
-   asp-action="Search">
+                            <a class="ever-mobile-link"
+                               asp-controller="Products"
+                               asp-action="Search">
 
-    <span class="ever-mobile-icon">
-        ⌕
-    </span>
+                                <span class="ever-mobile-icon">
+                                    ⌕
+                                </span>
 
-    Search
+                                Search
 
-</a>
+                            </a>
 
 
                             <!-- WISHLIST -->
@@ -327,6 +348,26 @@
 
                             </a>
 
+
+                            <!-- ADMIN -->
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a class="ever-mobile-link"
+                                   asp-controller="Admin"
+                                   asp-action="Index">
+
+                                    <span class="ever-mobile-icon">
+                                        ⚙
+                                    </span>
+
+                                    Admin Dashboard
+
+                                </a>
+                            }
+
+
+                            <!-- ACCOUNT / LOGIN / LOGOUT -->
 
                             @if (User.Identity?.IsAuthenticated == true)
                             {
@@ -385,6 +426,7 @@
 
                             }
 
+
                         </div>
 
 
@@ -397,61 +439,72 @@
                             <p class="ever-mobile-menu-heading">
                                 SHOP BY CATEGORY
                             </p>
+
+
                             <a asp-controller="Products"
-   asp-action="Category"
-   asp-route-id="new-arrivals">
-    New Arrivals
-</a>
+                               asp-action="Category"
+                               asp-route-id="new-arrivals">
+                                New Arrivals
+                            </a>
 
-<a asp-controller="Products"
-   asp-action="Category"
-   asp-route-id="women">
-    Women's Collection
-</a>
 
-<a asp-controller="Products"
-   asp-action="Category"
-   asp-route-id="men">
-    Men's Collection
-</a>
+                            <a asp-controller="Products"
+                               asp-action="Category"
+                               asp-route-id="women">
+                                Women's Collection
+                            </a>
 
-<a asp-controller="Products"
-   asp-action="Category"
-   asp-route-id="kurti">
-    Kurti
-</a>
 
-<a asp-controller="Products"
-   asp-action="Category"
-   asp-route-id="saree">
-    Saree
-</a>
+                            <a asp-controller="Products"
+                               asp-action="Category"
+                               asp-route-id="men">
+                                Men's Collection
+                            </a>
 
-<a asp-controller="Products"
-   asp-action="Category"
-   asp-route-id="accessories">
-    Accessories
-</a>
 
-<a asp-controller="Products"
-   asp-action="Category"
-   asp-route-id="skincare">
-    Skincare
-</a>
+                            <a asp-controller="Products"
+                               asp-action="Category"
+                               asp-route-id="kurti">
+                                Kurti
+                            </a>
 
-<a asp-controller="Products"
-   asp-action="Category"
-   asp-route-id="makeup">
-    Makeup
-</a>
 
-<a asp-controller="Products"
-   asp-action="Category"
-   asp-route-id="offers">
-    Offers
-</a>
+                            <a asp-controller="Products"
+                               asp-action="Category"
+                               asp-route-id="saree">
+                                Saree
+                            </a>
+
+
+                            <a asp-controller="Products"
+                               asp-action="Category"
+                               asp-route-id="accessories">
+                                Accessories
+                            </a>
+
+
+                            <a asp-controller="Products"
+                               asp-action="Category"
+                               asp-route-id="skincare">
+                                Skincare
+                            </a>
+
+
+                            <a asp-controller="Products"
+                               asp-action="Category"
+                               asp-route-id="makeup">
+                                Makeup
+                            </a>
+
+
+                            <a asp-controller="Products"
+                               asp-action="Category"
+                               asp-route-id="offers">
+                                Offers
+                            </a>
 
                         </div>
+
 
                     </div>
 
@@ -474,59 +527,68 @@
                      aria-label="Shop categories">
 
 
-                   <a asp-controller="Products"
-   asp-action="Category"
-   asp-route-id="new-arrivals">
-    New Arrivals
-</a>
+                    <a asp-controller="Products"
+                       asp-action="Category"
+                       asp-route-id="new-arrivals">
+                        New Arrivals
+                    </a>
 
-<a asp-controller="Products"
-   asp-action="Category"
-   asp-route-id="women">
-    Women's Collection
-</a>
 
-<a asp-controller="Products"
-   asp-action="Category"
-   asp-route-id="men">
-    Men's Collection
-</a>
+                    <a asp-controller="Products"
+                       asp-action="Category"
+                       asp-route-id="women">
+                        Women's Collection
+                    </a>
 
-<a asp-controller="Products"
-   asp-action="Category"
-   asp-route-id="kurti">
-    Kurti
-</a>
 
-<a asp-controller="Products"
-   asp-action="Category"
-   asp-route-id="saree">
-    Saree
-</a>
+                    <a asp-controller="Products"
+                       asp-action="Category"
+                       asp-route-id="men">
+                        Men's Collection
+                    </a>
 
-<a asp-controller="Products"
-   asp-action="Category"
-   asp-route-id="accessories">
-    Accessories
-</a>
 
-<a asp-controller="Products"
-   asp-action="Category"
-   asp-route-id="skincare">
-    Skincare
-</a>
+                    <a asp-controller="Products"
+                       asp-action="Category"
+                       asp-route-id="kurti">
+                        Kurti
+                    </a>
 
-<a asp-controller="Products"
-   asp-action="Category"
-   asp-route-id="makeup">
-    Makeup
-</a>
 
-<a asp-controller="Products"
-   asp-action="Category"
-   asp-route-id="offers">
-    Offers
-</a>
+                    <a asp-controller="Products"
+                       asp-action="Category"
+                       asp-route-id="saree">
+                        Saree
+                    </a>
+
+
+                    <a asp-controller="Products"
+                       asp-action="Category"
+                       asp-route-id="accessories">
+                        Accessories
+                    </a>
+
+
+                    <a asp-controller="Products"
+                       asp-action="Category"
+                       asp-route-id="skincare">
+                        Skincare
+                    </a>
+
+
+                    <a asp-controller="Products"
+                       asp-action="Category"
+                       asp-route-id="makeup">
+                        Makeup
+                    </a>
+
+
+                    <a asp-controller="Products"
+                       asp-action="Category"
+                       asp-route-id="offers">
+                        Offers
+                    </a>
+
 
                 </nav>
 
@@ -602,6 +664,7 @@
 
                     </a>
 
+
                 </div>
 
 
@@ -611,6 +674,7 @@
                     All rights reserved.
 
                 </small>
+
 
             </div>
 
@@ -669,6 +733,7 @@
                         "aria-label",
                         "Open navigation menu"
                     );
+
                 }
 
 
@@ -837,7 +902,6 @@
 
             /* =================================================
                GLOBAL FUNCTIONS
-               
                Product cards can use these later.
                ================================================= */
 
@@ -948,6 +1012,7 @@
         "Scripts",
         required: false
     )
+
 
 </body>
 

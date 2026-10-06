@@ -1,0 +1,259 @@
+﻿@model List<EStore.Models.Product>
+
+@{
+    ViewData["Title"] = "Manage Products";
+}
+
+<div class="container py-5">
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row
+                justify-content-between
+                align-items-md-center
+                gap-3 mb-4">
+
+        <div>
+            <h1 class="fw-bold mb-1">
+                Manage Products
+            </h1>
+
+            <p class="text-muted mb-0">
+                Add, edit and manage Ever Spring products.
+            </p>
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="CreateProduct"
+           class="btn btn-dark px-4">
+
+            + Add Product
+
+        </a>
+
+    </div>
+
+
+    <!-- Success Message -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+
+    <!-- Product Table -->
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead class="table-light">
+
+                        <tr>
+                            <th class="ps-4">
+                                Image
+                            </th>
+
+                            <th>
+                                Product
+                            </th>
+
+                            <th>
+                                Category
+                            </th>
+
+                            <th>
+                                Price
+                            </th>
+
+                            <th>
+                                Stock
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th class="text-end pe-4">
+                                Actions
+                            </th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model.Any())
+                        {
+                            foreach (var product in Model)
+                            {
+                                <tr>
+
+                                    <!-- Image -->
+                                    <td class="ps-4">
+
+                                        <img src="@product.ImageUrl"
+                                             alt="@product.Name"
+                                             style="
+                                                width:70px;
+                                                height:80px;
+                                                object-fit:cover;
+                                                border-radius:10px;
+                                             " />
+
+                                    </td>
+
+
+                                    <!-- Product -->
+                                    <td>
+
+                                        <div class="fw-semibold">
+                                            @product.Name
+                                        </div>
+
+                                        <small class="text-muted">
+                                            ID: @product.Id
+                                        </small>
+
+                                    </td>
+
+
+                                    <!-- Category -->
+                                    <td>
+                                        @product.Category
+                                    </td>
+
+
+                                    <!-- Price -->
+                                    <td>
+                                        <strong>
+                                            BDT @product.Price.ToString("N0")
+                                        </strong>
+                                    </td>
+
+
+                                    <!-- Stock -->
+                                    <td>
+                                        @product.Stock
+                                    </td>
+
+
+                                    <!-- Status -->
+                                    <td>
+
+                                        @if (product.IsActive)
+                                        {
+                                            <span class="badge bg-success">
+                                                Active
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                Inactive
+                                            </span>
+                                        }
+
+                                    </td>
+
+
+                                    <!-- Actions -->
+                                    <td class="text-end pe-4">
+
+                                        <div class="d-flex
+                                                    justify-content-end
+                                                    gap-2">
+
+                                            <!-- Edit -->
+                                            <a asp-controller="Admin"
+                                               asp-action="EditProduct"
+                                               asp-route-id="@product.Id"
+                                               class="btn btn-sm btn-outline-dark">
+
+                                                Edit
+
+                                            </a>
+
+
+                                            @if (product.IsActive)
+                                            {
+                                                <!-- Deactivate -->
+                                                <form asp-controller="Admin"
+                                                      asp-action="DeleteProduct"
+                                                      asp-route-id="@product.Id"
+                                                      method="post"
+                                                      onsubmit="return confirm('Are you sure you want to deactivate this product?');">
+
+                                                    @Html.AntiForgeryToken()
+
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-outline-danger">
+
+                                                        Deactivate
+
+                                                    </button>
+
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <!-- Activate -->
+                                                <form asp-controller="Admin"
+                                                      asp-action="ActivateProduct"
+                                                      asp-route-id="@product.Id"
+                                                      method="post">
+
+                                                    @Html.AntiForgeryToken()
+
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-outline-success">
+
+                                                        Activate
+
+                                                    </button>
+
+                                                </form>
+                                            }
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+
+                                <td colspan="7"
+                                    class="text-center py-5">
+
+                                    <h5>
+                                        No products found.
+                                    </h5>
+
+                                    <p class="text-muted">
+                                        Add your first product.
+                                    </p>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

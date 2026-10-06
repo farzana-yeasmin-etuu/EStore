@@ -84,8 +84,16 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
+    // Create Customer and Admin roles
     await DbInitializer.SeedRolesAsync(services);
 
+    // Create Admin account and assign Admin role
+    await DbInitializer.SeedAdminAsync(
+        services,
+        builder.Configuration
+    );
+
+    // Seed products from product image folders
     await DbInitializer.SeedProductsAsync(services);
 }
 
