@@ -38,7 +38,7 @@
           asp-action="RenameProductImages"
           method="post"
           onsubmit="return confirm(
-              'This will rename product image files and update their database paths. Continue?'
+                'Are you sure you want to rename all product images using their product names?'
           );">
 
         @Html.AntiForgeryToken()
@@ -61,6 +61,7 @@
         + Add Product
 
     </a>
+           
 
 </div>
 

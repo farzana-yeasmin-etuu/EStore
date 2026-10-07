@@ -353,145 +353,229 @@ namespace EStore.Controllers
         // ============================================================
         // RENAME ALL PRODUCT IMAGES
         // ============================================================
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RenameProductImages()
         {
-            var products = await _context.Products
-                .OrderBy(p => p.Id)
-                .ToListAsync();
-
-            int renamedCount = 0;
-            int skippedCount = 0;
-
-            foreach (var product in products)
+            try
             {
-                if (string.IsNullOrWhiteSpace(product.ImageUrl))
-                {
-                    skippedCount++;
-                    continue;
-                }
+                // Get all products from database
+                var products = await _context.Products
+                    .OrderBy(p => p.Id)
+                    .ToListAsync();
 
-                // Make sure this is one of our product images
-                if (!product.ImageUrl.StartsWith(
-                    "/images/products/",
-                    StringComparison.OrdinalIgnoreCase))
-                {
-                    skippedCount++;
-                    continue;
-                }
+                int renamedCount = 0;
+                int skippedCount = 0;
 
-                var currentRelativePath =
-                    product.ImageUrl.TrimStart('/')
+                foreach (var product in products)
+                {
+                    // ------------------------------------------------
+                    // 1. Check ImageUrl
+                    // ------------------------------------------------
+
+                    if (string.IsNullOrWhiteSpace(product.ImageUrl))
+                    {
+                        skippedCount++;
+                        continue;
+                    }
+
+
+                    // ------------------------------------------------
+                    // 2. Make sure image belongs to products folder
+                    // ------------------------------------------------
+
+                    if (!product.ImageUrl.StartsWith(
+                        "/images/products/",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        skippedCount++;
+                        continue;
+                    }
+
+
+                    // ------------------------------------------------
+                    // 3. Convert ImageUrl to physical file path
+                    // ------------------------------------------------
+
+                    var relativePath = product.ImageUrl
+                        .TrimStart('/')
                         .Replace(
                             '/',
                             Path.DirectorySeparatorChar
                         );
 
-                var currentFilePath = Path.Combine(
-                    _environment.WebRootPath,
-                    currentRelativePath
-                );
+                    var currentFilePath = Path.Combine(
+                        _environment.WebRootPath,
+                        relativePath
+                    );
 
-                // If old image doesn't exist
-                if (!System.IO.File.Exists(currentFilePath))
-                {
-                    skippedCount++;
-                    continue;
-                }
 
-                // Get extension
-                var extension =
-                    Path.GetExtension(currentFilePath)
-                        .ToLowerInvariant();
+                    // ------------------------------------------------
+                    // 4. Check if actual image exists
+                    // ------------------------------------------------
 
-                // Create professional filename
-                var baseFileName = CreateSafeFileName(
-                    product.Name
-                );
+                    if (!System.IO.File.Exists(currentFilePath))
+                    {
+                        skippedCount++;
+                        continue;
+                    }
 
-                if (string.IsNullOrWhiteSpace(baseFileName))
-                {
-                    baseFileName = $"product-{product.Id}";
-                }
 
-                var folderName =
-                    GetCategoryFolder(product.Category);
+                    // ------------------------------------------------
+                    // 5. Get image extension
+                    // ------------------------------------------------
 
-                var targetFolder = Path.Combine(
-                    _environment.WebRootPath,
-                    "images",
-                    "products",
-                    folderName
-                );
+                    var extension = Path.GetExtension(
+                        currentFilePath
+                    ).ToLowerInvariant();
 
-                if (!Directory.Exists(targetFolder))
-                {
-                    Directory.CreateDirectory(targetFolder);
-                }
 
-                var newFileName =
-                    baseFileName + extension;
+                    // ------------------------------------------------
+                    // 6. Create safe filename from Product Name
+                    // ------------------------------------------------
 
-                var newFilePath = Path.Combine(
-                    targetFolder,
-                    newFileName
-                );
+                    var baseFileName = CreateSafeFileName(
+                        product.Name
+                    );
 
-                // Prevent filename collision
-                int counter = 2;
 
-                while (
-                    System.IO.File.Exists(newFilePath) &&
-                    !string.Equals(
-                        currentFilePath,
-                        newFilePath,
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                )
-                {
-                    newFileName =
-                        $"{baseFileName}-{counter}{extension}";
+                    // If name is empty
+                    if (string.IsNullOrWhiteSpace(baseFileName))
+                    {
+                        baseFileName = $"product-{product.Id}";
+                    }
 
-                    newFilePath = Path.Combine(
+
+                    // ------------------------------------------------
+                    // 7. Find correct category folder
+                    // ------------------------------------------------
+
+                    var folderName = GetCategoryFolder(
+                        product.Category
+                    );
+
+
+                    var targetFolder = Path.Combine(
+                        _environment.WebRootPath,
+                        "images",
+                        "products",
+                        folderName
+                    );
+
+
+                    // Create folder if it doesn't exist
+                    if (!Directory.Exists(targetFolder))
+                    {
+                        Directory.CreateDirectory(targetFolder);
+                    }
+
+
+                    // ------------------------------------------------
+                    // 8. Create new filename
+                    // ------------------------------------------------
+
+                    var newFileName =
+                        baseFileName + extension;
+
+
+                    var newFilePath = Path.Combine(
                         targetFolder,
                         newFileName
                     );
 
-                    counter++;
+
+                    // ------------------------------------------------
+                    // 9. Avoid duplicate filenames
+                    // ------------------------------------------------
+
+                    int counter = 2;
+
+                    while (
+                        System.IO.File.Exists(newFilePath) &&
+                        !string.Equals(
+                            currentFilePath,
+                            newFilePath,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    )
+                    {
+                        newFileName =
+                            $"{baseFileName}-{counter}{extension}";
+
+                        newFilePath = Path.Combine(
+                            targetFolder,
+                            newFileName
+                        );
+
+                        counter++;
+                    }
+
+
+                    // ------------------------------------------------
+                    // 10. If already has correct filename
+                    // ------------------------------------------------
+
+                    if (string.Equals(
+                        currentFilePath,
+                        newFilePath,
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        skippedCount++;
+                        continue;
+                    }
+
+
+                    // ------------------------------------------------
+                    // 11. Rename physical image
+                    // ------------------------------------------------
+
+                    System.IO.File.Move(
+                        currentFilePath,
+                        newFilePath
+                    );
+
+
+                    // ------------------------------------------------
+                    // 12. Update ImageUrl in database
+                    // ------------------------------------------------
+
+                    product.ImageUrl =
+                        $"/images/products/{folderName}/{newFileName}";
+
+
+                    renamedCount++;
                 }
 
-                // If file is already correctly named
-                if (string.Equals(
-                    currentFilePath,
-                    newFilePath,
-                    StringComparison.OrdinalIgnoreCase))
-                {
-                    skippedCount++;
-                    continue;
-                }
 
-                // Move / rename file
-                System.IO.File.Move(
-                    currentFilePath,
-                    newFilePath
+                // ------------------------------------------------
+                // 13. Save updated ImageUrls
+                // ------------------------------------------------
+
+                await _context.SaveChangesAsync();
+
+
+                TempData["Success"] =
+                    $"{renamedCount} product image(s) renamed successfully. " +
+                    $"{skippedCount} product(s) skipped.";
+
+                return RedirectToAction(
+                    "Products",
+                    "Admin"
                 );
-
-                // Update database ImageUrl
-                product.ImageUrl =
-                    $"/images/products/{folderName}/{newFileName}";
-
-                renamedCount++;
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
 
-            await _context.SaveChangesAsync();
+                TempData["Error"] =
+                    "Something went wrong while renaming images. " +
+                    "No further images were processed.";
 
-            TempData["Success"] =
-                $"{renamedCount} product image(s) renamed successfully. " +
-                $"{skippedCount} product(s) skipped.";
-
-            return RedirectToAction(nameof(Products));
+                return RedirectToAction(
+                    "Products",
+                    "Admin"
+                );
+            }
         }
 
 
@@ -506,12 +590,21 @@ namespace EStore.Controllers
                 return "";
             }
 
-            var fileName = name.Trim().ToLowerInvariant();
 
-            // Replace spaces with hyphens
-            fileName = fileName.Replace(" ", "-");
+            // Convert to lowercase
+            var fileName = name
+                .Trim()
+                .ToLowerInvariant();
 
-            // Keep only letters, numbers and hyphens
+
+            // Replace spaces with -
+            fileName = fileName.Replace(
+                " ",
+                "-"
+            );
+
+
+            // Keep only letters, numbers and -
             var characters = fileName
                 .Where(c =>
                     char.IsLetterOrDigit(c) ||
@@ -519,9 +612,13 @@ namespace EStore.Controllers
                 )
                 .ToArray();
 
-            fileName = new string(characters);
 
-            // Remove duplicate hyphens
+            fileName = new string(
+                characters
+            );
+
+
+            // Remove multiple consecutive -
             while (fileName.Contains("--"))
             {
                 fileName = fileName.Replace(
@@ -530,6 +627,8 @@ namespace EStore.Controllers
                 );
             }
 
+
+            // Remove - from beginning/end
             return fileName.Trim('-');
         }
 
@@ -641,18 +740,40 @@ namespace EStore.Controllers
         {
             return category switch
             {
-                "New Arrivals" => "new-arrivals",
-                "Women's Collection" => "women",
-                "Men's Collection" => "men",
-                "Kurti" => "kurti",
-                "Saree" => "saree",
-                "Accessories" => "accessories",
-                "Skincare" => "skincare",
-                "Makeup" => "makeup",
-                "Offers" => "offers",
+                "New Arrivals" =>
+                    "new-arrivals",
 
-                _ => "new-arrivals"
+                "Women's Collection" =>
+                    "women",
+
+                "Men's Collection" =>
+                    "men",
+
+                "Kurti" =>
+                    "kurti",
+
+                "Saree" =>
+                    "saree",
+
+                "Accessories" =>
+                    "accessories",
+
+                "Skincare" =>
+                    "skincare",
+
+                "Makeup" =>
+                    "makeup",
+
+                "Offers" =>
+                    "offers",
+
+                _ =>
+                    "new-arrivals"
             };
         }
+
+
+
+
     }
 }
