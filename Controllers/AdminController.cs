@@ -266,6 +266,274 @@ namespace EStore.Controllers
 
 
         // ============================================================
+        // IMAGE MANAGER - GET
+        // ============================================================
+
+        [HttpGet]
+        public async Task<IActionResult> ImageManager()
+        {
+            var products = await _context.Products
+                .OrderBy(p => p.Category)
+                .ThenBy(p => p.Id)
+                .Select(p => new ProductImageItemViewModel
+                {
+                    Id = p.Id,
+                    ImageUrl = p.ImageUrl,
+                    ProductName = p.Name,
+                    Category = p.Category,
+                    Price = p.Price,
+                    Stock = p.Stock,
+                    IsActive = p.IsActive
+                })
+                .ToListAsync();
+
+            var model = new ProductImageManagerViewModel
+            {
+                Products = products
+            };
+
+            return View(model);
+        }
+
+        // ============================================================
+        // IMAGE MANAGER - SAVE NAMES
+        // ============================================================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveImageManager(
+            ProductImageManagerViewModel model)
+        {
+            try
+            {
+                if (model.Products == null ||
+                    model.Products.Count == 0)
+                {
+                    TempData["Error"] = "No products were received.";
+                    return RedirectToAction(nameof(ImageManager));
+                }
+
+                foreach (var item in model.Products)
+                {
+                    var product = await _context.Products
+                        .FirstOrDefaultAsync(p => p.Id == item.Id);
+
+                    if (product == null)
+                    {
+                        continue;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(item.ProductName))
+                    {
+                        continue;
+                    }
+
+                    product.Name = item.ProductName.Trim();
+                }
+
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] =
+                    "Product names saved successfully.";
+
+                return RedirectToAction(nameof(ImageManager));
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] =
+                    "Something went wrong while saving product names.";
+
+                Console.WriteLine(ex);
+
+                return RedirectToAction(nameof(ImageManager));
+            }
+        }
+
+
+        // ============================================================
+        // RENAME ALL PRODUCT IMAGES
+        // ============================================================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RenameProductImages()
+        {
+            var products = await _context.Products
+                .OrderBy(p => p.Id)
+                .ToListAsync();
+
+            int renamedCount = 0;
+            int skippedCount = 0;
+
+            foreach (var product in products)
+            {
+                if (string.IsNullOrWhiteSpace(product.ImageUrl))
+                {
+                    skippedCount++;
+                    continue;
+                }
+
+                // Make sure this is one of our product images
+                if (!product.ImageUrl.StartsWith(
+                    "/images/products/",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    skippedCount++;
+                    continue;
+                }
+
+                var currentRelativePath =
+                    product.ImageUrl.TrimStart('/')
+                        .Replace(
+                            '/',
+                            Path.DirectorySeparatorChar
+                        );
+
+                var currentFilePath = Path.Combine(
+                    _environment.WebRootPath,
+                    currentRelativePath
+                );
+
+                // If old image doesn't exist
+                if (!System.IO.File.Exists(currentFilePath))
+                {
+                    skippedCount++;
+                    continue;
+                }
+
+                // Get extension
+                var extension =
+                    Path.GetExtension(currentFilePath)
+                        .ToLowerInvariant();
+
+                // Create professional filename
+                var baseFileName = CreateSafeFileName(
+                    product.Name
+                );
+
+                if (string.IsNullOrWhiteSpace(baseFileName))
+                {
+                    baseFileName = $"product-{product.Id}";
+                }
+
+                var folderName =
+                    GetCategoryFolder(product.Category);
+
+                var targetFolder = Path.Combine(
+                    _environment.WebRootPath,
+                    "images",
+                    "products",
+                    folderName
+                );
+
+                if (!Directory.Exists(targetFolder))
+                {
+                    Directory.CreateDirectory(targetFolder);
+                }
+
+                var newFileName =
+                    baseFileName + extension;
+
+                var newFilePath = Path.Combine(
+                    targetFolder,
+                    newFileName
+                );
+
+                // Prevent filename collision
+                int counter = 2;
+
+                while (
+                    System.IO.File.Exists(newFilePath) &&
+                    !string.Equals(
+                        currentFilePath,
+                        newFilePath,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
+                {
+                    newFileName =
+                        $"{baseFileName}-{counter}{extension}";
+
+                    newFilePath = Path.Combine(
+                        targetFolder,
+                        newFileName
+                    );
+
+                    counter++;
+                }
+
+                // If file is already correctly named
+                if (string.Equals(
+                    currentFilePath,
+                    newFilePath,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    skippedCount++;
+                    continue;
+                }
+
+                // Move / rename file
+                System.IO.File.Move(
+                    currentFilePath,
+                    newFilePath
+                );
+
+                // Update database ImageUrl
+                product.ImageUrl =
+                    $"/images/products/{folderName}/{newFileName}";
+
+                renamedCount++;
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] =
+                $"{renamedCount} product image(s) renamed successfully. " +
+                $"{skippedCount} product(s) skipped.";
+
+            return RedirectToAction(nameof(Products));
+        }
+
+
+        // ============================================================
+        // CREATE SAFE IMAGE FILE NAME
+        // ============================================================
+
+        private string CreateSafeFileName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return "";
+            }
+
+            var fileName = name.Trim().ToLowerInvariant();
+
+            // Replace spaces with hyphens
+            fileName = fileName.Replace(" ", "-");
+
+            // Keep only letters, numbers and hyphens
+            var characters = fileName
+                .Where(c =>
+                    char.IsLetterOrDigit(c) ||
+                    c == '-'
+                )
+                .ToArray();
+
+            fileName = new string(characters);
+
+            // Remove duplicate hyphens
+            while (fileName.Contains("--"))
+            {
+                fileName = fileName.Replace(
+                    "--",
+                    "-"
+                );
+            }
+
+            return fileName.Trim('-');
+        }
+
+        // ============================================================
         // SAVE PRODUCT IMAGE
         // ============================================================
 

@@ -1,0 +1,264 @@
+﻿@model EStore.ViewModels.ProductImageManagerViewModel
+
+@{
+    ViewData["Title"] = "Product Image Manager";
+}
+
+<div class="container py-5">
+
+    <!-- HEADER -->
+    <div class="d-flex flex-column flex-md-row
+                justify-content-between
+                align-items-md-center
+                gap-3 mb-4">
+
+        <div>
+
+            <a asp-controller="Admin"
+               asp-action="Products"
+               class="text-decoration-none text-muted">
+
+                ← Back to Products
+
+            </a>
+
+            <h1 class="fw-bold mt-3 mb-1">
+                Product Image Manager
+            </h1>
+
+            <p class="text-muted mb-0">
+                Give your existing products meaningful names.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- SUCCESS MESSAGE -->
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+
+            @TempData["Success"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+
+    <!-- ERROR MESSAGE -->
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+
+            @TempData["Error"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+
+    <!-- INFORMATION -->
+
+    <div class="alert alert-info border-0 shadow-sm mb-4">
+
+        <strong>How to use:</strong>
+
+        <ol class="mb-0 mt-2">
+
+            <li>
+                Look at the product image.
+            </li>
+
+            <li>
+                Give it a meaningful product name.
+            </li>
+
+            <li>
+                Click <strong>Save Product Names</strong>.
+            </li>
+
+            <li>
+                After all names are correct, we will rename the
+                actual image files.
+            </li>
+
+        </ol>
+
+    </div>
+
+
+    <!-- FORM -->
+
+    <form asp-controller="Admin"
+          asp-action="SaveImageManager"
+          method="post">
+
+        @Html.AntiForgeryToken()
+
+
+        @if (Model.Products != null &&
+             Model.Products.Count > 0)
+        {
+            <div class="row g-4">
+
+                @for (int i = 0;
+                      i < Model.Products.Count;
+                      i++)
+                {
+                    var product = Model.Products[i];
+
+                    <div class="col-12 col-md-6 col-xl-4">
+
+                        <div class="card h-100 border-0 shadow-sm">
+
+
+                            <!-- IMAGE -->
+
+                            <div class="p-3">
+
+                                <div style="
+                                    width:100%;
+                                    height:300px;
+                                    background:#f8f8f8;
+                                    border-radius:14px;
+                                    overflow:hidden;
+                                ">
+
+                                    <img src="@product.ImageUrl"
+                                         alt="@product.ProductName"
+                                         style="
+                                            width:100%;
+                                            height:100%;
+                                            object-fit:contain;
+                                         " />
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- INFORMATION -->
+
+                            <div class="card-body pt-0">
+
+
+                                <!-- CATEGORY -->
+
+                                <div class="mb-2">
+
+                                    <span class="badge bg-light text-dark">
+
+                                        @product.Category
+
+                                    </span>
+
+
+                                    @if (product.IsActive)
+                                    {
+                                        <span class="badge bg-success">
+
+                                            Active
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+
+                                            Inactive
+
+                                        </span>
+                                    }
+
+                                </div>
+
+
+                                <!-- PRODUCT ID -->
+
+                                <div class="small text-muted mb-3">
+
+                                    Product ID:
+
+                                    <strong>
+                                        @product.Id
+                                    </strong>
+
+                                </div>
+
+
+                                <!-- IMPORTANT -->
+                                <!-- Only Id and ProductName are submitted -->
+
+                                <input type="hidden"
+                                       name="Products[@i].Id"
+                                       value="@product.Id" />
+
+
+                                <!-- PRODUCT NAME -->
+
+                                <label class="form-label fw-semibold">
+
+                                    Product Name
+
+                                </label>
+
+                                <input type="text"
+                                       name="Products[@i].ProductName"
+                                       value="@product.ProductName"
+                                       class="form-control"
+                                       placeholder="Example: Black Printed Kurti" />
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+
+
+            <!-- SAVE BUTTON -->
+
+            <div class="text-center mt-5">
+
+                <button type="submit"
+                        class="btn btn-dark btn-lg px-5">
+
+                    Save Product Names
+
+                </button>
+
+            </div>
+
+        }
+        else
+        {
+            <div class="text-center py-5">
+
+                <h4>
+                    No products found.
+                </h4>
+
+                <p class="text-muted">
+                    There are no products to manage.
+                </p>
+
+            </div>
+        }
+
+    </form>
+
+</div>

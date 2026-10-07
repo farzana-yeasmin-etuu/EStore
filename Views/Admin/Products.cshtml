@@ -22,13 +22,47 @@
             </p>
         </div>
 
-        <a asp-controller="Admin"
-           asp-action="CreateProduct"
-           class="btn btn-dark px-4">
+       <div class="d-flex gap-2 flex-wrap">
 
-            + Add Product
+           <a asp-controller="Admin"
+       asp-action="ImageManager"
+       class="btn btn-outline-dark">
 
-        </a>
+        🖼 Manage Image Names
+
+    </a>
+
+
+    <!-- Rename Existing Images -->
+    <form asp-controller="Admin"
+          asp-action="RenameProductImages"
+          method="post"
+          onsubmit="return confirm(
+              'This will rename product image files and update their database paths. Continue?'
+          );">
+
+        @Html.AntiForgeryToken()
+
+        <button type="submit"
+                class="btn btn-outline-dark">
+
+            Rename Images
+
+        </button>
+
+    </form>
+
+
+    <!-- Add Product -->
+    <a asp-controller="Admin"
+       asp-action="CreateProduct"
+       class="btn btn-dark px-4">
+
+        + Add Product
+
+    </a>
+
+</div>
 
     </div>
 
