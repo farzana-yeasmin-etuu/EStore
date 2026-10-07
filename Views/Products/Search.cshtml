@@ -1,160 +1,221 @@
-﻿@page
-@model List<EStore.ViewModels.ProductViewModel>
+﻿@model IEnumerable<EStore.ViewModels.ProductViewModel>
 
 @{
-    ViewData["Title"] = "Search | Ever Spring";
+    ViewData["Title"] = "Search Products";
+
+    var currentQuery = Context.Request.Query["q"].ToString();
+    var currentCategory = Context.Request.Query["category"].ToString();
+
+    string categoryTitle = string.IsNullOrWhiteSpace(currentCategory)
+        ? "All Products"
+        : currentCategory;
 }
 
-<div class="es-products-page">
+<div class="es-search-page">
 
-    <div class="es-products-header">
+    <!-- =========================
+         SEARCH HEADER
+         ========================= -->
+    <section class="es-search-header">
 
-        <div>
+        <div class="container">
 
-            <p class="es-products-small-title">
-                EVER SPRING
-            </p>
+            <div class="es-search-title">
 
-            <h1>
-                Search Results
-            </h1>
+                <span class="es-search-small-title">
+                    EVER SPRING
+                </span>
 
-            <p>
-                Search results for:
-                <strong>"@ViewBag.SearchQuery"</strong>
-            </p>
+                <h1>
+                    Search Products
+                </h1>
+
+                @if (!string.IsNullOrWhiteSpace(currentQuery))
+                {
+                    <p>
+                        Showing results for
+                        <strong>"@currentQuery"</strong>
+                    </p>
+                }
+                else
+                {
+                    <p>
+                        Find your favorite products
+                    </p>
+                }
+
+            </div>
+
+            <!-- SEARCH BOX -->
+            <form asp-controller="Products"
+                  asp-action="Search"
+                  method="get"
+                  class="es-main-search-form">
+
+                <input type="text"
+                       name="q"
+                       value="@currentQuery"
+                       placeholder="Search products..."
+                       autocomplete="off" />
+
+                @if (!string.IsNullOrWhiteSpace(currentCategory))
+                {
+                    <input type="hidden"
+                           name="category"
+                           value="@currentCategory" />
+                }
+
+                <button type="submit">
+                    <i class="bi bi-search"></i>
+                    Search
+                </button>
+
+            </form>
 
         </div>
 
-    </div>
+    </section>
 
 
-    @if (Model != null && Model.Count > 0)
-    {
-        <div class="es-product-grid">
+    <!-- =========================
+         SEARCH RESULTS
+         ========================= -->
+    <section class="es-search-results">
 
-            @foreach (var product in Model)
+        <div class="container">
+
+            <div class="es-search-result-top">
+
+                <div>
+                    <h2>
+                        @categoryTitle
+                    </h2>
+
+                    <p>
+                        @Model.Count() product(s) found
+                    </p>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(currentCategory))
+                {
+                    <a asp-controller="Products"
+                       asp-action="Category"
+                       asp-route-id="@currentCategory"
+                       class="es-back-category">
+                        ← Back to Category
+                    </a>
+                }
+
+            </div>
+
+
+            @if (Model != null && Model.Any())
             {
-                <div class="es-product-card">
+                <div class="es-product-grid">
 
-                    <div class="es-product-image-wrapper">
+                    @foreach (var product in Model)
+                    {
+                        <article class="es-product-card">
 
-                        <img src="@product.ImageUrl"
-                             alt="@product.Name"
-                             class="es-product-image" />
+                            <!-- IMAGE -->
+                            <a asp-controller="Products"
+                               asp-action="Details"
+                               asp-route-id="@product.Id"
+                               class="es-product-image-link">
 
-                        <button type="button"
-                                class="es-product-wishlist"
-                                onclick="addToWishlist(
-                                    '@product.ProductId',
-                                    '@product.Name',
-                                    '@product.ImageUrl'
-                                )">
+                                <div class="es-product-image-wrap">
 
-                            <svg viewBox="0 0 24 24"
-                                 fill="none"
-                                 stroke="currentColor"
-                                 stroke-width="1.8">
+                                    <img src="@product.ImageUrl"
+                                         alt="@product.Name"
+                                         class="es-product-image" />
 
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z">
-                                </path>
+                                </div>
 
-                            </svg>
+                            </a>
 
-                        </button>
 
+                            <!-- PRODUCT INFO -->
+                            <div class="es-product-info">
+
+                                <span class="es-product-category">
+                                    @product.Category
+                                </span>
+
+                                <h3 class="es-product-name">
+
+                                    <a asp-controller="Products"
+                                       asp-action="Details"
+                                       asp-route-id="@product.Id">
+
+                                        @product.Name
+
+                                    </a>
+
+                                </h3>
+
+                                <div class="es-product-bottom">
+
+                                    <span class="es-product-price">
+                                        ৳@product.Price.ToString("N0")
+                                    </span>
+
+                                    <a asp-controller="Products"
+                                       asp-action="Details"
+                                       asp-route-id="@product.Id"
+                                       class="es-view-product">
+                                        View
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+                    }
+
+                </div>
+            }
+            else
+            {
+                <!-- =========================
+                     NO RESULT
+                     ========================= -->
+
+                <div class="es-no-search-result">
+
+                    <div class="es-no-result-icon">
+                        <i class="bi bi-search"></i>
                     </div>
 
+                    <h2>
+                        No products found
+                    </h2>
 
-                    <div class="es-product-info">
-
-                        <p class="es-product-category">
-                            @product.Category
+                    @if (!string.IsNullOrWhiteSpace(currentQuery))
+                    {
+                        <p>
+                            We couldn't find any product matching
+                            <strong>"@currentQuery"</strong>.
                         </p>
+                    }
+                    else
+                    {
+                        <p>
+                            Try searching for a product name or category.
+                        </p>
+                    }
 
-                        <h3>
-                            @product.Name
-                        </h3>
-
-                        <div class="es-product-bottom">
-
-                            <span class="es-product-price">
-                                Coming Soon
-                            </span>
-
-                            <button type="button"
-                                    class="es-add-bag-btn"
-                                    onclick="addToCart(
-                                        '@product.ProductId',
-                                        '@product.Name',
-                                        '@product.ImageUrl'
-                                    )">
-
-                                Add to Bag
-
-                            </button>
-
-                        </div>
-
-                    </div>
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="es-search-home-btn">
+                        Continue Shopping
+                    </a>
 
                 </div>
             }
 
         </div>
-    }
-    else
-    {
-        <div class="es-no-products">
 
-            <h3>
-                No products found
-            </h3>
-
-            <p>
-                Try searching with another product name or category.
-            </p>
-
-        </div>
-    }
+    </section>
 
 </div>
-
-
-@section Scripts {
-
-    <script>
-
-        function addToWishlist(id, name, image) {
-
-            if (window.EverSpringWishlist) {
-
-                window.EverSpringWishlist.add({
-                    id: id,
-                    name: name,
-                    image: image
-                });
-
-            }
-
-        }
-
-
-        function addToCart(id, name, image) {
-
-            if (window.EverSpringCart) {
-
-                window.EverSpringCart.add({
-                    id: id,
-                    name: name,
-                    image: image,
-                    quantity: 1
-                });
-
-            }
-
-        }
-
-    </script>
-
-}

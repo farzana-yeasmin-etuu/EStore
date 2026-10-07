@@ -100,76 +100,95 @@ namespace EStore.Controllers
         // =========================================================
         // PRODUCT SEARCH
         // =========================================================
-        public async Task<IActionResult> Search(
-            string q,
-            string category = "")
+        public IActionResult Search(string q, string category = "")
         {
-            var query = _context.Products
+            var products = _context.Products
                 .Where(p => p.IsActive)
                 .AsQueryable();
 
-
-            // Category-specific search
             if (!string.IsNullOrWhiteSpace(category))
             {
-                var categories = GetCategories();
+                var categoryMap = GetCategories();
 
-                var selectedCategory = categories.FirstOrDefault(
-                    x => x.Key.Equals(
-                        category,
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                );
-
-                if (selectedCategory.Key == null)
+                if (categoryMap.ContainsKey(category))
                 {
-                    return NotFound();
-                }
+                    var categoryName = categoryMap[category];
 
-                query = query.Where(
-                    p => p.Category == selectedCategory.Value
-                );
+                    products = products.Where(p =>
+                        p.Category == categoryName);
+                }
             }
 
-
-            // Search product name/category
             if (!string.IsNullOrWhiteSpace(q))
             {
-                query = query.Where(
-                    p =>
-                        p.Name.Contains(q) ||
-                        p.Category.Contains(q)
-                );
+                products = products.Where(p =>
+                    p.Name.Contains(q) ||
+                    p.Category.Contains(q));
             }
 
-
-            var results = await query
-                .OrderBy(p => p.Id)
+            var result = products
+                .OrderByDescending(p => p.CreatedAt)
                 .Select(p => new ProductViewModel
                 {
                     Id = p.Id,
-                    ProductId = p.Id.ToString(),
-
                     Name = p.Name,
-
                     Category = p.Category,
-
                     ImageUrl = p.ImageUrl,
-
                     Price = p.Price
                 })
-                .ToListAsync();
-
-            // Hide products whose image was deleted
-            results = results
-                .Where(p => ImageExists(p.ImageUrl))
                 .ToList();
 
+            return View(result);
+        }
 
-            ViewBag.SearchQuery = q;
-            ViewBag.SearchCategory = category;
+        // =========================================================
+        // Details Page
+        // =========================================================
+        public async Task<IActionResult> Details(int id)
+        {
+            var product = await _context.Products
+                .Where(p =>
+                    p.Id == id &&
+                    p.IsActive
+                )
+                .Select(p => new ProductDetailsViewModel
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Category = p.Category,
+                    ImageUrl = p.ImageUrl,
+                    Price = p.Price,
+                    Stock = p.Stock,
+                    Description = p.Description,
+                    IsActive = p.IsActive
+                })
+                .FirstOrDefaultAsync();
 
-            return View(results);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
+        }
+
+        // =========================================================
+        // Wishlist page action
+        // =========================================================
+
+        public IActionResult Wishlist()
+        {
+            return View();
+        }
+
+        // =========================================================
+        // SHOPPING CART
+        // =========================================================
+
+        [HttpGet]
+        public IActionResult Cart()
+        {
+            return View();
         }
 
 

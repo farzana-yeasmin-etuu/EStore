@@ -1,0 +1,375 @@
+﻿@model EStore.ViewModels.ProductDetailsViewModel
+
+@{
+    ViewData["Title"] = Model.Name + " | Ever Spring";
+}
+
+<div class="container py-5">
+
+    <!-- BACK BUTTON -->
+
+    <div class="mb-4">
+
+        <a href="javascript:history.back()"
+           class="text-decoration-none text-muted">
+
+            ← Back
+
+        </a>
+
+    </div>
+
+
+    <!-- PRODUCT DETAILS -->
+
+    <div class="row g-5 align-items-start">
+
+
+        <!-- PRODUCT IMAGE -->
+
+        <div class="col-12 col-lg-6">
+
+            <div class="bg-light rounded-4 p-4"
+                 style="min-height:500px;">
+
+                <img src="@Model.ImageUrl"
+                     alt="@Model.Name"
+                     class="w-100 h-100"
+                     style="
+                        max-height:500px;
+                        object-fit:contain;
+                     " />
+
+            </div>
+
+        </div>
+
+
+        <!-- PRODUCT INFORMATION -->
+
+        <div class="col-12 col-lg-6">
+
+            <!-- CATEGORY -->
+
+            <div class="mb-3">
+
+                <span class="badge"
+                      style="
+                        background:#f8d7e3;
+                        color:#7a4055;
+                      ">
+
+                    @Model.Category
+
+                </span>
+
+            </div>
+
+
+            <!-- PRODUCT NAME -->
+
+            <h1 class="fw-bold mb-3">
+
+                @Model.Name
+
+            </h1>
+
+
+            <!-- PRICE -->
+
+            <h3 class="fw-semibold mb-4"
+                style="color:#a85c78;">
+
+                BDT @Model.Price.ToString("N0")
+
+            </h3>
+
+
+            <!-- DESCRIPTION -->
+
+            @if (!string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <div class="mb-4">
+
+                    <h5 class="fw-bold">
+                        Description
+                    </h5>
+
+                    <p class="text-muted"
+                       style="line-height:1.8;">
+
+                        @Model.Description
+
+                    </p>
+
+                </div>
+            }
+
+
+            <!-- STOCK -->
+
+            <div class="mb-4">
+
+                @if (Model.Stock > 0)
+                {
+                    <span class="text-success fw-semibold">
+
+                        ✓ In Stock
+
+                    </span>
+
+                    <span class="text-muted ms-2">
+
+                        (@Model.Stock available)
+
+                    </span>
+                }
+                else
+                {
+                    <span class="text-danger fw-semibold">
+
+                        Out of Stock
+
+                    </span>
+                }
+
+            </div>
+
+
+            @if (Model.Stock > 0)
+            {
+                <!-- QUANTITY -->
+
+                <div class="mb-4">
+
+                    <label class="form-label fw-semibold">
+                        Quantity
+                    </label>
+
+                    <div class="d-flex align-items-center"
+                         style="max-width:150px;">
+
+                        <button type="button"
+                                class="btn btn-outline-secondary"
+                                id="decreaseQty">
+
+                            −
+
+                        </button>
+
+
+                        <input type="number"
+                               id="productQuantity"
+                               value="1"
+                               min="1"
+                               max="@Model.Stock"
+                               class="form-control text-center mx-2"
+                               style="width:70px;" />
+
+
+                        <button type="button"
+                                class="btn btn-outline-secondary"
+                                id="increaseQty">
+
+                            +
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ACTION BUTTONS -->
+
+                <div class="d-flex flex-column gap-3">
+
+                    <button type="button"
+                            class="btn btn-dark btn-lg"
+                            onclick="addProductToCart()">
+
+                        🛍 Add to Bag
+
+                    </button>
+
+
+                    <button type="button"
+                            class="btn btn-outline-dark btn-lg"
+                            onclick="addProductToWishlist()">
+
+                        ♡ Add to Wishlist
+
+                    </button>
+
+                </div>
+
+            }
+            else
+            {
+                <button type="button"
+                        class="btn btn-secondary btn-lg w-100"
+                        disabled>
+
+                    Out of Stock
+
+                </button>
+            }
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts
+{
+    <script>
+
+        // ============================================
+        // PRODUCT INFORMATION
+        // ============================================
+
+        const product = {
+            id: @Model.Id,
+            name: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Name)),
+            category: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Category)),
+            imageUrl: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ImageUrl)),
+            price: @Model.Price,
+            stock: @Model.Stock
+        };
+
+
+        // ============================================
+        // QUANTITY
+        // ============================================
+
+        const quantityInput =
+            document.getElementById("productQuantity");
+
+
+        const decreaseButton =
+            document.getElementById("decreaseQty");
+
+
+        const increaseButton =
+            document.getElementById("increaseQty");
+
+
+        if (quantityInput) {
+
+            decreaseButton.addEventListener(
+                "click",
+                function () {
+
+                    let quantity =
+                        parseInt(quantityInput.value) || 1;
+
+                    if (quantity > 1) {
+
+                        quantity--;
+
+                        quantityInput.value =
+                            quantity;
+                    }
+
+                }
+            );
+
+
+            increaseButton.addEventListener(
+                "click",
+                function () {
+
+                    let quantity =
+                        parseInt(quantityInput.value) || 1;
+
+                    if (quantity < product.stock) {
+
+                        quantity++;
+
+                        quantityInput.value =
+                            quantity;
+                    }
+
+                }
+            );
+
+        }
+
+
+        // ============================================
+        // ADD TO CART
+        // ============================================
+
+        function addProductToCart() {
+
+            const quantity =
+                parseInt(quantityInput.value) || 1;
+
+
+            if (quantity < 1 ||
+                quantity > product.stock) {
+
+                alert("Invalid quantity.");
+
+                return;
+            }
+
+
+            if (window.EverSpringCart &&
+                window.EverSpringCart.add) {
+
+                window.EverSpringCart.add(
+                    product,
+                    quantity
+                );
+
+                alert(
+                    product.name +
+                    " added to your bag."
+                );
+
+            }
+            else {
+
+                alert(
+                    "Shopping bag is not available."
+                );
+
+            }
+
+        }
+
+
+        // ============================================
+        // ADD TO WISHLIST
+        // ============================================
+
+        function addProductToWishlist() {
+
+            if (window.EverSpringWishlist &&
+                window.EverSpringWishlist.add) {
+
+                window.EverSpringWishlist.add(
+                    product
+                );
+
+                alert(
+                    product.name +
+                    " added to your wishlist."
+                );
+
+            }
+            else {
+
+                alert(
+                    "Wishlist is not available."
+                );
+
+            }
+
+        }
+
+    </script>
+}

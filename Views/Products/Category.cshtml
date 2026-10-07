@@ -40,9 +40,17 @@
                     <!-- Product Image -->
                     <div class="es-product-image-wrapper">
 
-                        <img src="@product.ImageUrl"
-                             alt="@product.Name"
-                             class="es-product-image" />
+                      <a asp-controller="Products"
+   asp-action="Details"
+   asp-route-id="@product.Id"
+   class="text-decoration-none">
+
+    <img src="@product.ImageUrl"
+         alt="@product.Name"
+         class="w-100"
+         style="object-fit:contain;">
+
+</a>
 
                         <!-- Wishlist -->
                         <button type="button"

@@ -1,0 +1,370 @@
+﻿@{
+    ViewData["Title"] = "My Wishlist | Ever Spring";
+}
+
+<div class="container py-5">
+
+    <!-- HEADER -->
+
+    <div class="text-center mb-5">
+
+        <h1 class="fw-bold">
+            My Wishlist
+        </h1>
+
+        <p class="text-muted">
+            Your favourite Ever Spring products
+        </p>
+
+    </div>
+
+
+    <!-- WISHLIST PRODUCTS -->
+
+    <div id="wishlistContainer"
+         class="row g-4">
+
+    </div>
+
+
+    <!-- EMPTY WISHLIST -->
+
+    <div id="emptyWishlist"
+         class="text-center py-5"
+         style="display:none;">
+
+        <div style="font-size:60px;">
+            ♡
+        </div>
+
+        <h3 class="fw-bold mt-3">
+            Your wishlist is empty
+        </h3>
+
+        <p class="text-muted">
+            Save your favourite products here.
+        </p>
+
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="btn btn-dark px-4 mt-2">
+
+            Continue Shopping
+
+        </a>
+
+    </div>
+
+</div>
+
+
+@section Scripts
+{
+    <script>
+
+        // ============================================
+        // GET WISHLIST
+        // ============================================
+
+        function getWishlist()
+        {
+            try
+            {
+                return JSON.parse(
+                    localStorage.getItem(
+                        "everSpringWishlist"
+                    )
+                ) || [];
+            }
+            catch
+            {
+                return [];
+            }
+        }
+
+
+        // ============================================
+        // SAVE WISHLIST
+        // ============================================
+
+        function saveWishlist(items)
+        {
+            localStorage.setItem(
+                "everSpringWishlist",
+                JSON.stringify(items)
+            );
+        }
+
+
+        // ============================================
+        // DISPLAY WISHLIST
+        // ============================================
+
+        function displayWishlist()
+        {
+            const container =
+                document.getElementById(
+                    "wishlistContainer"
+                );
+
+            const emptyWishlist =
+                document.getElementById(
+                    "emptyWishlist"
+                );
+
+
+            const wishlist =
+                getWishlist();
+
+
+            container.innerHTML = "";
+
+
+            // Empty wishlist
+
+            if (wishlist.length === 0)
+            {
+                emptyWishlist.style.display =
+                    "block";
+
+                return;
+            }
+
+
+            emptyWishlist.style.display =
+                "none";
+
+
+            wishlist.forEach(function(product)
+            {
+
+                const card =
+                    document.createElement("div");
+
+                card.className =
+                    "col-12 col-sm-6 col-lg-4 col-xl-3";
+
+
+                card.innerHTML = `
+
+                    <div class="card h-100 border-0 shadow-sm">
+
+                        <!-- IMAGE -->
+
+                        <div class="p-3">
+
+                            <a href="/Products/Details/${product.id}">
+
+                                <div
+                                    style="
+                                        height:280px;
+                                        background:#f8f8f8;
+                                        border-radius:14px;
+                                        overflow:hidden;
+                                    "
+                                >
+
+                                    <img
+                                        src="${product.imageUrl}"
+                                        alt="${escapeHtml(product.name)}"
+                                        style="
+                                            width:100%;
+                                            height:100%;
+                                            object-fit:contain;
+                                        "
+                                    />
+
+                                </div>
+
+                            </a>
+
+                        </div>
+
+
+                        <!-- DETAILS -->
+
+                        <div class="card-body pt-0">
+
+                            <div class="small text-muted mb-1">
+                                ${escapeHtml(product.category || "")}
+                            </div>
+
+
+                            <h5 class="fw-semibold">
+
+                                <a
+                                    href="/Products/Details/${product.id}"
+                                    class="text-decoration-none text-dark"
+                                >
+                                    ${escapeHtml(product.name)}
+                                </a>
+
+                            </h5>
+
+
+                            <div
+                                class="fw-bold mb-3"
+                                style="color:#a85c78;"
+                            >
+
+                                BDT ${Number(product.price || 0).toLocaleString()}
+
+                            </div>
+
+
+                            <!-- ACTIONS -->
+
+                            <div class="d-flex gap-2">
+
+                                <button
+                                    type="button"
+                                    class="btn btn-dark flex-grow-1"
+                                    onclick="moveToBag(${product.id})"
+                                >
+
+                                    Add to Bag
+
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-danger"
+                                    onclick="removeFromWishlist(${product.id})"
+                                    title="Remove from wishlist"
+                                >
+
+                                    ♡
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+
+                container.appendChild(card);
+
+            });
+
+        }
+
+
+        // ============================================
+        // REMOVE FROM WISHLIST
+        // ============================================
+
+        function removeFromWishlist(id)
+        {
+            let wishlist =
+                getWishlist();
+
+
+            wishlist =
+                wishlist.filter(function(product)
+                {
+                    return Number(product.id) !==
+                           Number(id);
+                });
+
+
+            saveWishlist(wishlist);
+
+
+            // Update navbar count
+
+            if (
+                window.updateWishlistCount
+            )
+            {
+                window.updateWishlistCount();
+            }
+
+
+            displayWishlist();
+        }
+
+
+        // ============================================
+        // MOVE TO BAG
+        // ============================================
+
+        function moveToBag(id)
+        {
+            const wishlist =
+                getWishlist();
+
+
+            const product =
+                wishlist.find(function(item)
+                {
+                    return Number(item.id) ===
+                           Number(id);
+                });
+
+
+            if (!product)
+            {
+                return;
+            }
+
+
+            if (
+                window.EverSpringCart &&
+                window.EverSpringCart.add
+            )
+            {
+                window.EverSpringCart.add(
+                    product,
+                    1
+                );
+
+
+                alert(
+                    product.name +
+                    " added to your bag."
+                );
+            }
+            else
+            {
+                alert(
+                    "Shopping bag is not available."
+                );
+            }
+        }
+
+
+        // ============================================
+        // ESCAPE HTML
+        // ============================================
+
+        function escapeHtml(value)
+        {
+            const div =
+                document.createElement("div");
+
+            div.textContent =
+                value ?? "";
+
+            return div.innerHTML;
+        }
+
+
+        // ============================================
+        // LOAD PAGE
+        // ============================================
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function()
+            {
+                displayWishlist();
+            }
+        );
+
+    </script>
+}

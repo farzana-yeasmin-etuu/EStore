@@ -359,7 +359,6 @@ namespace EStore.Controllers
         {
             try
             {
-                // Get all products from database
                 var products = await _context.Products
                     .OrderBy(p => p.Id)
                     .ToListAsync();
@@ -369,20 +368,11 @@ namespace EStore.Controllers
 
                 foreach (var product in products)
                 {
-                    // ------------------------------------------------
-                    // 1. Check ImageUrl
-                    // ------------------------------------------------
-
                     if (string.IsNullOrWhiteSpace(product.ImageUrl))
                     {
                         skippedCount++;
                         continue;
                     }
-
-
-                    // ------------------------------------------------
-                    // 2. Make sure image belongs to products folder
-                    // ------------------------------------------------
 
                     if (!product.ImageUrl.StartsWith(
                         "/images/products/",
@@ -392,12 +382,19 @@ namespace EStore.Controllers
                         continue;
                     }
 
+                    // --------------------------------------------
+                    // Convert URL encoded filename back to actual
+                    // filename
+                    // --------------------------------------------
 
-                    // ------------------------------------------------
-                    // 3. Convert ImageUrl to physical file path
-                    // ------------------------------------------------
+                    var decodedUrl = Uri.UnescapeDataString(
+                        product.ImageUrl
+                    );
 
-                    var relativePath = product.ImageUrl
+                    // Example:
+                    // /images/products/new-arrivals/new (1).jpg
+
+                    var relativePath = decodedUrl
                         .TrimStart('/')
                         .Replace(
                             '/',
@@ -409,10 +406,9 @@ namespace EStore.Controllers
                         relativePath
                     );
 
-
-                    // ------------------------------------------------
-                    // 4. Check if actual image exists
-                    // ------------------------------------------------
+                    // --------------------------------------------
+                    // Check physical file
+                    // --------------------------------------------
 
                     if (!System.IO.File.Exists(currentFilePath))
                     {
@@ -420,40 +416,35 @@ namespace EStore.Controllers
                         continue;
                     }
 
-
-                    // ------------------------------------------------
-                    // 5. Get image extension
-                    // ------------------------------------------------
+                    // --------------------------------------------
+                    // Get extension
+                    // --------------------------------------------
 
                     var extension = Path.GetExtension(
                         currentFilePath
                     ).ToLowerInvariant();
 
-
-                    // ------------------------------------------------
-                    // 6. Create safe filename from Product Name
-                    // ------------------------------------------------
+                    // --------------------------------------------
+                    // Create filename from Product Name
+                    // --------------------------------------------
 
                     var baseFileName = CreateSafeFileName(
                         product.Name
                     );
 
-
-                    // If name is empty
                     if (string.IsNullOrWhiteSpace(baseFileName))
                     {
-                        baseFileName = $"product-{product.Id}";
+                        baseFileName =
+                            $"product-{product.Id}";
                     }
 
-
-                    // ------------------------------------------------
-                    // 7. Find correct category folder
-                    // ------------------------------------------------
+                    // --------------------------------------------
+                    // Get category folder
+                    // --------------------------------------------
 
                     var folderName = GetCategoryFolder(
                         product.Category
                     );
-
 
                     var targetFolder = Path.Combine(
                         _environment.WebRootPath,
@@ -462,31 +453,26 @@ namespace EStore.Controllers
                         folderName
                     );
 
-
-                    // Create folder if it doesn't exist
                     if (!Directory.Exists(targetFolder))
                     {
                         Directory.CreateDirectory(targetFolder);
                     }
 
-
-                    // ------------------------------------------------
-                    // 8. Create new filename
-                    // ------------------------------------------------
+                    // --------------------------------------------
+                    // Create new filename
+                    // --------------------------------------------
 
                     var newFileName =
                         baseFileName + extension;
-
 
                     var newFilePath = Path.Combine(
                         targetFolder,
                         newFileName
                     );
 
-
-                    // ------------------------------------------------
-                    // 9. Avoid duplicate filenames
-                    // ------------------------------------------------
+                    // --------------------------------------------
+                    // Prevent duplicate filenames
+                    // --------------------------------------------
 
                     int counter = 2;
 
@@ -510,10 +496,9 @@ namespace EStore.Controllers
                         counter++;
                     }
 
-
-                    // ------------------------------------------------
-                    // 10. If already has correct filename
-                    // ------------------------------------------------
+                    // --------------------------------------------
+                    // Already correctly named
+                    // --------------------------------------------
 
                     if (string.Equals(
                         currentFilePath,
@@ -524,35 +509,33 @@ namespace EStore.Controllers
                         continue;
                     }
 
-
-                    // ------------------------------------------------
-                    // 11. Rename physical image
-                    // ------------------------------------------------
+                    // --------------------------------------------
+                    // Rename physical file
+                    // --------------------------------------------
 
                     System.IO.File.Move(
                         currentFilePath,
                         newFilePath
                     );
 
-
-                    // ------------------------------------------------
-                    // 12. Update ImageUrl in database
-                    // ------------------------------------------------
+                    // --------------------------------------------
+                    // Update database ImageUrl
+                    // --------------------------------------------
 
                     product.ImageUrl =
-                        $"/images/products/{folderName}/{newFileName}";
-
+                        "/images/products/" +
+                        folderName +
+                        "/" +
+                        Uri.EscapeDataString(newFileName);
 
                     renamedCount++;
                 }
 
-
-                // ------------------------------------------------
-                // 13. Save updated ImageUrls
-                // ------------------------------------------------
+                // --------------------------------------------
+                // Save database changes
+                // --------------------------------------------
 
                 await _context.SaveChangesAsync();
-
 
                 TempData["Success"] =
                     $"{renamedCount} product image(s) renamed successfully. " +
@@ -568,8 +551,7 @@ namespace EStore.Controllers
                 Console.WriteLine(ex);
 
                 TempData["Error"] =
-                    "Something went wrong while renaming images. " +
-                    "No further images were processed.";
+                    "Something went wrong while renaming product images.";
 
                 return RedirectToAction(
                     "Products",
@@ -577,7 +559,6 @@ namespace EStore.Controllers
                 );
             }
         }
-
 
         // ============================================================
         // CREATE SAFE IMAGE FILE NAME

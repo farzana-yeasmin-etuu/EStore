@@ -11,24 +11,37 @@
     <title>@ViewData["Title"] - Ever Spring</title>
 
 
-    <!-- Bootstrap -->
+    <!-- =====================================================
+         BOOTSTRAP
+         ===================================================== -->
+
     <link rel="stylesheet"
           href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
 
-    <!-- Existing project CSS -->
+    <!-- =====================================================
+         EXISTING PROJECT CSS
+         ===================================================== -->
+
     <link rel="stylesheet"
           href="~/css/site.css"
           asp-append-version="true" />
 
 
-    <!-- EStore generated CSS -->
+    <!-- =====================================================
+         ESTORE GENERATED CSS
+         ===================================================== -->
+
     <link rel="stylesheet"
           href="~/EStore.styles.css"
           asp-append-version="true" />
 
 
-    <!-- Ever Spring CSS - MUST BE LAST -->
+    <!-- =====================================================
+         EVER SPRING CSS
+         MUST BE LAST
+         ===================================================== -->
+
     <link rel="stylesheet"
           href="~/css/ever-spring.css"
           asp-append-version="true" />
@@ -45,344 +58,205 @@
 
     <header>
 
+
         <!-- =================================================
-             TOP NAVBAR
+             STICKY NAVIGATION WRAPPER
              ================================================= -->
 
-        <nav class="ever-navbar">
-
-            <div class="container">
-
-                <div class="ever-navbar-top">
+        <div class="ever-sticky-navigation">
 
 
-                    <!-- ================================
-                         LEFT - LOGO
-                         ================================ -->
+            <!-- =================================================
+                 TOP NAVBAR
+                 ================================================= -->
 
-                    <a class="ever-logo"
-                       asp-controller="Home"
-                       asp-action="Index"
-                       aria-label="Ever Spring Home">
+            <nav class="ever-navbar">
 
-                        <img src="~/images/ever-spring-logo.png"
-                             alt="Ever Spring Logo" />
+                <div class="container">
 
-                    </a>
+                    <div class="ever-navbar-top">
 
 
-                    <!-- ================================
-                         CENTER - BRAND
-                         ================================ -->
+                        <!-- ====================================
+                             LEFT - LOGO
+                             ==================================== -->
 
-                    <a class="ever-brand-centered"
-                       asp-controller="Home"
-                       asp-action="Index">
+                        <a class="ever-logo"
+                           asp-controller="Home"
+                           asp-action="Index"
+                           aria-label="Ever Spring Home">
 
-                        Ever Spring
-
-                    </a>
-
-
-                    <!-- ================================
-                         MOBILE HAMBURGER
-                         ================================ -->
-
-                    <button class="ever-menu-toggle"
-                            type="button"
-                            id="everMenuToggle"
-                            aria-label="Open navigation menu"
-                            aria-controls="everMobileMenu"
-                            aria-expanded="false">
-
-                        <span></span>
-                        <span></span>
-                        <span></span>
-
-                    </button>
-
-
-                    <!-- =================================================
-                         DESKTOP NAVIGATION ACTIONS
-                         ================================================= -->
-
-                    <div class="ever-nav-actions">
-
-
-                        <!-- SEARCH -->
-
-                        <a class="ever-icon-link"
-                           asp-controller="Products"
-                           asp-action="Search"
-                           aria-label="Search">
-
-                            <span class="ever-icon">
-                                ⌕
-                            </span>
-
-                            <span class="action-label">
-                                Search
-                            </span>
+                            <img src="~/images/ever-spring-logo.png"
+                                 alt="Ever Spring Logo" />
 
                         </a>
 
 
-                        <!-- =========================================
-                             WISHLIST
-                             ========================================= -->
+                        <!-- ====================================
+                             CENTER - BRAND
+                             ==================================== -->
 
-                        <a class="ever-icon-link es-nav-icon-link"
-                           href="#wishlist"
-                           aria-label="Wishlist">
+                        <a class="ever-brand-centered"
+                           asp-controller="Home"
+                           asp-action="Index">
 
-                            <span class="es-nav-icon">
-
-                                <!-- Heart -->
-
-                                <svg viewBox="0 0 24 24"
-                                     aria-hidden="true">
-
-                                    <path d="M20.8 8.7c0 5.2-8.8 10.2-8.8 10.2S3.2 13.9 3.2 8.7A4.7 4.7 0 0 1 12 6.3a4.7 4.7 0 0 1 8.8 2.4Z">
-                                    </path>
-
-                                </svg>
-
-
-                                <!-- Wishlist Number -->
-
-                                <span class="es-nav-badge"
-                                      id="wishlistCount">
-                                </span>
-
-                            </span>
+                            Ever Spring
 
                         </a>
 
 
-                        <!-- =========================================
-                             SHOPPING BAG
-                             ========================================= -->
+                        <!-- ====================================
+                             MOBILE HAMBURGER
+                             ==================================== -->
 
-                        <a class="ever-icon-link es-nav-icon-link"
-                           href="#cart"
-                           aria-label="Shopping Bag">
+                        <button class="ever-menu-toggle"
+                                type="button"
+                                id="everMenuToggle"
+                                aria-label="Open navigation menu"
+                                aria-controls="everMobileMenu"
+                                aria-expanded="false">
 
-                            <span class="es-nav-icon">
+                            <span></span>
+                            <span></span>
+                            <span></span>
 
-                                <!-- Shopping Bag -->
-
-                                <svg viewBox="0 0 24 24"
-                                     aria-hidden="true">
-
-                                    <path d="M6 8h12l1 13H5L6 8Z">
-                                    </path>
-
-                                    <path d="M9 8a3 3 0 0 1 6 0">
-                                    </path>
-
-                                </svg>
+                        </button>
 
 
-                                <!-- Cart Number -->
+                        <!-- =================================================
+                             DESKTOP NAVIGATION ACTIONS
+                             ================================================= -->
 
-                                <span class="es-nav-badge"
-                                      id="cartCount">
-                                </span>
-
-                            </span>
-
-                        </a>
+                        <div class="ever-nav-actions">
 
 
-                        <!-- =========================================
-                             ADMIN / ACCOUNT / LOGIN
-                             ========================================= -->
-
-                        @if (User.Identity?.IsAuthenticated == true)
-                        {
-
-                            <!-- ADMIN -->
-
-                            @if (User.IsInRole("Admin"))
-                            {
-                                <a class="ever-icon-link"
-                                   asp-controller="Admin"
-                                   asp-action="Index"
-                                   aria-label="Admin Dashboard">
-
-                                    <span class="ever-icon">
-                                        ⚙
-                                    </span>
-
-                                    <span class="action-label">
-                                        Admin
-                                    </span>
-
-                                </a>
-                            }
-
-
-                            <!-- ACCOUNT -->
+                            <!-- =========================================
+                                 SEARCH
+                                 ========================================= -->
 
                             <a class="ever-icon-link"
-                               asp-controller="Account"
-                               asp-action="Profile"
-                               aria-label="My Account">
-
-                                <span class="ever-icon">
-                                    ♙
-                                </span>
-
-                                <span class="action-label">
-                                    Account
-                                </span>
-
-                            </a>
-
-
-                            <!-- LOGOUT -->
-
-                            <form asp-controller="Account"
-                                  asp-action="Logout"
-                                  method="post"
-                                  class="ever-logout-form">
-
-                                <button type="submit"
-                                        class="ever-icon-link">
-
-                                    <span class="action-label">
-                                        Logout
-                                    </span>
-
-                                </button>
-
-                            </form>
-
-                        }
-                        else
-                        {
-
-                            <!-- LOGIN -->
-
-                            <a class="ever-icon-link"
-                               asp-controller="Account"
-                               asp-action="Login"
-                               aria-label="Login">
-
-                                <span class="ever-icon">
-                                    ♙
-                                </span>
-
-                                <span class="action-label">
-                                    Login
-                                </span>
-
-                            </a>
-
-                        }
-
-
-                    </div>
-
-
-                    <!-- =================================================
-                         MOBILE MENU
-                         ================================================= -->
-
-                    <div class="ever-mobile-menu"
-                         id="everMobileMenu">
-
-
-                        <!-- MOBILE ACTIONS -->
-
-                        <div class="ever-mobile-menu-actions">
-
-
-                            <!-- SEARCH -->
-
-                            <a class="ever-mobile-link"
                                asp-controller="Products"
-                               asp-action="Search">
+                               asp-action="Search"
+                               aria-label="Search">
 
-                                <span class="ever-mobile-icon">
+                                <span class="ever-icon">
                                     ⌕
                                 </span>
 
-                                Search
-
-                            </a>
-
-
-                            <!-- WISHLIST -->
-
-                            <a class="ever-mobile-link"
-                               href="#wishlist">
-
-                                <span class="ever-mobile-icon">
-                                    ♡
-                                </span>
-
-                                Wishlist
-
-                                <span class="ever-mobile-count"
-                                      id="mobileWishlistCount">
+                                <span class="action-label">
+                                    Search
                                 </span>
 
                             </a>
 
 
-                            <!-- SHOPPING BAG -->
+                            <!-- =========================================
+                                 WISHLIST
+                                 ========================================= -->
 
-                            <a class="ever-mobile-link"
-                               href="#cart">
+                            <a class="ever-icon-link es-nav-icon-link"
+                               asp-controller="Products"
+                               asp-action="Wishlist"
+                               aria-label="Wishlist">
 
-                                <span class="ever-mobile-icon">
-                                    🛍
-                                </span>
+                                <span class="es-nav-icon">
 
-                                Shopping Bag
+                                    <svg viewBox="0 0 24 24"
+                                         aria-hidden="true">
 
-                                <span class="ever-mobile-count"
-                                      id="mobileCartCount">
-                                </span>
+                                        <path d="M20.8 8.7c0 5.2-8.8 10.2-8.8 10.2S3.2 13.9 3.2 8.7A4.7 4.7 0 0 1 12 6.3a4.7 4.7 0 0 1 8.8 2.4Z">
+                                        </path>
 
-                            </a>
+                                    </svg>
 
 
-                            <!-- ADMIN -->
+                                    <!-- Wishlist Count -->
 
-                            @if (User.IsInRole("Admin"))
-                            {
-                                <a class="ever-mobile-link"
-                                   asp-controller="Admin"
-                                   asp-action="Index">
-
-                                    <span class="ever-mobile-icon">
-                                        ⚙
+                                    <span class="es-nav-badge"
+                                          id="wishlistCount">
                                     </span>
 
-                                    Admin Dashboard
+                                </span>
 
-                                </a>
-                            }
+                            </a>
 
 
-                            <!-- ACCOUNT / LOGIN / LOGOUT -->
+                            <!-- =========================================
+                                 SHOPPING BAG
+                                 ========================================= -->
+
+                            <a class="ever-icon-link es-nav-icon-link"
+                               asp-controller="Products"
+                               asp-action="Cart"
+                               aria-label="Shopping Bag">
+
+                                <span class="es-nav-icon">
+
+                                    <svg viewBox="0 0 24 24"
+                                         aria-hidden="true">
+
+                                        <path d="M6 8h12l1 13H5L6 8Z">
+                                        </path>
+
+                                        <path d="M9 8a3 3 0 0 1 6 0">
+                                        </path>
+
+                                    </svg>
+
+
+                                    <!-- Cart Count -->
+
+                                    <span class="es-nav-badge"
+                                          id="cartCount">
+                                    </span>
+
+                                </span>
+
+                            </a>
+
+
+                            <!-- =================================================
+                                 ADMIN / ACCOUNT / LOGIN
+                                 ================================================= -->
 
                             @if (User.Identity?.IsAuthenticated == true)
                             {
 
+                                <!-- ADMIN -->
+
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a class="ever-icon-link"
+                                       asp-controller="Admin"
+                                       asp-action="Index"
+                                       aria-label="Admin Dashboard">
+
+                                        <span class="ever-icon">
+                                            ⚙
+                                        </span>
+
+                                        <span class="action-label">
+                                            Admin
+                                        </span>
+
+                                    </a>
+                                }
+
+
                                 <!-- ACCOUNT -->
 
-                                <a class="ever-mobile-link"
+                                <a class="ever-icon-link"
                                    asp-controller="Account"
-                                   asp-action="Profile">
+                                   asp-action="Profile"
+                                   aria-label="My Account">
 
-                                    <span class="ever-mobile-icon">
+                                    <span class="ever-icon">
                                         ♙
                                     </span>
 
-                                    My Account
+                                    <span class="action-label">
+                                        Account
+                                    </span>
 
                                 </a>
 
@@ -391,16 +265,15 @@
 
                                 <form asp-controller="Account"
                                       asp-action="Logout"
-                                      method="post">
+                                      method="post"
+                                      class="ever-logout-form">
 
                                     <button type="submit"
-                                            class="ever-mobile-link">
+                                            class="ever-icon-link">
 
-                                        <span class="ever-mobile-icon">
-                                            ↪
+                                        <span class="action-label">
+                                            Logout
                                         </span>
-
-                                        Logout
 
                                     </button>
 
@@ -412,15 +285,18 @@
 
                                 <!-- LOGIN -->
 
-                                <a class="ever-mobile-link"
+                                <a class="ever-icon-link"
                                    asp-controller="Account"
-                                   asp-action="Login">
+                                   asp-action="Login"
+                                   aria-label="Login">
 
-                                    <span class="ever-mobile-icon">
+                                    <span class="ever-icon">
                                         ♙
                                     </span>
 
-                                    Login
+                                    <span class="action-label">
+                                        Login
+                                    </span>
 
                                 </a>
 
@@ -430,78 +306,250 @@
                         </div>
 
 
-                        <!-- =========================================
-                             MOBILE CATEGORIES
-                             ========================================= -->
+                        <!-- =================================================
+                             MOBILE MENU
+                             ================================================= -->
 
-                        <div class="ever-mobile-categories">
-
-                            <p class="ever-mobile-menu-heading">
-                                SHOP BY CATEGORY
-                            </p>
+                        <div class="ever-mobile-menu"
+                             id="everMobileMenu">
 
 
-                            <a asp-controller="Products"
-                               asp-action="Category"
-                               asp-route-id="new-arrivals">
-                                New Arrivals
-                            </a>
+                            <!-- =========================================
+                                 MOBILE ACTIONS
+                                 ========================================= -->
+
+                            <div class="ever-mobile-menu-actions">
 
 
-                            <a asp-controller="Products"
-                               asp-action="Category"
-                               asp-route-id="women">
-                                Women's Collection
-                            </a>
+                                <!-- SEARCH -->
+
+                                <a class="ever-mobile-link"
+                                   asp-controller="Products"
+                                   asp-action="Search">
+
+                                    <span class="ever-mobile-icon">
+                                        ⌕
+                                    </span>
+
+                                    Search
+
+                                </a>
 
 
-                            <a asp-controller="Products"
-                               asp-action="Category"
-                               asp-route-id="men">
-                                Men's Collection
-                            </a>
+                                <!-- WISHLIST -->
+
+                                <a class="ever-mobile-link"
+                                   asp-controller="Products"
+                                   asp-action="Wishlist">
+
+                                    <span class="ever-mobile-icon">
+                                        ♡
+                                    </span>
+
+                                    Wishlist
+
+                                    <span class="ever-mobile-count"
+                                          id="mobileWishlistCount">
+                                    </span>
+
+                                </a>
 
 
-                            <a asp-controller="Products"
-                               asp-action="Category"
-                               asp-route-id="kurti">
-                                Kurti
-                            </a>
+                                <!-- SHOPPING BAG -->
+
+                                <a class="ever-mobile-link"
+                                     asp-controller="Products"
+                                     asp-action="Cart">
+
+                                    <span class="ever-mobile-icon">
+                                        🛍
+                                    </span>
+
+                                    Shopping Bag
+
+                                    <span class="ever-mobile-count"
+                                          id="mobileCartCount">
+                                    </span>
+
+                                </a>
 
 
-                            <a asp-controller="Products"
-                               asp-action="Category"
-                               asp-route-id="saree">
-                                Saree
-                            </a>
+                                <!-- ADMIN -->
+
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a class="ever-mobile-link"
+                                       asp-controller="Admin"
+                                       asp-action="Index">
+
+                                        <span class="ever-mobile-icon">
+                                            ⚙
+                                        </span>
+
+                                        Admin Dashboard
+
+                                    </a>
+                                }
 
 
-                            <a asp-controller="Products"
-                               asp-action="Category"
-                               asp-route-id="accessories">
-                                Accessories
-                            </a>
+                                <!-- =====================================
+                                     ACCOUNT / LOGIN / LOGOUT
+                                     ===================================== -->
+
+                                @if (User.Identity?.IsAuthenticated == true)
+                                {
+
+                                    <!-- ACCOUNT -->
+
+                                    <a class="ever-mobile-link"
+                                       asp-controller="Account"
+                                       asp-action="Profile">
+
+                                        <span class="ever-mobile-icon">
+                                            ♙
+                                        </span>
+
+                                        My Account
+
+                                    </a>
 
 
-                            <a asp-controller="Products"
-                               asp-action="Category"
-                               asp-route-id="skincare">
-                                Skincare
-                            </a>
+                                    <!-- LOGOUT -->
+
+                                    <form asp-controller="Account"
+                                          asp-action="Logout"
+                                          method="post">
+
+                                        <button type="submit"
+                                                class="ever-mobile-link">
+
+                                            <span class="ever-mobile-icon">
+                                                ↪
+                                            </span>
+
+                                            Logout
+
+                                        </button>
+
+                                    </form>
+
+                                }
+                                else
+                                {
+
+                                    <!-- LOGIN -->
+
+                                    <a class="ever-mobile-link"
+                                       asp-controller="Account"
+                                       asp-action="Login">
+
+                                        <span class="ever-mobile-icon">
+                                            ♙
+                                        </span>
+
+                                        Login
+
+                                    </a>
+
+                                }
 
 
-                            <a asp-controller="Products"
-                               asp-action="Category"
-                               asp-route-id="makeup">
-                                Makeup
-                            </a>
+                            </div>
 
 
-                            <a asp-controller="Products"
-                               asp-action="Category"
-                               asp-route-id="offers">
-                                Offers
-                            </a>
+                            <!-- =========================================
+                                 MOBILE CATEGORIES
+                                 ========================================= -->
+
+                            <div class="ever-mobile-categories">
+
+                                <p class="ever-mobile-menu-heading">
+                                    SHOP BY CATEGORY
+                                </p>
+
+
+                                <a asp-controller="Products"
+                                   asp-action="Category"
+                                   asp-route-id="new-arrivals">
+
+                                    New Arrivals
+
+                                </a>
+
+
+                                <a asp-controller="Products"
+                                   asp-action="Category"
+                                   asp-route-id="women">
+
+                                    Women's Collection
+
+                                </a>
+
+
+                                <a asp-controller="Products"
+                                   asp-action="Category"
+                                   asp-route-id="men">
+
+                                    Men's Collection
+
+                                </a>
+
+
+                                <a asp-controller="Products"
+                                   asp-action="Category"
+                                   asp-route-id="kurti">
+
+                                    Kurti
+
+                                </a>
+
+
+                                <a asp-controller="Products"
+                                   asp-action="Category"
+                                   asp-route-id="saree">
+
+                                    Saree
+
+                                </a>
+
+
+                                <a asp-controller="Products"
+                                   asp-action="Category"
+                                   asp-route-id="accessories">
+
+                                    Accessories
+
+                                </a>
+
+
+                                <a asp-controller="Products"
+                                   asp-action="Category"
+                                   asp-route-id="skincare">
+
+                                    Skincare
+
+                                </a>
+
+
+                                <a asp-controller="Products"
+                                   asp-action="Category"
+                                   asp-route-id="makeup">
+
+                                    Makeup
+
+                                </a>
+
+
+                                <a asp-controller="Products"
+                                   asp-action="Category"
+                                   asp-route-id="offers">
+
+                                    Offers
+
+                                </a>
+
+                            </div>
+
 
                         </div>
 
@@ -510,89 +558,108 @@
 
                 </div>
 
+            </nav>
+
+
+            <!-- =====================================================
+                 DESKTOP CATEGORY BAR
+                 ===================================================== -->
+
+            <div class="ever-category-bar">
+
+                <div class="container">
+
+                    <nav class="ever-category-links"
+                         aria-label="Shop categories">
+
+
+                        <a asp-controller="Products"
+                           asp-action="Category"
+                           asp-route-id="new-arrivals">
+
+                            New Arrivals
+
+                        </a>
+
+
+                        <a asp-controller="Products"
+                           asp-action="Category"
+                           asp-route-id="women">
+
+                            Women's Collection
+
+                        </a>
+
+
+                        <a asp-controller="Products"
+                           asp-action="Category"
+                           asp-route-id="men">
+
+                            Men's Collection
+
+                        </a>
+
+
+                        <a asp-controller="Products"
+                           asp-action="Category"
+                           asp-route-id="kurti">
+
+                            Kurti
+
+                        </a>
+
+
+                        <a asp-controller="Products"
+                           asp-action="Category"
+                           asp-route-id="saree">
+
+                            Saree
+
+                        </a>
+
+
+                        <a asp-controller="Products"
+                           asp-action="Category"
+                           asp-route-id="accessories">
+
+                            Accessories
+
+                        </a>
+
+
+                        <a asp-controller="Products"
+                           asp-action="Category"
+                           asp-route-id="skincare">
+
+                            Skincare
+
+                        </a>
+
+
+                        <a asp-controller="Products"
+                           asp-action="Category"
+                           asp-route-id="makeup">
+
+                            Makeup
+
+                        </a>
+
+
+                        <a asp-controller="Products"
+                           asp-action="Category"
+                           asp-route-id="offers">
+
+                            Offers
+
+                        </a>
+
+
+                    </nav>
+
+                </div>
+
             </div>
 
-        </nav>
-
-
-        <!-- =====================================================
-             DESKTOP CATEGORY BAR
-             ===================================================== -->
-
-        <div class="ever-category-bar">
-
-            <div class="container">
-
-                <nav class="ever-category-links"
-                     aria-label="Shop categories">
-
-
-                    <a asp-controller="Products"
-                       asp-action="Category"
-                       asp-route-id="new-arrivals">
-                        New Arrivals
-                    </a>
-
-
-                    <a asp-controller="Products"
-                       asp-action="Category"
-                       asp-route-id="women">
-                        Women's Collection
-                    </a>
-
-
-                    <a asp-controller="Products"
-                       asp-action="Category"
-                       asp-route-id="men">
-                        Men's Collection
-                    </a>
-
-
-                    <a asp-controller="Products"
-                       asp-action="Category"
-                       asp-route-id="kurti">
-                        Kurti
-                    </a>
-
-
-                    <a asp-controller="Products"
-                       asp-action="Category"
-                       asp-route-id="saree">
-                        Saree
-                    </a>
-
-
-                    <a asp-controller="Products"
-                       asp-action="Category"
-                       asp-route-id="accessories">
-                        Accessories
-                    </a>
-
-
-                    <a asp-controller="Products"
-                       asp-action="Category"
-                       asp-route-id="skincare">
-                        Skincare
-                    </a>
-
-
-                    <a asp-controller="Products"
-                       asp-action="Category"
-                       asp-route-id="makeup">
-                        Makeup
-                    </a>
-
-
-                    <a asp-controller="Products"
-                       asp-action="Category"
-                       asp-route-id="offers">
-                        Offers
-                    </a>
-
-
-                </nav>
-
-            </div>
 
         </div>
 
@@ -696,7 +763,7 @@
 
 
     <!-- =====================================================
-         MOBILE MENU + WISHLIST/CART COUNTER
+         MOBILE MENU + WISHLIST + CART
          ===================================================== -->
 
     <script>
@@ -800,7 +867,18 @@
 
 
             /* =================================================
-               WISHLIST + CART
+               STORAGE KEYS
+               ================================================= */
+
+            const WISHLIST_KEY =
+                "everSpringWishlist";
+
+            const CART_KEY =
+                "everSpringCart";
+
+
+            /* =================================================
+               NAVBAR COUNTERS
                ================================================= */
 
             const wishlistCount =
@@ -820,185 +898,648 @@
                 );
 
 
-            /* Get existing data */
-
-            let wishlist =
-                JSON.parse(
-                    localStorage.getItem(
-                        "everSpringWishlist"
-                    )
-                ) || [];
-
-
-            let cart =
-                JSON.parse(
-                    localStorage.getItem(
-                        "everSpringCart"
-                    )
-                ) || [];
-
-
             /* =================================================
-               UPDATE COUNTERS
+               GET WISHLIST
                ================================================= */
 
-            function updateCounters() {
+            function getWishlistItems() {
+
+                try {
+
+                    const data =
+                        localStorage.getItem(
+                            WISHLIST_KEY
+                        );
 
 
-                /* -----------------------------
-                   Wishlist
-                   ----------------------------- */
+                    if (!data) {
 
-                if (wishlistCount) {
+                        return [];
 
-                    wishlistCount.textContent =
-                        wishlist.length > 0
-                            ? wishlist.length
-                            : "";
-
-                }
+                    }
 
 
-                if (mobileWishlistCount) {
-
-                    mobileWishlistCount.textContent =
-                        wishlist.length > 0
-                            ? wishlist.length
-                            : "";
-
-                }
+                    const items =
+                        JSON.parse(data);
 
 
-                /* -----------------------------
-                   Shopping Bag
-                   ----------------------------- */
-
-                if (cartCount) {
-
-                    cartCount.textContent =
-                        cart.length > 0
-                            ? cart.length
-                            : "";
+                    return Array.isArray(items)
+                        ? items
+                        : [];
 
                 }
+                catch (error) {
 
+                    console.error(
+                        "Wishlist read error:",
+                        error
+                    );
 
-                if (mobileCartCount) {
-
-                    mobileCartCount.textContent =
-                        cart.length > 0
-                            ? cart.length
-                            : "";
+                    return [];
 
                 }
 
             }
 
 
-            /* Initial counter update */
+            /* =================================================
+               SAVE WISHLIST
+               ================================================= */
 
-            updateCounters();
+            function saveWishlistItems(items) {
+
+                localStorage.setItem(
+                    WISHLIST_KEY,
+                    JSON.stringify(items)
+                );
+
+                updateCounters();
+
+            }
 
 
             /* =================================================
-               GLOBAL FUNCTIONS
-               Product cards can use these later.
+               GET CART
+               ================================================= */
+
+            function getCartItems() {
+
+                try {
+
+                    const data =
+                        localStorage.getItem(
+                            CART_KEY
+                        );
+
+
+                    if (!data) {
+
+                        return [];
+
+                    }
+
+
+                    const items =
+                        JSON.parse(data);
+
+
+                    return Array.isArray(items)
+                        ? items
+                        : [];
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "Cart read error:",
+                        error
+                    );
+
+                    return [];
+
+                }
+
+            }
+
+
+            /* =================================================
+               SAVE CART
+               ================================================= */
+
+            function saveCartItems(items) {
+
+                localStorage.setItem(
+                    CART_KEY,
+                    JSON.stringify(items)
+                );
+
+                updateCounters();
+
+            }
+
+
+            /* =================================================
+               UPDATE NAVBAR COUNTERS
+               ================================================= */
+
+            function updateCounters() {
+
+
+                const wishlist =
+                    getWishlistItems();
+
+
+                const cart =
+                    getCartItems();
+
+
+                /* =============================================
+                   WISHLIST COUNT
+                   ============================================= */
+
+                if (wishlistCount) {
+
+                    if (wishlist.length > 0) {
+
+                        wishlistCount.textContent =
+                            wishlist.length;
+
+                        wishlistCount.style.display =
+                            "flex";
+
+                    }
+                    else {
+
+                        wishlistCount.textContent =
+                            "";
+
+                        wishlistCount.style.display =
+                            "none";
+
+                    }
+
+                }
+
+
+                /* Mobile Wishlist */
+
+                if (mobileWishlistCount) {
+
+                    if (wishlist.length > 0) {
+
+                        mobileWishlistCount.textContent =
+                            wishlist.length;
+
+                        mobileWishlistCount.style.display =
+                            "inline-flex";
+
+                    }
+                    else {
+
+                        mobileWishlistCount.textContent =
+                            "";
+
+                        mobileWishlistCount.style.display =
+                            "none";
+
+                    }
+
+                }
+
+
+                /* =============================================
+                   CART COUNT
+                   ============================================= */
+
+                const totalCartQuantity =
+                    cart.reduce(
+                        function (total, item) {
+
+                            return total +
+                                Number(
+                                    item.quantity || 1
+                                );
+
+                        },
+                        0
+                    );
+
+
+                /* Desktop Cart */
+
+                if (cartCount) {
+
+                    if (totalCartQuantity > 0) {
+
+                        cartCount.textContent =
+                            totalCartQuantity;
+
+                        cartCount.style.display =
+                            "flex";
+
+                    }
+                    else {
+
+                        cartCount.textContent =
+                            "";
+
+                        cartCount.style.display =
+                            "none";
+
+                    }
+
+                }
+
+
+                /* Mobile Cart */
+
+                if (mobileCartCount) {
+
+                    if (totalCartQuantity > 0) {
+
+                        mobileCartCount.textContent =
+                            totalCartQuantity;
+
+                        mobileCartCount.style.display =
+                            "inline-flex";
+
+                    }
+                    else {
+
+                        mobileCartCount.textContent =
+                            "";
+
+                        mobileCartCount.style.display =
+                            "none";
+
+                    }
+
+                }
+
+            }
+
+
+            /* =================================================
+               WISHLIST
                ================================================= */
 
             window.EverSpringWishlist = {
 
 
+                /* =============================================
+                   ADD
+                   ============================================= */
+
                 add: function (product) {
 
-                    wishlist.push(product);
 
-                    localStorage.setItem(
-                        "everSpringWishlist",
-                        JSON.stringify(wishlist)
-                    );
+                    if (!product ||
+                        !product.id) {
 
-                    updateCounters();
+                        return false;
+
+                    }
+
+
+                    const wishlist =
+                        getWishlistItems();
+
+
+                    /* Prevent duplicate product */
+
+                    const alreadyExists =
+                        wishlist.some(
+                            function (item) {
+
+                                return Number(item.id) ===
+                                    Number(product.id);
+
+                            }
+                        );
+
+
+                    if (alreadyExists) {
+
+                        updateCounters();
+
+                        return false;
+
+                    }
+
+
+                    /* Save only required data */
+
+                    wishlist.push({
+
+                        id: product.id,
+
+                        name: product.name,
+
+                        category: product.category,
+
+                        imageUrl: product.imageUrl,
+
+                        price: product.price
+
+                    });
+
+
+                    saveWishlistItems(wishlist);
+
+
+                    return true;
 
                 },
 
 
+                /* =============================================
+                   REMOVE
+                   ============================================= */
+
                 remove: function (productId) {
+
+
+                    let wishlist =
+                        getWishlistItems();
+
 
                     wishlist =
                         wishlist.filter(
                             function (item) {
 
-                                return item.id !== productId;
+                                return Number(item.id) !==
+                                    Number(productId);
 
                             }
                         );
 
 
-                    localStorage.setItem(
-                        "everSpringWishlist",
-                        JSON.stringify(wishlist)
-                    );
+                    saveWishlistItems(wishlist);
 
-                    updateCounters();
+
+                    return true;
 
                 },
 
 
+                /* =============================================
+                   CHECK PRODUCT
+                   ============================================= */
+
+                has: function (productId) {
+
+
+                    const wishlist =
+                        getWishlistItems();
+
+
+                    return wishlist.some(
+                        function (item) {
+
+                            return Number(item.id) ===
+                                Number(productId);
+
+                        }
+                    );
+
+                },
+
+
+                /* =============================================
+                   GET ALL
+                   ============================================= */
+
                 getAll: function () {
 
-                    return wishlist;
+                    return getWishlistItems();
+
+                },
+
+
+                /* =============================================
+                   CLEAR ALL
+                   ============================================= */
+
+                clear: function () {
+
+                    localStorage.removeItem(
+                        WISHLIST_KEY
+                    );
+
+                    updateCounters();
 
                 }
 
             };
 
 
+            /* =================================================
+               SHOPPING CART
+               ================================================= */
+
             window.EverSpringCart = {
 
 
-                add: function (product) {
+                /* =============================================
+                   ADD TO CART
+                   ============================================= */
 
-                    cart.push(product);
+                add: function (
+                    product,
+                    quantity = 1
+                ) {
 
-                    localStorage.setItem(
-                        "everSpringCart",
-                        JSON.stringify(cart)
-                    );
 
-                    updateCounters();
+                    if (!product ||
+                        !product.id) {
+
+                        return false;
+
+                    }
+
+
+                    quantity =
+                        Number(quantity);
+
+
+                    if (isNaN(quantity) ||
+                        quantity < 1) {
+
+                        quantity = 1;
+
+                    }
+
+
+                    const cart =
+                        getCartItems();
+
+
+                    /* Find existing product */
+
+                    const existingItem =
+                        cart.find(
+                            function (item) {
+
+                                return Number(item.id) ===
+                                    Number(product.id);
+
+                            }
+                        );
+
+
+                    if (existingItem) {
+
+                        /* Increase quantity */
+
+                        existingItem.quantity =
+                            Number(
+                                existingItem.quantity || 0
+                            ) + quantity;
+
+                    }
+                    else {
+
+                        /* Add new product */
+
+                        cart.push({
+
+                            id: product.id,
+
+                            name: product.name,
+
+                            category: product.category,
+
+                            imageUrl: product.imageUrl,
+
+                            price: product.price,
+
+                            quantity: quantity
+
+                        });
+
+                    }
+
+
+                    saveCartItems(cart);
+
+
+                    return true;
 
                 },
 
 
+                /* =============================================
+                   REMOVE
+                   ============================================= */
+
                 remove: function (productId) {
+
+
+                    let cart =
+                        getCartItems();
+
 
                     cart =
                         cart.filter(
                             function (item) {
 
-                                return item.id !== productId;
+                                return Number(item.id) !==
+                                    Number(productId);
 
                             }
                         );
 
 
-                    localStorage.setItem(
-                        "everSpringCart",
-                        JSON.stringify(cart)
-                    );
+                    saveCartItems(cart);
 
-                    updateCounters();
+
+                    return true;
 
                 },
 
 
+                /* =============================================
+                   UPDATE QUANTITY
+                   ============================================= */
+
+                updateQuantity: function (
+                    productId,
+                    quantity
+                ) {
+
+
+                    quantity =
+                        Number(quantity);
+
+
+                    let cart =
+                        getCartItems();
+
+
+                    const item =
+                        cart.find(
+                            function (product) {
+
+                                return Number(product.id) ===
+                                    Number(productId);
+
+                            }
+                        );
+
+
+                    if (!item) {
+
+                        return false;
+
+                    }
+
+
+                    /* Remove if quantity is zero */
+
+                    if (isNaN(quantity) ||
+                        quantity <= 0) {
+
+
+                        cart =
+                            cart.filter(
+                                function (product) {
+
+                                    return Number(product.id) !==
+                                        Number(productId);
+
+                                }
+                            );
+
+                    }
+                    else {
+
+                        item.quantity =
+                            quantity;
+
+                    }
+
+
+                    saveCartItems(cart);
+
+
+                    return true;
+
+                },
+
+
+                /* =============================================
+                   GET ALL
+                   ============================================= */
+
                 getAll: function () {
 
-                    return cart;
+                    return getCartItems();
+
+                },
+
+
+                /* =============================================
+                   CLEAR CART
+                   ============================================= */
+
+                clear: function () {
+
+                    localStorage.removeItem(
+                        CART_KEY
+                    );
+
+                    updateCounters();
 
                 }
 
             };
+
+
+            /* =================================================
+               INITIAL COUNTER UPDATE
+               ================================================= */
+
+            updateCounters();
 
 
         });
@@ -1006,7 +1547,9 @@
     </script>
 
 
-    <!-- Page-specific scripts -->
+    <!-- =====================================================
+         PAGE-SPECIFIC SCRIPTS
+         ===================================================== -->
 
     @await RenderSectionAsync(
         "Scripts",
