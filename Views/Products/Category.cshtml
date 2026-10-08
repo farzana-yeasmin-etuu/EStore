@@ -1,5 +1,4 @@
-﻿
-@model List<EStore.ViewModels.ProductViewModel>
+﻿@model List<EStore.ViewModels.ProductViewModel>
 
 @{
     var categoryName = ViewBag.CategoryName as string ?? "Products";
@@ -40,26 +39,28 @@
                     <!-- Product Image -->
                     <div class="es-product-image-wrapper">
 
-                      <a asp-controller="Products"
-   asp-action="Details"
-   asp-route-id="@product.Id"
-   class="text-decoration-none">
+                        <a asp-controller="Products"
+                           asp-action="Details"
+                           asp-route-id="@product.Id"
+                           class="text-decoration-none">
 
-    <img src="@product.ImageUrl"
-         alt="@product.Name"
-         class="w-100"
-         style="object-fit:contain;">
+                            <img src="@product.ImageUrl"
+                                 alt="@product.Name"
+                                 class="w-100"
+                                 style="object-fit:contain;">
 
-</a>
+                        </a>
+
 
                         <!-- Wishlist -->
                         <button type="button"
                                 class="es-product-wishlist"
-                                onclick="addToWishlist(
-                            '@product.ProductId',
-                            '@product.Name',
-                            '@product.ImageUrl'
-                            )"
+                                data-product-id="@product.Id"
+                                data-product-name="@product.Name"
+                                data-product-category="@product.Category"
+                                data-product-image="@product.ImageUrl"
+                                data-product-price="@product.Price"
+                                onclick="addCategoryProductToWishlist(this)"
                                 aria-label="Add to wishlist">
 
                             <svg viewBox="0 0 24 24"
@@ -90,19 +91,24 @@
 
                         <div class="es-product-bottom">
 
+                            <!-- PRICE -->
                             <span class="es-product-price">
                                 BDT @product.Price.ToString("N0")
                             </span>
 
+
+                            <!-- ADD TO BAG -->
                             <button type="button"
                                     class="es-add-bag-btn"
-                                    onclick="addToCart(
-                                '@product.ProductId',
-                                '@product.Name',
-                                '@product.ImageUrl'
-                                )">
+                                    data-product-id="@product.Id"
+                                    data-product-name="@product.Name"
+                                    data-product-category="@product.Category"
+                                    data-product-image="@product.ImageUrl"
+                                    data-product-price="@product.Price"
+                                    onclick="addCategoryProductToCart(this)">
 
                                 Add to Bag
+
                             </button>
 
                         </div>
@@ -134,31 +140,96 @@
 
     <script>
 
-        function addToWishlist(id, name, image) {
+        /* =========================================================
+           CREATE PRODUCT OBJECT
+           ========================================================= */
 
-            if (window.EverSpringWishlist) {
+        function getCategoryProduct(button) {
 
-                window.EverSpringWishlist.add({
-                    id: id,
-                    name: name,
-                    image: image
-                });
+            return {
+
+                id: button.dataset.productId,
+
+                name: button.dataset.productName,
+
+                category: button.dataset.productCategory,
+
+                imageUrl: button.dataset.productImage,
+
+                price: Number(button.dataset.productPrice) || 0
+
+            };
+
+        }
+
+
+        /* =========================================================
+           ADD TO WISHLIST
+           ========================================================= */
+
+        function addCategoryProductToWishlist(button) {
+
+            const product =
+                getCategoryProduct(button);
+
+
+            console.log("Wishlist Product:", product);
+
+
+            if (window.EverSpringWishlist &&
+                typeof window.EverSpringWishlist.add === "function") {
+
+                window.EverSpringWishlist.add(product);
+
+                alert(
+                    product.name +
+                    " added to your wishlist."
+                );
+
+            }
+            else {
+
+                alert(
+                    "Wishlist is not available."
+                );
 
             }
 
         }
 
 
-        function addToCart(id, name, image) {
+        /* =========================================================
+           ADD TO CART
+           ========================================================= */
 
-            if (window.EverSpringCart) {
+        function addCategoryProductToCart(button) {
 
-                window.EverSpringCart.add({
-                    id: id,
-                    name: name,
-                    image: image,
-                    quantity: 1
-                });
+            const product =
+                getCategoryProduct(button);
+
+
+            console.log("Cart Product:", product);
+
+
+            if (window.EverSpringCart &&
+                typeof window.EverSpringCart.add === "function") {
+
+                window.EverSpringCart.add(
+                    product,
+                    1
+                );
+
+                alert(
+                    product.name +
+                    " added to your bag."
+                );
+
+            }
+            else {
+
+                alert(
+                    "Shopping bag is not available."
+                );
 
             }
 

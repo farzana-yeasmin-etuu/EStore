@@ -51,7 +51,7 @@
 
 <body>
 
-
+      <div class="ever-sticky-navigation">
     <!-- =====================================================
          HEADER
          ===================================================== -->
@@ -63,7 +63,7 @@
              STICKY NAVIGATION WRAPPER
              ================================================= -->
 
-        <div class="ever-sticky-navigation">
+      
 
 
             <!-- =================================================
@@ -664,6 +664,8 @@
         </div>
 
     </header>
+    </div>
+
 
 
     <!-- =====================================================
@@ -1170,67 +1172,63 @@
                    ADD
                    ============================================= */
 
-                add: function (product) {
+          add: function (product) {
+
+    if (!product || !product.id) {
+        return false;
+    }
+
+    const wishlist = getWishlistItems();
+
+    const existingItem = wishlist.find(function (item) {
+
+        return Number(item.id) ===
+            Number(product.id);
+
+    });
 
 
-                    if (!product ||
-                        !product.id) {
+    /* =============================================
+       PRODUCT ALREADY EXISTS
+       Update product information
+       ============================================= */
 
-                        return false;
+    if (existingItem) {
 
-                    }
+        existingItem.name = product.name;
+        existingItem.category = product.category;
+        existingItem.imageUrl = product.imageUrl;
+        existingItem.price = Number(product.price) || 0;
 
+        saveWishlistItems(wishlist);
 
-                    const wishlist =
-                        getWishlistItems();
-
-
-                    /* Prevent duplicate product */
-
-                    const alreadyExists =
-                        wishlist.some(
-                            function (item) {
-
-                                return Number(item.id) ===
-                                    Number(product.id);
-
-                            }
-                        );
+        return false;
+    }
 
 
-                    if (alreadyExists) {
+    /* =============================================
+       NEW PRODUCT
+       ============================================= */
 
-                        updateCounters();
+    wishlist.push({
 
-                        return false;
+        id: product.id,
 
-                    }
+        name: product.name,
 
+        category: product.category,
 
-                    /* Save only required data */
+        imageUrl: product.imageUrl,
 
-                    wishlist.push({
+        price: Number(product.price) || 0
 
-                        id: product.id,
-
-                        name: product.name,
-
-                        category: product.category,
-
-                        imageUrl: product.imageUrl,
-
-                        price: product.price
-
-                    });
+    });
 
 
-                    saveWishlistItems(wishlist);
+    saveWishlistItems(wishlist);
 
-
-                    return true;
-
-                },
-
+    return true;
+},
 
                 /* =============================================
                    REMOVE
@@ -1317,222 +1315,174 @@
                SHOPPING CART
                ================================================= */
 
-            window.EverSpringCart = {
+         window.EverSpringCart = {
 
+    /* =============================================
+       ADD TO CART
+       ============================================= */
 
-                /* =============================================
-                   ADD TO CART
-                   ============================================= */
+    add: function (product, quantity = 1) {
 
-                add: function (
-                    product,
-                    quantity = 1
-                ) {
+        if (!product || !product.id) {
+            return false;
+        }
 
+        quantity = Number(quantity);
 
-                    if (!product ||
-                        !product.id) {
+        if (isNaN(quantity) || quantity < 1) {
+            quantity = 1;
+        }
 
-                        return false;
+        const cart = getCartItems();
 
-                    }
+        /* Find existing product */
+        const existingItem = cart.find(function (item) {
+            return Number(item.id) === Number(product.id);
+        });
 
 
-                    quantity =
-                        Number(quantity);
+        /* =============================================
+           IF PRODUCT ALREADY EXISTS
+           Update ALL product information
+           ============================================= */
 
+        if (existingItem) {
 
-                    if (isNaN(quantity) ||
-                        quantity < 1) {
+            existingItem.name = product.name;
+            existingItem.category = product.category;
+            existingItem.imageUrl = product.imageUrl;
+            existingItem.price = Number(product.price) || 0;
 
-                        quantity = 1;
+            existingItem.quantity =
+                Number(existingItem.quantity || 0) + quantity;
+        }
 
-                    }
 
+        /* =============================================
+           NEW PRODUCT
+           ============================================= */
 
-                    const cart =
-                        getCartItems();
+        else {
 
+            cart.push({
 
-                    /* Find existing product */
+                id: product.id,
 
-                    const existingItem =
-                        cart.find(
-                            function (item) {
+                name: product.name,
 
-                                return Number(item.id) ===
-                                    Number(product.id);
+                category: product.category,
 
-                            }
-                        );
+                imageUrl: product.imageUrl,
 
+                price: Number(product.price) || 0,
 
-                    if (existingItem) {
+                quantity: quantity
 
-                        /* Increase quantity */
+            });
 
-                        existingItem.quantity =
-                            Number(
-                                existingItem.quantity || 0
-                            ) + quantity;
+        }
 
-                    }
-                    else {
 
-                        /* Add new product */
+        saveCartItems(cart);
 
-                        cart.push({
+        return true;
+    },
 
-                            id: product.id,
 
-                            name: product.name,
+    /* =============================================
+       REMOVE
+       ============================================= */
 
-                            category: product.category,
+    remove: function (productId) {
 
-                            imageUrl: product.imageUrl,
+        let cart = getCartItems();
 
-                            price: product.price,
+        cart = cart.filter(function (item) {
 
-                            quantity: quantity
+            return Number(item.id) !==
+                Number(productId);
 
-                        });
+        });
 
-                    }
+        saveCartItems(cart);
 
+        return true;
+    },
 
-                    saveCartItems(cart);
 
+    /* =============================================
+       UPDATE QUANTITY
+       ============================================= */
 
-                    return true;
+    updateQuantity: function (productId, quantity) {
 
-                },
+        quantity = Number(quantity);
 
+        let cart = getCartItems();
 
-                /* =============================================
-                   REMOVE
-                   ============================================= */
+        const item = cart.find(function (product) {
 
-                remove: function (productId) {
+            return Number(product.id) ===
+                Number(productId);
 
+        });
 
-                    let cart =
-                        getCartItems();
 
+        if (!item) {
+            return false;
+        }
 
-                    cart =
-                        cart.filter(
-                            function (item) {
 
-                                return Number(item.id) !==
-                                    Number(productId);
+        /* Remove if quantity is zero */
 
-                            }
-                        );
+        if (isNaN(quantity) || quantity <= 0) {
 
+            cart = cart.filter(function (product) {
 
-                    saveCartItems(cart);
+                return Number(product.id) !==
+                    Number(productId);
 
+            });
 
-                    return true;
+        }
 
-                },
+        else {
 
+            item.quantity = quantity;
 
-                /* =============================================
-                   UPDATE QUANTITY
-                   ============================================= */
+        }
 
-                updateQuantity: function (
-                    productId,
-                    quantity
-                ) {
 
+        saveCartItems(cart);
 
-                    quantity =
-                        Number(quantity);
+        return true;
+    },
 
 
-                    let cart =
-                        getCartItems();
+    /* =============================================
+       GET ALL
+       ============================================= */
 
+    getAll: function () {
 
-                    const item =
-                        cart.find(
-                            function (product) {
+        return getCartItems();
 
-                                return Number(product.id) ===
-                                    Number(productId);
+    },
 
-                            }
-                        );
 
+    /* =============================================
+       CLEAR CART
+       ============================================= */
 
-                    if (!item) {
+    clear: function () {
 
-                        return false;
+        localStorage.removeItem(CART_KEY);
 
-                    }
+        updateCounters();
 
+    }
 
-                    /* Remove if quantity is zero */
-
-                    if (isNaN(quantity) ||
-                        quantity <= 0) {
-
-
-                        cart =
-                            cart.filter(
-                                function (product) {
-
-                                    return Number(product.id) !==
-                                        Number(productId);
-
-                                }
-                            );
-
-                    }
-                    else {
-
-                        item.quantity =
-                            quantity;
-
-                    }
-
-
-                    saveCartItems(cart);
-
-
-                    return true;
-
-                },
-
-
-                /* =============================================
-                   GET ALL
-                   ============================================= */
-
-                getAll: function () {
-
-                    return getCartItems();
-
-                },
-
-
-                /* =============================================
-                   CLEAR CART
-                   ============================================= */
-
-                clear: function () {
-
-                    localStorage.removeItem(
-                        CART_KEY
-                    );
-
-                    updateCounters();
-
-                }
-
-            };
+};
 
 
             /* =================================================
