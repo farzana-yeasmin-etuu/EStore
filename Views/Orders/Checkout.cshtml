@@ -1,0 +1,583 @@
+﻿@model EStore.ViewModels.CheckoutViewModel
+
+@{
+    ViewData["Title"] = "Checkout | Ever Spring";
+}
+
+<div class="es-checkout-page">
+
+    <div class="es-checkout-header">
+
+        <p class="es-products-small-title">
+            EVER SPRING
+        </p>
+
+        <h1>
+            Checkout
+        </h1>
+
+        <p>
+            Complete your information to place your order.
+        </p>
+
+    </div>
+
+
+    <div class="es-checkout-layout">
+
+        <!-- ==========================================
+             CUSTOMER INFORMATION
+        =========================================== -->
+        <div class="es-checkout-form-card">
+
+            <h2>
+                Delivery Information
+            </h2>
+
+            <p class="es-checkout-form-subtitle">
+                Please provide your delivery details.
+            </p>
+
+
+            <form id="checkoutForm">
+
+                @Html.AntiForgeryToken()
+
+
+                <!-- Full Name -->
+                <div class="es-form-group">
+
+                    <label for="CustomerName">
+                        Full Name
+                    </label>
+
+                    <input type="text"
+                           id="CustomerName"
+                           name="CustomerName"
+                           class="es-checkout-input"
+                           placeholder="Enter your full name"
+                           required />
+
+                </div>
+
+
+                <!-- Email -->
+                <div class="es-form-group">
+
+                    <label for="CustomerEmail">
+                        Email Address
+                    </label>
+
+                    <input type="email"
+                           id="CustomerEmail"
+                           name="CustomerEmail"
+                           class="es-checkout-input"
+                           value="@Model.CustomerEmail"
+                           placeholder="Enter your email"
+                           required />
+
+                </div>
+
+
+                <!-- Phone -->
+                <div class="es-form-group">
+
+                    <label for="CustomerPhone">
+                        Phone Number
+                    </label>
+
+                    <input type="tel"
+                           id="CustomerPhone"
+                           name="CustomerPhone"
+                           class="es-checkout-input"
+                           placeholder="01XXXXXXXXX"
+                           required />
+
+                </div>
+
+
+                <!-- Address -->
+                <div class="es-form-group">
+
+                    <label for="ShippingAddress">
+                        Shipping Address
+                    </label>
+
+                    <textarea id="ShippingAddress"
+                              name="ShippingAddress"
+                              class="es-checkout-input es-checkout-textarea"
+                              placeholder="House, Road, Area"
+                              rows="4"
+                              required></textarea>
+
+                </div>
+
+
+                <!-- City -->
+                <div class="es-checkout-row">
+
+                    <div class="es-form-group">
+
+                        <label for="City">
+                            City
+                        </label>
+
+                        <input type="text"
+                               id="City"
+                               name="City"
+                               class="es-checkout-input"
+                               placeholder="Dhaka"
+                               required />
+
+                    </div>
+
+
+                    <!-- Post Code -->
+                    <div class="es-form-group">
+
+                        <label for="PostCode">
+                            Post Code
+                        </label>
+
+                        <input type="text"
+                               id="PostCode"
+                               name="PostCode"
+                               class="es-checkout-input"
+                               placeholder="4000"
+                               required />
+
+                    </div>
+
+                </div>
+
+
+                <button type="submit"
+                        class="es-place-order-btn"
+                        id="placeOrderBtn">
+
+                    Place Order
+
+                </button>
+
+
+                <p id="checkoutMessage"
+                   class="es-checkout-message">
+                </p>
+
+            </form>
+
+        </div>
+
+
+        <!-- ==========================================
+             ORDER SUMMARY
+        =========================================== -->
+        <div class="es-checkout-summary-card">
+
+            <h2>
+                Your Order
+            </h2>
+
+
+            <div id="checkoutItems">
+                <!-- JavaScript will load cart items -->
+            </div>
+
+
+            <div class="es-checkout-summary-line">
+
+                <span>
+                    Subtotal
+                </span>
+
+                <strong id="checkoutSubtotal">
+                    BDT 0
+                </strong>
+
+            </div>
+
+
+            <div class="es-checkout-summary-line">
+
+                <span>
+                    Delivery
+                </span>
+
+                <strong>
+                    Free
+                </strong>
+
+            </div>
+
+
+            <div class="es-checkout-total-line">
+
+                <span>
+                    Total
+                </span>
+
+                <strong id="checkoutTotal">
+                    BDT 0
+                </strong>
+
+            </div>
+
+
+            <p class="es-checkout-note">
+                Final amount is calculated securely
+                from our product database.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        loadCheckoutCart();
+
+    }
+);
+
+
+// =====================================================
+// FORMAT PRICE
+// =====================================================
+
+function formatPrice(price) {
+
+    return "BDT " +
+        Number(price || 0)
+            .toLocaleString("en-BD");
+
+}
+
+
+// =====================================================
+// LOAD CART
+// =====================================================
+
+function loadCheckoutCart() {
+
+    const cart =
+        JSON.parse(
+            localStorage.getItem(
+                "everSpringCart"
+            ) || "[]"
+        );
+
+
+    const container =
+        document.getElementById(
+            "checkoutItems"
+        );
+
+
+    const subtotalElement =
+        document.getElementById(
+            "checkoutSubtotal"
+        );
+
+
+    const totalElement =
+        document.getElementById(
+            "checkoutTotal"
+        );
+
+
+    if (!cart.length) {
+
+        container.innerHTML = `
+            <div class="es-checkout-empty">
+                <p>Your bag is empty.</p>
+
+                <a href="/Products"
+                   class="es-checkout-back-btn">
+                    Continue Shopping
+                </a>
+            </div>
+        `;
+
+        subtotalElement.textContent =
+            "BDT 0";
+
+        totalElement.textContent =
+            "BDT 0";
+
+        document.getElementById(
+            "placeOrderBtn"
+        ).disabled = true;
+
+        return;
+    }
+
+
+    let subtotal = 0;
+
+
+    container.innerHTML = "";
+
+
+    cart.forEach(function (item) {
+
+        const quantity =
+            Number(item.quantity || 1);
+
+        const price =
+            Number(item.price || 0);
+
+        const itemTotal =
+            price * quantity;
+
+        subtotal += itemTotal;
+
+
+        const itemElement =
+            document.createElement("div");
+
+        itemElement.className =
+            "es-checkout-item";
+
+
+        itemElement.innerHTML = `
+
+            <div class="es-checkout-item-image">
+
+                <img src="${item.imageUrl || ""}"
+                     alt="${item.name || "Product"}">
+
+            </div>
+
+            <div class="es-checkout-item-info">
+
+                <h3>
+                    ${item.name || "Product"}
+                </h3>
+
+                <p>
+                    Qty: ${quantity}
+                </p>
+
+                <strong>
+                    ${formatPrice(itemTotal)}
+                </strong>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(
+            itemElement
+        );
+
+    });
+
+
+    subtotalElement.textContent =
+        formatPrice(subtotal);
+
+    totalElement.textContent =
+        formatPrice(subtotal);
+
+}
+
+
+// =====================================================
+// SUBMIT CHECKOUT
+// =====================================================
+
+document.getElementById(
+    "checkoutForm"
+).addEventListener(
+    "submit",
+    async function (event) {
+
+        event.preventDefault();
+
+
+        const button =
+            document.getElementById(
+                "placeOrderBtn"
+            );
+
+
+        const message =
+            document.getElementById(
+                "checkoutMessage"
+            );
+
+
+        const cart =
+            JSON.parse(
+                localStorage.getItem(
+                    "everSpringCart"
+                ) || "[]"
+            );
+
+
+        if (!cart.length) {
+
+            message.textContent =
+                "Your shopping bag is empty.";
+
+            return;
+        }
+
+
+        // ---------------------------------------------
+        // Prepare ONLY ProductId + Quantity
+        // ---------------------------------------------
+
+        const items =
+            cart.map(function (item) {
+
+                return {
+
+                    productId:
+                        Number(item.id),
+
+                    quantity:
+                        Number(item.quantity || 1)
+
+                };
+
+            });
+
+
+        const requestData = {
+
+            customerName:
+                document.getElementById(
+                    "CustomerName"
+                ).value.trim(),
+
+            customerEmail:
+                document.getElementById(
+                    "CustomerEmail"
+                ).value.trim(),
+
+            customerPhone:
+                document.getElementById(
+                    "CustomerPhone"
+                ).value.trim(),
+
+            shippingAddress:
+                document.getElementById(
+                    "ShippingAddress"
+                ).value.trim(),
+
+            city:
+                document.getElementById(
+                    "City"
+                ).value.trim(),
+
+            postCode:
+                document.getElementById(
+                    "PostCode"
+                ).value.trim(),
+
+            items: items
+
+        };
+
+
+        // ---------------------------------------------
+        // Anti-forgery token
+        // ---------------------------------------------
+
+        const token =
+            document.querySelector(
+                'input[name="__RequestVerificationToken"]'
+            ).value;
+
+
+        button.disabled = true;
+
+        button.textContent =
+            "Creating Order...";
+
+        message.textContent = "";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/Orders/CreateOrder",
+                    {
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json",
+
+                            "RequestVerificationToken":
+                                token
+
+                        },
+
+                        body:
+                            JSON.stringify(
+                                requestData
+                            )
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok ||
+                !data.success) {
+
+                throw new Error(
+                    data.message ||
+                    "Unable to create order."
+                );
+
+            }
+
+
+            // -----------------------------------------
+            // Order created successfully
+            // -----------------------------------------
+
+            window.location.href =
+                "/Orders/Details/" +
+                data.orderId;
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+
+            message.textContent =
+                error.message ||
+                "Something went wrong.";
+
+
+            button.disabled = false;
+
+            button.textContent =
+                "Place Order";
+
+        }
+
+    }
+);
+
+</script>
+}

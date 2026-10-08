@@ -68,29 +68,32 @@
 
 
         <!-- Orders -->
-        <div class="col-md-6 col-lg-4">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center p-4">
+    <!-- Orders -->
+<div class="col-md-6 col-lg-4">
+    <div class="card h-100 shadow-sm border-0">
+        <div class="card-body text-center p-4">
 
-                    <div class="mb-3" style="font-size: 40px;">
-                        📦
-                    </div>
-
-                    <h4 class="fw-bold">
-                        Orders
-                    </h4>
-
-                    <p class="text-muted">
-                        Manage customer orders.
-                    </p>
-
-                    <button class="btn btn-outline-dark" disabled>
-                        Coming Soon
-                    </button>
-
-                </div>
+            <div class="mb-3" style="font-size: 40px;">
+                📦
             </div>
+
+            <h4 class="fw-bold">
+                Orders
+            </h4>
+
+            <p class="text-muted">
+                Manage customer orders.
+            </p>
+
+            <a asp-controller="Admin"
+               asp-action="Orders"
+               class="btn btn-outline-dark">
+                Manage Orders
+            </a>
+
         </div>
+    </div>
+</div>
 
     </div>
 

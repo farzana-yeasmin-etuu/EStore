@@ -1,0 +1,149 @@
+﻿@model EStore.Models.Order
+
+@{
+    ViewData["Title"] = "Order Details | Ever Spring";
+}
+
+<div class="es-checkout-page">
+
+    <div class="es-checkout-header">
+
+        <p class="es-products-small-title">
+            EVER SPRING
+        </p>
+
+        <h1>
+            Order Placed
+        </h1>
+
+        <p>
+            Thank you for shopping with Ever Spring.
+        </p>
+
+    </div>
+
+
+    <div class="es-checkout-layout">
+
+        <!-- ORDER INFORMATION -->
+
+        <div class="es-checkout-form-card">
+
+            <h2>
+                Order Information
+            </h2>
+
+            <div style="margin-top: 25px;">
+
+                <p>
+                    <strong>Order Number:</strong>
+                    @Model.OrderNumber
+                </p>
+
+                <p>
+                    <strong>Order Date:</strong>
+                    @Model.CreatedAt.ToLocalTime()
+                </p>
+
+                <p>
+                    <strong>Payment Status:</strong>
+                    @Model.PaymentStatus
+                </p>
+
+                <p>
+                    <strong>Order Status:</strong>
+                    @Model.OrderStatus
+                </p>
+
+            </div>
+
+
+            <hr />
+
+
+            <h3 style="margin-top: 25px;">
+                Delivery Information
+            </h3>
+
+            <p>
+                @Model.CustomerName
+            </p>
+
+            <p>
+                @Model.CustomerPhone
+            </p>
+
+            <p>
+                @Model.CustomerEmail
+            </p>
+
+            <p>
+                @Model.ShippingAddress
+            </p>
+
+            <p>
+                @Model.City -
+                @Model.PostCode
+            </p>
+
+        </div>
+
+
+        <!-- ORDER SUMMARY -->
+
+        <div class="es-checkout-summary-card">
+
+            <h2>
+                Your Order
+            </h2>
+
+
+            @foreach (var item in Model.OrderItems)
+            {
+                <div class="es-checkout-item">
+
+                    <div class="es-checkout-item-image">
+
+                        <img src="@item.ImageUrl"
+                             alt="@item.ProductName">
+
+                    </div>
+
+
+                    <div class="es-checkout-item-info">
+
+                        <h3>
+                            @item.ProductName
+                        </h3>
+
+                        <p>
+                            Qty: @item.Quantity
+                        </p>
+
+                        <strong>
+                            BDT @item.TotalPrice.ToString("N0")
+                        </strong>
+
+                    </div>
+
+                </div>
+            }
+
+
+            <div class="es-checkout-total-line">
+
+                <span>
+                    Total
+                </span>
+
+                <strong>
+                    BDT @Model.TotalAmount.ToString("N0")
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

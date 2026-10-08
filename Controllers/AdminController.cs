@@ -713,6 +713,105 @@ namespace EStore.Controllers
         }
 
 
+        // =========================================================
+        // ADMIN ORDERS
+        // =========================================================
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Orders()
+        {
+            var orders =
+                await _context.Orders
+                    .Include(o => o.OrderItems)
+                    .OrderByDescending(o => o.CreatedAt)
+                    .ToListAsync();
+
+            return View(orders);
+        }
+
+
+
+        // =========================================================
+        //  OrderDetails
+        // =========================================================
+
+
+        public async Task<IActionResult> OrderDetails(int id)
+        {
+            var order =
+                await _context.Orders
+                    .Include(o => o.OrderItems)
+                    .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            return View(order);
+        }
+
+        // =========================================================
+        // UPDATE ORDER STATUS
+        // =========================================================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateOrderStatus(
+            int id,
+            string status)
+        {
+            var allowedStatuses =
+                new[]
+                {
+            "Pending",
+            "Confirmed",
+            "Processing",
+            "Shipped",
+            "Delivered",
+            "Cancelled"
+                };
+
+
+            if (!allowedStatuses.Contains(status))
+            {
+                return BadRequest(
+                    "Invalid order status.");
+            }
+
+
+            var order =
+                await _context.Orders
+                    .FirstOrDefaultAsync(o =>
+                        o.Id == id);
+
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+
+            order.OrderStatus = status;
+
+            order.UpdatedAt =
+                DateTime.UtcNow;
+
+
+            await _context.SaveChangesAsync();
+
+
+            TempData["SuccessMessage"] =
+                "Order status updated successfully.";
+
+
+            return RedirectToAction(
+                nameof(OrderDetails),
+                new { id = id }
+            );
+        }
+
+
         // ============================================================
         // CATEGORY → FOLDER NAME
         // ============================================================

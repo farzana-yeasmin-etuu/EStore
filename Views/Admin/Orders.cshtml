@@ -1,0 +1,314 @@
+﻿@model List<EStore.Models.Order>
+
+@{
+    ViewData["Title"] = "Orders | Admin";
+}
+
+<div class="es-admin-page">
+
+
+
+    <!-- ==========================================
+         HEADER
+    =========================================== -->
+
+    <div class="es-admin-page-header">
+
+        <div>
+
+            <p class="es-products-small-title">
+                EVER SPRING ADMIN
+            </p>
+
+            <h1>
+                Orders
+            </h1>
+
+            <p>
+                View and manage customer orders.
+            </p>
+
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="Index"
+           class="es-admin-back-btn">
+            ← Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- ==========================================
+         ORDER STATISTICS
+    =========================================== -->
+
+    <div class="es-order-stats">
+
+        <div class="es-order-stat-card">
+
+            <span>
+                Total Orders
+            </span>
+
+            <strong>
+                @Model.Count
+            </strong>
+
+        </div>
+
+
+        <div class="es-order-stat-card">
+
+            <span>
+                Pending
+            </span>
+
+            <strong>
+                @Model.Count(o =>
+                    o.OrderStatus == "Pending")
+            </strong>
+
+        </div>
+
+
+        <div class="es-order-stat-card">
+
+            <span>
+                Confirmed
+            </span>
+
+            <strong>
+                @Model.Count(o =>
+                    o.OrderStatus == "Confirmed")
+            </strong>
+
+        </div>
+
+
+        <div class="es-order-stat-card">
+
+            <span>
+                Paid
+            </span>
+
+            <strong>
+                @Model.Count(o =>
+                    o.PaymentStatus == "Paid")
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         ORDERS TABLE
+    =========================================== -->
+
+    <div class="es-admin-table-card">
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="es-admin-table-wrapper">
+
+                <table class="es-admin-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Order
+                            </th>
+
+                            <th>
+                                Customer
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Payment
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var order in Model)
+                        {
+                            <tr>
+
+                                <!-- Order Number -->
+
+                                <td>
+
+                                    <strong>
+                                        @order.OrderNumber
+                                    </strong>
+
+                                    <small>
+                                        #@order.Id
+                                    </small>
+
+                                </td>
+
+
+                                <!-- Customer -->
+
+                                <td>
+
+                                    <strong>
+                                        @order.CustomerName
+                                    </strong>
+
+                                    <small>
+                                        @order.CustomerEmail
+                                    </small>
+
+                                </td>
+
+
+                                <!-- Date -->
+
+                                <td>
+
+                                   @(order.CreatedAt.ToLocalTime().ToString("dd MMM yyyy"))
+
+                                    <small>
+                                       @(order.CreatedAt.ToLocalTime().ToString("hh:mm tt"))
+                                    </small>
+
+                                </td>
+
+
+                                <!-- Amount -->
+
+                                <td>
+
+                                    <strong>
+                                       BDT @(order.TotalAmount.ToString("N0"))
+                                    </strong>
+
+                                    <small>
+                                        @order.OrderItems.Count
+                                        item(s)
+                                    </small>
+
+                                </td>
+
+
+                                <!-- Payment -->
+
+                                <td>
+
+                                    @if (order.PaymentStatus == "Paid")
+                                    {
+                                        <span class="es-status-badge es-status-paid">
+                                            Paid
+                                        </span>
+                                    }
+                                    else if (order.PaymentStatus == "Failed")
+                                    {
+                                        <span class="es-status-badge es-status-failed">
+                                            Failed
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="es-status-badge es-status-pending">
+                                            @order.PaymentStatus
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- Order Status -->
+
+                                <td>
+
+                                    @if (order.OrderStatus == "Confirmed")
+                                    {
+                                        <span class="es-status-badge es-status-confirmed">
+                                            Confirmed
+                                        </span>
+                                    }
+                                    else if (order.OrderStatus == "Cancelled")
+                                    {
+                                        <span class="es-status-badge es-status-cancelled">
+                                            Cancelled
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="es-status-badge es-status-pending">
+                                            @order.OrderStatus
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- Action -->
+
+                                <td>
+
+                                    <a asp-controller="Admin"
+                                       asp-action="OrderDetails"
+                                       asp-route-id="@order.Id"
+                                       class="es-admin-view-btn">
+                                        View
+                                    </a>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <div class="es-admin-empty">
+
+                <div class="es-admin-empty-icon">
+                    🛍️
+                </div>
+
+                <h3>
+                    No Orders Yet
+                </h3>
+
+                <p>
+                    Customer orders will appear here.
+                </p>
+
+            </div>
+        }
+
+    </div>
+
+</div>
