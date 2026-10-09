@@ -4172,3 +4172,240 @@ main {
         margin: 0 0 0 18px;
     }
 }
+
+
+/* =========================================================
+   ADMIN PAGE VISIT ANALYTICS
+   ========================================================= */
+
+.es-analytics-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 35px 24px 70px;
+}
+
+.es-analytics-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.es-analytics-eyebrow {
+    color: #c66b82;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.es-analytics-header h1 {
+    margin: 8px 0;
+    color: #292326;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 34px;
+    font-weight: 500;
+}
+
+.es-analytics-header p,
+.es-analytics-section-heading p {
+    margin: 0;
+    color: #888;
+    font-size: 14px;
+}
+
+.es-analytics-back {
+    padding: 11px 17px;
+    border: 1px solid #edccd5;
+    border-radius: 9px;
+    color: #bd6279;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+    .es-analytics-back:hover {
+        background: #fff4f7;
+        color: #98485e;
+    }
+
+.es-analytics-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 28px;
+}
+
+.es-analytics-stat {
+    min-width: 0;
+    padding: 23px;
+    border: 1px solid #efd8de;
+    border-radius: 15px;
+    background: #fff;
+}
+
+    .es-analytics-stat span,
+    .es-analytics-stat small {
+        display: block;
+        color: #888;
+        font-size: 13px;
+    }
+
+    .es-analytics-stat strong {
+        display: block;
+        margin: 12px 0 8px;
+        color: #292326;
+        font-size: 30px;
+        font-weight: 600;
+    }
+
+    .es-analytics-stat small {
+        font-size: 12px;
+    }
+
+.es-analytics-section {
+    margin-bottom: 25px;
+    overflow: hidden;
+    border: 1px solid #efd8de;
+    border-radius: 15px;
+    background: #fff;
+    box-shadow: 0 7px 22px rgba(80, 30, 45, 0.035);
+}
+
+.es-analytics-section-heading {
+    padding: 22px 24px;
+    background: #fffafb;
+    border-bottom: 1px solid #f1e0e5;
+}
+
+    .es-analytics-section-heading h2 {
+        margin: 0 0 6px;
+        color: #352a2e;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 22px;
+        font-weight: 500;
+    }
+
+.es-analytics-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.es-analytics-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+    .es-analytics-table th {
+        padding: 15px 18px;
+        background: #fffafb;
+        color: #806e73;
+        font-size: 11px;
+        letter-spacing: 0.5px;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .es-analytics-table td {
+        padding: 15px 18px;
+        border-top: 1px solid #f4e8eb;
+        color: #51464a;
+        vertical-align: middle;
+    }
+
+.es-analytics-rank {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #f9e5ea;
+    color: #a6546b;
+    font-weight: 600;
+}
+
+.es-analytics-url {
+    max-width: 220px;
+    overflow-wrap: anywhere;
+}
+
+.es-analytics-id {
+    min-width: 150px;
+    max-width: 220px;
+    overflow-wrap: anywhere;
+    font-size: 11px;
+}
+
+.es-analytics-tag {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+    .es-analytics-tag.logged-in {
+        background: #eaf7ee;
+        color: #367a4a;
+    }
+
+    .es-analytics-tag.guest {
+        background: #fff1d5;
+        color: #956700;
+    }
+
+.es-analytics-empty {
+    padding: 35px 20px;
+    color: #888;
+    text-align: center;
+    font-size: 14px;
+}
+
+@media (max-width: 900px) {
+    .es-analytics-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .es-analytics-page {
+        padding: 28px 14px 50px;
+    }
+
+    .es-analytics-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+        .es-analytics-header h1 {
+            font-size: 29px;
+        }
+
+    .es-analytics-back {
+        width: 100%;
+        text-align: center;
+    }
+
+    .es-analytics-stats {
+        gap: 12px;
+    }
+
+    .es-analytics-stat {
+        padding: 16px;
+    }
+
+        .es-analytics-stat strong {
+            font-size: 25px;
+        }
+
+    .es-analytics-section-heading {
+        padding: 18px;
+    }
+
+    .es-analytics-table th,
+    .es-analytics-table td {
+        padding: 13px;
+    }
+}

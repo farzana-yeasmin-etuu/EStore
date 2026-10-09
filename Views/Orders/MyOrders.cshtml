@@ -79,13 +79,8 @@
                                 STATUS
                             </span>
 
-                            <span class="es-customer-status
+                            <span class="es-customer-status @(order.OrderStatus.ToLower().Replace(" ", "-"))">
                                 @order.OrderStatus
-                                .ToLower()
-                                .Replace(" ", " -")">
-
-                                @order.OrderStatus
-
                             </span>
 
                         </div>

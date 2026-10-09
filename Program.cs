@@ -79,6 +79,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 
+// ======================================================
+// 9. page visitor Middleware
+
+
+app.UseMiddleware<EStore.Middleware.PageVisitMiddleware>();
+
 // Seed database
 using (var scope = app.Services.CreateScope())
 {

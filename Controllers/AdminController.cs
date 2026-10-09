@@ -32,6 +32,68 @@ namespace EStore.Controllers
         }
 
 
+
+        // ============================================================
+        // Page visitor
+        // ============================================================
+
+        public async Task<IActionResult> PageVisits()
+        {
+            var visits = _context.PageVisits.AsNoTracking();
+
+            var totalVisits = await visits.CountAsync();
+
+            var uniqueVisitors = await visits
+                .Where(v => v.VisitorId != null && v.VisitorId != "")
+                .Select(v => v.VisitorId)
+                .Distinct()
+                .CountAsync();
+
+            var loggedInVisits = await visits
+                .CountAsync(v => v.UserId != null && v.UserId != "");
+
+            var guestVisits = await visits
+                .CountAsync(v => v.UserId == null || v.UserId == "");
+
+            var popularPages = await visits
+                .GroupBy(v => v.PageName)
+                .Select(g => new PopularPageViewModel
+                {
+                    PageName = g.Key,
+                    Visits = g.Count()
+                })
+                .OrderByDescending(p => p.Visits)
+                .Take(10)
+                .ToListAsync();
+
+            var recentVisits = await visits
+                .OrderByDescending(v => v.VisitedAt)
+                .Take(50)
+                .Select(v => new RecentPageVisitViewModel
+                {
+                    PageName = v.PageName,
+                    Url = v.Url,
+                    UserId = v.UserId,
+                    VisitorId = v.VisitorId,
+                    VisitedAt = v.VisitedAt,
+                    IsLoggedIn = v.UserId != null && v.UserId != ""
+                })
+                .ToListAsync();
+
+            var model = new PageVisitDashboardViewModel
+            {
+                TotalVisits = totalVisits,
+                UniqueVisitors = uniqueVisitors,
+                LoggedInVisits = loggedInVisits,
+                GuestVisits = guestVisits,
+                PopularPages = popularPages,
+                RecentVisits = recentVisits
+            };
+
+            return View(model);
+        }
+
+
         // ============================================================
         // PRODUCT LIST
         // ============================================================

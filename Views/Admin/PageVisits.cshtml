@@ -1,0 +1,176 @@
+﻿@model EStore.ViewModels.PageVisitDashboardViewModel
+
+@{
+    ViewData["Title"] = "Page Visit Analytics";
+}
+
+<div class="es-analytics-page">
+
+    <div class="es-analytics-header">
+        <div>
+            <span class="es-analytics-eyebrow">EVER SPRING ADMIN</span>
+            <h1>Page Visit Analytics</h1>
+            <p>Understand how visitors explore your store.</p>
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="Index"
+           class="es-analytics-back">
+            ← Dashboard
+        </a>
+    </div>
+
+
+    <div class="es-analytics-stats">
+
+        <div class="es-analytics-stat">
+            <span>Total Page Visits</span>
+            <strong>@Model.TotalVisits.ToString("N0")</strong>
+            <small>Recorded page views</small>
+        </div>
+
+        <div class="es-analytics-stat">
+            <span>Unique Browsers</span>
+            <strong>@Model.UniqueVisitors.ToString("N0")</strong>
+            <small>Based on visitor cookies</small>
+        </div>
+
+        <div class="es-analytics-stat">
+            <span>Logged-in Visits</span>
+            <strong>@Model.LoggedInVisits.ToString("N0")</strong>
+            <small>Visits linked to accounts</small>
+        </div>
+
+        <div class="es-analytics-stat">
+            <span>Guest Visits</span>
+            <strong>@Model.GuestVisits.ToString("N0")</strong>
+            <small>Visits without a signed-in account</small>
+        </div>
+
+    </div>
+
+
+    <div class="es-analytics-section">
+
+        <div class="es-analytics-section-heading">
+            <div>
+                <h2>Popular Pages</h2>
+                <p>Pages with the most recorded visits.</p>
+            </div>
+        </div>
+
+        @if (Model.PopularPages.Count == 0)
+        {
+            <div class="es-analytics-empty">
+                No page visits recorded yet.
+            </div>
+        }
+        else
+        {
+            <div class="es-analytics-table-wrap">
+                <table class="es-analytics-table">
+                    <thead>
+                        <tr>
+                            <th>Page</th>
+                            <th>Page Name</th>
+                            <th>Total Visits</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.PopularPages.Count; i++)
+                        {
+                            var popularPage = Model.PopularPages[i];
+
+                            <tr>
+                                <td>
+                                    <span class="es-analytics-rank">
+                                        @(i + 1)
+                                    </span>
+                                </td>
+
+                                <td>@(popularPage.PageName)</td>
+
+                                <td>
+                                    <strong>@(popularPage.Visits.ToString("N0"))</strong>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+    </div>
+
+
+    <div class="es-analytics-section">
+
+        <div class="es-analytics-section-heading">
+            <div>
+                <h2>Recent Activity</h2>
+                <p>The latest 50 recorded page visits.</p>
+            </div>
+        </div>
+
+        @if (Model.RecentVisits.Count == 0)
+        {
+            <div class="es-analytics-empty">
+                No activity available yet. Browse the store using another tab,
+                then refresh this page.
+            </div>
+        }
+        else
+        {
+            <div class="es-analytics-table-wrap">
+                <table class="es-analytics-table">
+                    <thead>
+                        <tr>
+                            <th>Page</th>
+                            <th>URL</th>
+                            <th>Visitor Type</th>
+                            <th>Visitor ID</th>
+                            <th>Visited At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var visit in Model.RecentVisits)
+                        {
+                            <tr>
+                                <td>@visit.PageName</td>
+                                <td class="es-analytics-url">
+                                    @visit.Url
+                                </td>
+                                <td>
+                                    @if (visit.IsLoggedIn)
+                                    {
+                                        <span class="es-analytics-tag logged-in">
+                                            Registered
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="es-analytics-tag guest">
+                                            Guest
+                                        </span>
+                                    }
+                                </td>
+                                <td class="es-analytics-id">
+                                    @(visit.IsLoggedIn
+                                        ? visit.UserId
+                                        : visit.VisitorId)
+                                </td>
+                                <td>
+                                    @(visit.VisitedAt
+                                        .ToLocalTime()
+                                        .ToString("dd MMM yyyy, hh:mm tt"))
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+    </div>
+
+</div>
