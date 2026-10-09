@@ -2,6 +2,21 @@
 
 @{
     ViewData["Title"] = "Order Details | Ever Spring";
+
+    string[] trackingStatuses =
+    {
+        "Pending",
+        "Confirmed",
+        "Processing",
+        "Shipped",
+        "Delivered"
+    };
+
+    int currentStatusIndex =
+        Array.IndexOf(
+            trackingStatuses,
+            Model.OrderStatus
+        );
 }
 
 <div class="es-checkout-page">
@@ -50,10 +65,111 @@
                     @Model.PaymentStatus
                 </p>
 
-                <p>
-                    <strong>Order Status:</strong>
-                    @Model.OrderStatus
-                </p>
+                <div class="es-order-tracking">
+
+                    <div class="es-tracking-header">
+                        <div>
+                            <span class="es-tracking-eyebrow">
+                                ORDER TRACKING
+                            </span>
+
+                            <h3>
+                                Track Your Order
+                            </h3>
+
+                            <p>
+                                Current status:
+                                <strong>@Model.OrderStatus</strong>
+                            </p>
+                        </div>
+                    </div>
+
+
+                    @if (Model.OrderStatus == "Cancelled")
+                    {
+                        <div class="es-tracking-cancelled">
+                            <span>✕</span>
+
+                            <div>
+                                <strong>Order Cancelled</strong>
+
+                                <p>
+                                    This order has been cancelled.
+                                </p>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="es-tracking-timeline">
+
+                            @for (int i = 0; i < trackingStatuses.Length; i++)
+                            {
+                                string status = trackingStatuses[i];
+
+                                string stepClass = "";
+
+                                if (i < currentStatusIndex)
+                                {
+                                    stepClass = "completed";
+                                }
+                                else if (i == currentStatusIndex)
+                                {
+                                    stepClass = "current";
+                                }
+                                else
+                                {
+                                    stepClass = "upcoming";
+                                }
+
+                                <div class="es-tracking-step @stepClass">
+
+                                    <div class="es-tracking-circle">
+
+                                        @if (i < currentStatusIndex)
+                                        {
+                                            <span>✓</span>
+                                        }
+                                        else if (i == currentStatusIndex)
+                                        {
+                                            <span>●</span>
+                                        }
+                                        else
+                                        {
+                                            <span>@(i + 1)</span>
+                                        }
+
+                                    </div>
+
+                                    <div class="es-tracking-content">
+
+                                        <strong>
+                                            @status
+                                        </strong>
+
+                                        @if (i == currentStatusIndex)
+                                        {
+                                            <span class="es-tracking-current">
+                                                Current Status
+                                            </span>
+                                        }
+
+                                    </div>
+
+                                </div>
+
+                                @if (i < trackingStatuses.Length - 1)
+                                {
+                                    <div class="es-tracking-line
+                                        @(i < currentStatusIndex ? "completed" : "")">
+                                    </div>
+                                }
+                            }
+
+                        </div>
+                    }
+
+                </div>
 
             </div>
 

@@ -288,6 +288,26 @@ namespace EStore.Controllers
 
 
         // =========================================================
+        //  MY Orders
+        // =========================================================
+
+        [HttpGet]
+        public async Task<IActionResult> MyOrders()
+        {
+            var userId =
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
+            var orders =
+                await _context.Orders
+                    .Include(o => o.OrderItems)
+                    .Where(o => o.UserId == userId)
+                    .OrderByDescending(o => o.CreatedAt)
+                    .ToListAsync();
+
+            return View(orders);
+        }
+        // =========================================================
         // GET: /Orders/Details/5
         // =========================================================
         [HttpGet]

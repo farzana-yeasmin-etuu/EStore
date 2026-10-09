@@ -1,0 +1,175 @@
+﻿@model IEnumerable<EStore.Models.Order>
+
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<div class="es-my-orders-page">
+
+    <div class="es-my-orders-header">
+        <div>
+            <span class="es-page-eyebrow">EVER SPRING</span>
+
+            <h1>My Orders</h1>
+
+            <p>
+                View your orders and track their delivery status.
+            </p>
+        </div>
+
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="es-orders-back-btn">
+            ← Continue Shopping
+        </a>
+    </div>
+
+
+    @if (!Model.Any())
+    {
+        <div class="es-orders-empty">
+
+            <div class="es-orders-empty-icon">
+                🛍
+            </div>
+
+            <h3>No Orders Yet</h3>
+
+            <p>
+                You haven't placed any orders yet.
+            </p>
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="es-orders-shop-btn">
+                Start Shopping
+            </a>
+
+        </div>
+    }
+    else
+    {
+        <div class="es-orders-list">
+
+            @foreach (var order in Model)
+            {
+                <div class="es-order-card">
+
+                    <div class="es-order-card-top">
+
+                        <div>
+                            <span class="es-order-label">
+                                ORDER NUMBER
+                            </span>
+
+                            <h3>
+                                @order.OrderNumber
+                            </h3>
+
+                            <p class="es-order-date">
+                                @(order.CreatedAt
+                                    .ToLocalTime()
+                                    .ToString("dd MMM yyyy, hh:mm tt"))
+                            </p>
+                        </div>
+
+                        <div class="es-order-status-area">
+
+                            <span class="es-order-label">
+                                STATUS
+                            </span>
+
+                            <span class="es-customer-status
+                                @order.OrderStatus
+                                .ToLower()
+                                .Replace(" ", " -")">
+
+                                @order.OrderStatus
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="es-order-card-middle">
+
+                        <div class="es-order-products">
+
+                            @foreach (var item in order.OrderItems.Take(3))
+                            {
+                                <div class="es-order-product">
+
+                                    <img src="@item.ImageUrl"
+                                         alt="@item.ProductName" />
+
+                                    <div>
+                                        <strong>
+                                            @item.ProductName
+                                        </strong>
+
+                                        <span>
+                                            Qty: @item.Quantity
+                                        </span>
+                                    </div>
+
+                                </div>
+                            }
+
+                            @if (order.OrderItems.Count > 3)
+                            {
+                                <span class="es-more-items">
+                                    +@(order.OrderItems.Count - 3) more item(s)
+                                </span>
+                            }
+
+                        </div>
+
+
+                        <div class="es-order-total">
+
+                            <span>Total</span>
+
+                            <strong>
+                                BDT @(order.TotalAmount.ToString("N0"))
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="es-order-card-bottom">
+
+                        <div class="es-payment-info">
+
+                            <span>
+                                Payment:
+                            </span>
+
+                            <strong>
+                                @order.PaymentStatus
+                            </strong>
+
+                        </div>
+
+
+                        <a asp-controller="Orders"
+                           asp-action="Details"
+                           asp-route-id="@order.Id"
+                           class="es-track-order-btn">
+
+                            Track Order →
+
+                        </a>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>
