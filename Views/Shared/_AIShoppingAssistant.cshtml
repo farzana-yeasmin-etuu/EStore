@@ -1,0 +1,45 @@
+﻿
+<div id="es-ai-widget">
+    <button type="button" id="es-ai-toggle"
+            aria-label="Open AI Shopping Assistant"
+            aria-expanded="false">
+        <span aria-hidden="true">✿</span>
+        <span class="es-ai-toggle-text">Ask Ever Spring AI</span>
+    </button>
+
+    <section id="es-ai-panel" class="es-ai-panel" hidden>
+        <header class="es-ai-header">
+            <div>
+                <strong>Ever Spring Assistant</strong>
+                <small>Here to help you shop</small>
+            </div>
+            <button type="button" id="es-ai-close"
+                    aria-label="Close chat">
+                ×
+            </button>
+        </header>
+
+        <div id="es-ai-messages" class="es-ai-messages"
+             aria-live="polite">
+            <div class="es-ai-message es-ai-bot">
+                Hi! Welcome to Ever Spring 🌸
+               
+            </div>
+        </div>
+
+        <div id="es-ai-products" class="es-ai-products"></div>
+
+        <form id="es-ai-form">
+            @Html.AntiForgeryToken()
+            <label class="visually-hidden" for="es-ai-input">
+                Your message
+            </label>
+            <textarea id="es-ai-input" name="Message"
+                      maxlength="1000" rows="2"
+                      placeholder="Ask about products..."
+                      required></textarea>
+            <button id="es-ai-send" type="submit">Send ↑</button>
+        </form>
+        <p class="es-ai-note">AI suggestions may need verification.</p>
+    </section>
+</div>

@@ -1,0 +1,276 @@
+﻿
+#es-ai-widget {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    z-index: 1050;
+    font-family: inherit;
+}
+
+#es-ai-toggle {
+    border: 0;
+    border-radius: 28px;
+    padding: 13px 19px;
+    background: #c94f83;
+    color: white;
+    box-shadow: 0 5px 22px #8b315733;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.es-ai-toggle-text {
+    margin-left: 7px;
+}
+
+.es-ai-panel {
+    position: absolute;
+    right: 0;
+    bottom: 62px;
+    width: 360px;
+    height: min(540px, 75vh);
+    background: #fffafc;
+    border: 1px solid #f0d4e1;
+    border-radius: 19px;
+    box-shadow: 0 12px 40px #58233b2b;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+    .es-ai-panel[hidden] {
+        display: none;
+    }
+
+.es-ai-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    color: #692b48;
+    background: #fbe5ef;
+}
+
+    .es-ai-header small {
+        display: block;
+        margin-top: 3px;
+        color: #87566d;
+    }
+
+#es-ai-close {
+    border: 0;
+    background: transparent;
+    color: #692b48;
+    font-size: 27px;
+    cursor: pointer;
+}
+
+.es-ai-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px;
+}
+
+.es-ai-message {
+    max-width: 90%;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    border-radius: 13px;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.es-ai-bot {
+    background: #f7e7ee;
+    color: #4c2d3a;
+    border-bottom-left-radius: 4px;
+}
+
+.es-ai-user {
+    margin-left: auto;
+    background: #c94f83;
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.es-ai-products {
+    display: flex;
+    gap: 9px;
+    overflow-x: auto;
+    padding: 0 12px 10px;
+}
+
+.es-ai-product {
+    flex: 0 0 135px;
+    padding: 8px;
+    border: 1px solid #f0d4e1;
+    border-radius: 12px;
+    background: white;
+    color: #4c2d3a;
+    font-size: 12px;
+}
+
+    .es-ai-product img {
+        width: 100%;
+        height: 95px;
+        object-fit: cover;
+        border-radius: 8px;
+        background: #f8edf2;
+    }
+
+    .es-ai-product strong {
+        display: block;
+        margin-top: 7px;
+        overflow-wrap: anywhere;
+    }
+
+    .es-ai-product a {
+        display: inline-block;
+        margin-top: 5px;
+        color: #a52f65;
+        font-weight: 600;
+    }
+
+#es-ai-form {
+    display: flex;
+    align-items: end;
+    gap: 8px;
+    padding: 10px;
+    border-top: 1px solid #f0d4e1;
+}
+
+#es-ai-input {
+    min-width: 0;
+    flex: 1;
+    resize: none;
+    border: 1px solid #e6c5d4;
+    border-radius: 12px;
+    padding: 10px;
+    background: white;
+    color: #38232d;
+}
+
+#es-ai-send {
+    border: 0;
+    border-radius: 10px;
+    padding: 10px 13px;
+    background: #c94f83;
+    color: white;
+    cursor: pointer;
+}
+
+    #es-ai-send:disabled {
+        opacity: .6;
+        cursor: wait;
+    }
+
+.es-ai-note {
+    margin: 0;
+    padding: 0 12px 8px;
+    color: #806b75;
+    font-size: 10px;
+}
+
+@media (max-width: 480px) {
+    #es-ai-widget {
+        right: 12px;
+        bottom: 12px;
+    }
+
+    .es-ai-panel {
+        position: fixed;
+        right: 8px;
+        bottom: 74px;
+        width: calc(100vw - 16px);
+        height: min(600px, 76vh);
+    }
+
+    .es-ai-toggle {
+        padding: 12px 15px;
+    }
+}
+
+/* Product recommendations inside the chat */
+.es-ai-product-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.es-ai-products-heading {
+    margin: 4px 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: #843451;
+}
+
+.es-ai-product-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 9px;
+    border: 1px solid #f0d2df;
+    border-radius: 12px;
+    background: #fff;
+    color: #543642;
+    text-decoration: none;
+}
+
+    .es-ai-product-card img {
+        display: block;
+        width: 68px;
+        height: 76px;
+        min-width: 68px;
+        max-width: 68px;
+        object-fit: cover;
+        border-radius: 8px;
+        background: #f9eaf0;
+    }
+
+.es-ai-product-details {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+    .es-ai-product-details strong {
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .es-ai-product-details span {
+        font-size: 13px;
+        font-weight: 700;
+        color: #c44780;
+    }
+
+    .es-ai-product-details small {
+        font-size: 11px;
+        color: #806773;
+    }
+
+.es-ai-product-card:hover {
+    border-color: #ce6595;
+    background: #fff8fb;
+}
+
+#es-ai-messages {
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+#es-ai-send:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}

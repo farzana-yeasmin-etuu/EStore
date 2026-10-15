@@ -23,6 +23,10 @@
          EXISTING PROJECT CSS
          ===================================================== -->
 
+<link rel="stylesheet"
+      href="~/css/ai-shopping.css"
+      asp-append-version="true" />
+
     <link rel="stylesheet"
           href="~/css/site.css"
           asp-append-version="true" />
@@ -1505,6 +1509,12 @@
         "Scripts",
         required: false
     )
+
+
+    @await Html.PartialAsync("_AIShoppingAssistant")
+
+<script src="~/js/ai-shopping.js"
+        asp-append-version="true"></script>
 
 
 </body>

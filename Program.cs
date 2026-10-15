@@ -28,6 +28,12 @@ builder.Services
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddHttpClient<EStore.Services.GeminiService>(
+    client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(12);
+    });
+
 
 // ======================================================
 // Build Application
