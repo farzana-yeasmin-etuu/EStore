@@ -151,6 +151,41 @@
                 </div>
 
 
+
+                <div class="mb-4">
+
+                    <label class="form-label fw-semibold">
+                        Payment Method
+                    </label>
+
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="PaymentMethod"
+                               id="pmCod"
+                               value="COD"
+                               checked />
+                        <label class="form-check-label" for="pmCod">
+                            Cash on Delivery
+                        </label>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="PaymentMethod"
+                               id="pmOnline"
+                               value="Online"
+                               disabled />
+                        <label class="form-check-label text-muted" for="pmOnline">
+                            Pay Online (bKash, Nagad, Card) – Coming soon
+                        </label>
+                    </div>
+
+                </div>
+
+
+
                 <button type="submit"
                         class="es-place-order-btn"
                         id="placeOrderBtn">
@@ -553,6 +588,11 @@ document.getElementById(
             // -----------------------------------------
             // Order created successfully
             // -----------------------------------------
+
+
+             // Order is placed, so empty the shopping bag
+
+            localStorage.removeItem("everSpringCart");
 
             window.location.href =
                 "/Orders/Details/" +

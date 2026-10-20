@@ -10,13 +10,16 @@ namespace EStore.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly EStore.Services.IEmailService _email;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            EStore.Services.IEmailService email)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _email = email;
         }
 
 
@@ -86,6 +89,11 @@ namespace EStore.Controllers
                     user,
                     isPersistent: false
                 );
+
+                await _email.SendWelcomeAsync(
+    user.Email!,
+    user.FullName
+);
 
                 return RedirectToAction(
                     "Index",

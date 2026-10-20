@@ -59,12 +59,24 @@ namespace EStore.Models
         [MaxLength(100)]
         public string? ValidationId { get; set; }
 
+     
+
         // Will be useful later for payment gateway
         [MaxLength(100)]
         public string? PaymentSessionKey { get; set; }
 
+        // COD or SSLCommerz
+        [MaxLength(30)]
+        public string PaymentMethod { get; set; } = "COD";
+
+        // When the payment was verified
+        public DateTime? PaidAt { get; set; }
+
         // Prevent stock from being deducted twice later
         public bool StockDeducted { get; set; } = false;
+
+
+        
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

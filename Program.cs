@@ -34,6 +34,16 @@ builder.Services.AddHttpClient<EStore.Services.GeminiService>(
         client.Timeout = TimeSpan.FromSeconds(12);
     });
 
+//email verification
+
+builder.Services.Configure<EStore.Services.SmtpSettings>(
+    builder.Configuration.GetSection("Smtp"));
+
+builder.Services.AddScoped<EStore.Services.IEmailService, EStore.Services.EmailService>();
+
+//order services for COD
+
+builder.Services.AddScoped<EStore.Services.OrderService>();
 
 // ======================================================
 // Build Application

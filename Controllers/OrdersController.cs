@@ -12,10 +12,17 @@ namespace EStore.Controllers
     public class OrdersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly EStore.Services.OrderService _orders;
+        private readonly EStore.Services.IEmailService _email;
 
-        public OrdersController(ApplicationDbContext context)
+        public OrdersController(
+            ApplicationDbContext context,
+            EStore.Services.OrderService orders,
+            EStore.Services.IEmailService email)
         {
             _context = context;
+            _orders = orders;
+            _email = email;
         }
 
         // =========================================================
@@ -234,6 +241,9 @@ namespace EStore.Controllers
                     Currency =
                         "BDT",
 
+                    PaymentMethod =
+                        "COD",
+
                     TotalAmount =
                         totalAmount,
 
@@ -264,6 +274,12 @@ namespace EStore.Controllers
 
             await _context.SaveChangesAsync();
 
+            // -----------------------------------------------------
+            // 11.1 COD order: reduce stock and send emails now
+            // -----------------------------------------------------
+            await _orders.DeductStockAsync(order);
+
+            await _email.SendOrderConfirmationAsync(order);
 
             // -----------------------------------------------------
             // 12. Return result

@@ -8,29 +8,50 @@ using Microsoft.EntityFrameworkCore;
 namespace EStore.Controllers
 {
     [Authorize(Roles = "Admin")]
+
     public class AdminController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _environment;
+        private readonly EStore.Services.IEmailService _email;
 
         public AdminController(
             ApplicationDbContext context,
-            IWebHostEnvironment environment)
+            IWebHostEnvironment environment,
+            EStore.Services.IEmailService email)
         {
             _context = context;
             _environment = environment;
+            _email = email;
         }
-
 
         // ============================================================
         // ADMIN DASHBOARD
         // ============================================================
 
         public IActionResult Index()
+
         {
             return View();
         }
 
+
+        // TEMPORARY: delete this after email test works
+        [HttpGet]
+        public async Task<IActionResult> TestEmail(string to)
+        {
+            if (string.IsNullOrWhiteSpace(to))
+                return Content("Use: /Admin/TestEmail?to=youremail@gmail.com");
+
+            var ok = await _email.SendAsync(
+                to,
+                "Test email from Ever Spring",
+                "<h3>It works!</h3><p>Your email setup is correct.</p>");
+
+            return Content(ok
+                ? "Email sent. Check your inbox (and spam folder)."
+                : "Email FAILED. Look at the terminal for the error message.");
+        }
 
 
         // ============================================================
@@ -856,11 +877,21 @@ namespace EStore.Controllers
 
             order.OrderStatus = status;
 
+            // Cash on Delivery: money is collected when the order is delivered
+            if (status == "Delivered" && order.PaymentMethod == "COD")
+            {
+                order.PaymentStatus = "Paid";
+                order.PaidAt = DateTime.UtcNow;
+            }
+
             order.UpdatedAt =
                 DateTime.UtcNow;
 
 
             await _context.SaveChangesAsync();
+
+            // Tell the customer about the new status
+            await _email.SendOrderStatusAsync(order);
 
 
             TempData["SuccessMessage"] =
