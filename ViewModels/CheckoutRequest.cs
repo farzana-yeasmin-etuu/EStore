@@ -23,6 +23,9 @@ namespace EStore.ViewModels
         [Required]
         public string PostCode { get; set; } = "";
 
+        // "COD" or "Online"
+        public string PaymentMethod { get; set; } = "COD";
+
         [Required]
         public List<CartItemRequest> Items { get; set; }
             = new List<CartItemRequest>();

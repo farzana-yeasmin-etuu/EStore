@@ -45,6 +45,15 @@ builder.Services.AddScoped<EStore.Services.IEmailService, EStore.Services.EmailS
 
 builder.Services.AddScoped<EStore.Services.OrderService>();
 
+
+builder.Services.Configure<EStore.Services.SslCommerzSettings>(
+    builder.Configuration.GetSection("SslCommerz"));
+
+builder.Services.AddHttpClient<EStore.Services.SslCommerzService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(20);
+});
+
 // ======================================================
 // Build Application
 // ======================================================

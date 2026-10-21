@@ -175,10 +175,9 @@
                                type="radio"
                                name="PaymentMethod"
                                id="pmOnline"
-                               value="Online"
-                               disabled />
-                        <label class="form-check-label text-muted" for="pmOnline">
-                            Pay Online (bKash, Nagad, Card) – Coming soon
+                               value="Online" />
+                        <label class="form-check-label" for="pmOnline">
+                            Pay Online (bKash, Nagad, Card)
                         </label>
                     </div>
 
@@ -521,7 +520,14 @@ document.getElementById(
                     "PostCode"
                 ).value.trim(),
 
-            items: items
+                                    paymentMethod:
+                        document.querySelector(
+                            'input[name="PaymentMethod"]:checked'
+                        ).value,
+
+                    items: items
+
+           
 
         };
 
@@ -592,11 +598,22 @@ document.getElementById(
 
              // Order is placed, so empty the shopping bag
 
-            localStorage.removeItem("everSpringCart");
+                    if (data.paymentMethod === "SSLCommerz") {
 
-            window.location.href =
-                "/Orders/Details/" +
-                data.orderId;
+                        // Online: keep the cart until payment succeeds
+                        window.location.href =
+                            "/Payment/Pay/" +
+                            data.orderId;
+
+                    } else {
+
+                        // COD: order is final, so empty the shopping bag
+                        localStorage.removeItem("everSpringCart");
+
+                        window.location.href =
+                            "/Orders/Details/" +
+                            data.orderId;
+                    }
 
         }
         catch (error) {

@@ -38,6 +38,28 @@
     </div>
 
 
+        @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success" style="max-width:900px;margin:0 auto 20px;">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger" style="max-width:900px;margin:0 auto 20px;">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (TempData["ClearCart"] != null)
+    {
+        <script>
+            localStorage.removeItem("everSpringCart");
+        </script>
+    }
+
+
     <div class="es-checkout-layout">
 
         <!-- ORDER INFORMATION -->
@@ -64,6 +86,25 @@
                     <strong>Payment Status:</strong>
                     @Model.PaymentStatus
                 </p>
+
+
+                                <p>
+                    <strong>Payment Method:</strong>
+                    @(Model.PaymentMethod == "SSLCommerz" ? "Online Payment" : "Cash on Delivery")
+                </p>
+
+                @if (Model.PaymentMethod == "SSLCommerz"
+                     && Model.PaymentStatus != "Paid"
+                     && Model.OrderStatus != "Cancelled")
+                {
+                    <a asp-controller="Payment"
+                       asp-action="Pay"
+                       asp-route-id="@Model.Id"
+                       class="es-place-order-btn"
+                       style="display:inline-block;text-decoration:none;margin-bottom:20px;">
+                        Pay Now
+                    </a>
+                }
 
                 <div class="es-order-tracking">
 

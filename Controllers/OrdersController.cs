@@ -242,7 +242,9 @@ namespace EStore.Controllers
                         "BDT",
 
                     PaymentMethod =
-                        "COD",
+                        request.PaymentMethod == "Online"
+                            ? "SSLCommerz"
+                            : "COD",
 
                     TotalAmount =
                         totalAmount,
@@ -277,9 +279,16 @@ namespace EStore.Controllers
             // -----------------------------------------------------
             // 11.1 COD order: reduce stock and send emails now
             // -----------------------------------------------------
-            await _orders.DeductStockAsync(order);
+            bool isOnline =
+     order.PaymentMethod == "SSLCommerz";
 
-            await _email.SendOrderConfirmationAsync(order);
+            if (!isOnline)
+            {
+                // COD: order is final now
+                await _orders.DeductStockAsync(order);
+
+                await _email.SendOrderConfirmationAsync(order);
+            }
 
             // -----------------------------------------------------
             // 12. Return result
@@ -293,6 +302,9 @@ namespace EStore.Controllers
 
                 orderNumber =
                     order.OrderNumber,
+
+                paymentMethod =
+                    order.PaymentMethod,
 
                 totalAmount =
                     order.TotalAmount,
