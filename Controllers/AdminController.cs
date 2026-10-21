@@ -119,13 +119,130 @@ namespace EStore.Controllers
         // PRODUCT LIST
         // ============================================================
 
+        [HttpGet]
         public async Task<IActionResult> Products()
         {
-            var products = await _context.Products
-                .OrderByDescending(p => p.Id)
+            // Only the category names (for the filter dropdown), not all products
+            ViewBag.Categories = await _context.Products
+                .AsNoTracking()
+                .Select(p => p.Category)
+                .Distinct()
+                .OrderBy(c => c)
                 .ToListAsync();
 
-            return View(products);
+            return View();
+        }
+
+
+        // ============================================================
+        // PRODUCTS DATA FOR DATATABLES (server-side)
+        // ============================================================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ProductsData(
+            [FromForm] DataTablesRequest dt,
+            string? category,
+            string? status,
+            string? stock)
+        {
+            const int lowStockLimit = 5;
+
+            var total = await _context.Products.CountAsync();
+
+            var query = _context.Products.AsNoTracking().AsQueryable();
+
+            // ---- Filters ----
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                query = query.Where(p => p.Category == category);
+            }
+
+            if (status == "Active")
+            {
+                query = query.Where(p => p.IsActive);
+            }
+            else if (status == "Inactive")
+            {
+                query = query.Where(p => !p.IsActive);
+            }
+
+            if (stock == "Out")
+            {
+                query = query.Where(p => p.Stock == 0);
+            }
+            else if (stock == "Low")
+            {
+                query = query.Where(p => p.Stock > 0 && p.Stock <= lowStockLimit);
+            }
+
+            // ---- Search (name, category, or product ID) ----
+            var search = dt.Search.Value?.Trim();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var pattern = $"%{search}%";
+                var isId = int.TryParse(search, out var idValue);
+
+                query = query.Where(p =>
+                    EF.Functions.ILike(p.Name, pattern) ||
+                    EF.Functions.ILike(p.Category, pattern) ||
+                    (isId && p.Id == idValue));
+            }
+
+            var filtered = await query.CountAsync();
+
+            // ---- Sorting (only whitelisted columns) ----
+            var order = dt.Order.FirstOrDefault();
+            var asc = order?.Dir == "asc";
+
+            IOrderedQueryable<Product> sorted = order == null
+                ? query.OrderByDescending(p => p.Id)   // default: newest first
+                : order.Column switch
+                {
+                    1 => asc ? query.OrderBy(p => p.Name)
+                             : query.OrderByDescending(p => p.Name),
+
+                    2 => asc ? query.OrderBy(p => p.Category)
+                             : query.OrderByDescending(p => p.Category),
+
+                    3 => asc ? query.OrderBy(p => p.Price)
+                             : query.OrderByDescending(p => p.Price),
+
+                    4 => asc ? query.OrderBy(p => p.Stock)
+                             : query.OrderByDescending(p => p.Stock),
+
+                    5 => asc ? query.OrderBy(p => p.IsActive)
+                             : query.OrderByDescending(p => p.IsActive),
+
+                    _ => query.OrderByDescending(p => p.Id)
+                };
+
+            var pageSize = Math.Clamp(dt.Length, 1, 100);
+
+            var data = await sorted
+                .ThenByDescending(p => p.Id)
+                .Skip(dt.Start)
+                .Take(pageSize)
+                .Select(p => new
+                {
+                    id = p.Id,
+                    imageUrl = p.ImageUrl,
+                    name = p.Name,
+                    category = p.Category,
+                    price = p.Price,
+                    stock = p.Stock,
+                    isActive = p.IsActive
+                })
+                .ToListAsync();
+
+            return Json(new
+            {
+                draw = dt.Draw,
+                recordsTotal = total,
+                recordsFiltered = filtered,
+                data
+            });
         }
 
 
@@ -800,16 +917,192 @@ namespace EStore.Controllers
         // ADMIN ORDERS
         // =========================================================
 
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Orders()
-        {
-            var orders =
-                await _context.Orders
-                    .Include(o => o.OrderItems)
-                    .OrderByDescending(o => o.CreatedAt)
-                    .ToListAsync();
 
-            return View(orders);
+        // =========================================================
+        //  Time zone helpers (Bangladesh is UTC+6)
+        // =========================================================
+
+        private static readonly TimeZoneInfo BdTz = ResolveBdTimeZone();
+
+        private static TimeZoneInfo ResolveBdTimeZone()
+        {
+            foreach (var id in new[] { "Asia/Dhaka", "Bangladesh Standard Time" })
+            {
+                try
+                {
+                    return TimeZoneInfo.FindSystemTimeZoneById(id);
+                }
+                catch
+                {
+                    // try next id
+                }
+            }
+
+            return TimeZoneInfo.CreateCustomTimeZone(
+                "BST", TimeSpan.FromHours(6), "Bangladesh", "Bangladesh");
+        }
+
+        // Date picked in the filter (Bangladesh time) -> UTC for the database
+        private static DateTime BdToUtc(DateTime date) =>
+            TimeZoneInfo.ConvertTimeToUtc(
+                DateTime.SpecifyKind(date.Date, DateTimeKind.Unspecified),
+                BdTz);
+
+        // UTC from the database -> Bangladesh time for display
+        private static DateTime ToBd(DateTime utc) =>
+            TimeZoneInfo.ConvertTimeFromUtc(
+                DateTime.SpecifyKind(utc, DateTimeKind.Utc),
+                BdTz);
+
+
+        // =========================================================
+        //  Shared order filter (the report page will reuse this later)
+        // =========================================================
+
+        private IQueryable<Order> FilterOrders(
+            string? status,
+            string? paymentStatus,
+            DateTime? from,
+            DateTime? to,
+            string? search)
+        {
+            var q = _context.Orders.AsNoTracking().AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                q = q.Where(o => o.OrderStatus == status);
+            }
+
+            if (!string.IsNullOrWhiteSpace(paymentStatus))
+            {
+                q = q.Where(o => o.PaymentStatus == paymentStatus);
+            }
+
+            if (from.HasValue)
+            {
+                var fromUtc = BdToUtc(from.Value);
+                q = q.Where(o => o.CreatedAt >= fromUtc);
+            }
+
+            if (to.HasValue)
+            {
+                // Include the whole "to" day
+                var toUtc = BdToUtc(to.Value.AddDays(1));
+                q = q.Where(o => o.CreatedAt < toUtc);
+            }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var pattern = $"%{search.Trim()}%";
+
+                q = q.Where(o =>
+                    EF.Functions.ILike(o.OrderNumber, pattern) ||
+                    EF.Functions.ILike(o.CustomerName, pattern) ||
+                    EF.Functions.ILike(o.CustomerEmail, pattern) ||
+                    EF.Functions.ILike(o.CustomerPhone, pattern));
+            }
+
+            return q;
+        }
+
+
+        // =========================================================
+        //  Orders page (the table loads its own data)
+        // =========================================================
+
+        [HttpGet]
+        public IActionResult Orders()
+        {
+            return View();
+        }
+
+
+        // =========================================================
+        //  Orders data for DataTables (server-side)
+        // =========================================================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> OrdersData(
+            [FromForm] DataTablesRequest dt,
+            string? status,
+            string? paymentStatus,
+            DateTime? from,
+            DateTime? to)
+        {
+            var total = await _context.Orders.CountAsync();
+
+            var query = FilterOrders(
+                status, paymentStatus, from, to, dt.Search.Value);
+
+            var filtered = await query.CountAsync();
+
+            // Which column and direction to sort by
+            var column = dt.Order.FirstOrDefault()?.Column ?? 2;
+            var asc = (dt.Order.FirstOrDefault()?.Dir ?? "desc") == "asc";
+
+            // Only these columns are allowed. Never build ORDER BY from raw user text.
+            IOrderedQueryable<Order> sorted = column switch
+            {
+                0 => asc ? query.OrderBy(o => o.OrderNumber)
+                         : query.OrderByDescending(o => o.OrderNumber),
+
+                1 => asc ? query.OrderBy(o => o.CustomerName)
+                         : query.OrderByDescending(o => o.CustomerName),
+
+                3 => asc ? query.OrderBy(o => o.TotalAmount)
+                         : query.OrderByDescending(o => o.TotalAmount),
+
+                4 => asc ? query.OrderBy(o => o.PaymentStatus)
+                         : query.OrderByDescending(o => o.PaymentStatus),
+
+                5 => asc ? query.OrderBy(o => o.OrderStatus)
+                         : query.OrderByDescending(o => o.OrderStatus),
+
+                _ => asc ? query.OrderBy(o => o.CreatedAt)
+                         : query.OrderByDescending(o => o.CreatedAt)
+            };
+
+            var pageSize = Math.Clamp(dt.Length, 1, 100);
+
+            var rows = await sorted
+                .ThenByDescending(o => o.Id)
+                .Skip(dt.Start)
+                .Take(pageSize)
+                .Select(o => new
+                {
+                    o.Id,
+                    o.OrderNumber,
+                    o.CustomerName,
+                    o.CustomerPhone,
+                    o.CreatedAt,
+                    o.TotalAmount,
+                    o.PaymentStatus,
+                    o.PaymentMethod,
+                    o.OrderStatus
+                })
+                .ToListAsync();
+
+            var data = rows.Select(o => new
+            {
+                id = o.Id,
+                orderNumber = o.OrderNumber,
+                customer = o.CustomerName,
+                phone = o.CustomerPhone,
+                date = ToBd(o.CreatedAt).ToString("dd MMM yyyy, hh:mm tt"),
+                total = o.TotalAmount,
+                paymentStatus = o.PaymentStatus,
+                paymentMethod = o.PaymentMethod,
+                status = o.OrderStatus
+            });
+
+            return Json(new
+            {
+                draw = dt.Draw,
+                recordsTotal = total,
+                recordsFiltered = filtered,
+                data
+            });
         }
 
 

@@ -1,0 +1,70 @@
+﻿@* Reusable orders table: used by the Orders page now, and by the Report page later *@
+
+@Html.AntiForgeryToken()
+
+<div class="row g-2 mb-3">
+
+    <div class="col-6 col-md-3">
+        <label class="form-label small mb-1">Order Status</label>
+        <select id="fStatus" class="form-select">
+            <option value="">All</option>
+            <option>Pending</option>
+            <option>Confirmed</option>
+            <option>Processing</option>
+            <option>Shipped</option>
+            <option>Delivered</option>
+            <option>Cancelled</option>
+        </select>
+    </div>
+
+    <div class="col-6 col-md-3">
+        <label class="form-label small mb-1">Payment</label>
+        <select id="fPayment" class="form-select">
+            <option value="">All</option>
+            <option>Paid</option>
+            <option>Pending</option>
+            <option>Failed</option>
+            <option>Cancelled</option>
+        </select>
+    </div>
+
+    <div class="col-6 col-md-2">
+        <label class="form-label small mb-1">From</label>
+        <input type="date" id="fFrom" class="form-control" />
+    </div>
+
+    <div class="col-6 col-md-2">
+        <label class="form-label small mb-1">To</label>
+        <input type="date" id="fTo" class="form-control" />
+    </div>
+
+    <div class="col-12 col-md-2 d-flex align-items-end">
+        <button type="button" id="btnReset" class="btn btn-outline-secondary w-100">
+            Reset
+        </button>
+    </div>
+
+</div>
+
+<div class="es-admin-table-wrapper">
+
+    <table id="ordersTable"
+           class="es-admin-table display"
+           style="width:100%"
+           data-url="@Url.Action("OrdersData", "Admin")">
+
+        <thead>
+            <tr>
+                <th>Order #</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+
+    </table>
+
+</div>
