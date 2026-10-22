@@ -1,0 +1,232 @@
+﻿@{
+    ViewData["Title"] = "Order Report | Admin";
+}
+
+<link rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css" />
+
+<style>
+    .rp-grid {
+        display: grid;
+        gap: 16px;
+        margin-bottom: 20px;
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    .rp-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 18px 20px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    }
+
+        .rp-card span {
+            display: block;
+            color: #333;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .rp-card strong {
+            display: block;
+            font-size: 26px;
+            line-height: 1.2;
+        }
+
+    .rp-quick {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+
+    .rp-print-only {
+        display: none;
+    }
+
+    @@media (max-width: 1100px) {
+        .rp-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @@media (max-width: 700px) {
+        .rp-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .rp-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media print {
+        header, footer, #es-ai-widget, .no-print,
+        .dataTables_length, .dataTables_filter, .dataTables_paginate {
+            display: none !important;
+        }
+
+        .rp-print-only {
+            display: block;
+            margin-bottom: 12px;
+            color: #555;
+        }
+
+        .rp-card {
+            box-shadow: none;
+            border: 1px solid #ddd;
+        }
+    }
+</style>
+
+<div class="es-admin-page">
+
+    <div class="es-admin-page-header">
+
+        <div>
+            <p class="es-products-small-title">
+                EVER SPRING ADMIN
+            </p>
+
+            <h1>
+                Order Report
+            </h1>
+
+            <p>
+                Filter orders, then export or print the report.
+            </p>
+
+            <p class="rp-print-only" id="printStamp"></p>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 no-print">
+            <a id="btnExport" class="btn btn-success" href="#">
+                Export Excel
+            </a>
+
+            <button type="button" class="btn btn-outline-dark" onclick="window.print()">
+                Print
+            </button>
+
+            <a asp-controller="Admin"
+               asp-action="Index"
+               class="es-admin-back-btn">
+                ← Dashboard
+            </a>
+        </div>
+
+    </div>
+
+
+    <!-- Summary cards -->
+    <div class="rp-grid">
+
+        <div class="rp-card">
+            <span>Total Orders</span>
+            <strong id="sOrders">–</strong>
+        </div>
+
+        <div class="rp-card">
+            <span>Sales</span>
+            <strong id="sSales">–</strong>
+        </div>
+
+        <div class="rp-card">
+            <span>Paid</span>
+            <strong id="sPaid" style="color:#198754;">–</strong>
+        </div>
+
+        <div class="rp-card">
+            <span>Awaiting Payment</span>
+            <strong id="sUnpaid" style="color:#b7791f;">–</strong>
+        </div>
+
+        <div class="rp-card">
+            <span>Cancelled</span>
+            <strong id="sCancelled" style="color:#dc3545;">–</strong>
+        </div>
+
+    </div>
+
+
+    <div class="es-admin-table-card">
+
+        <!-- Quick date ranges -->
+        <div class="rp-quick no-print">
+            <button type="button" class="btn btn-sm btn-outline-dark" data-range="today">Today</button>
+            <button type="button" class="btn btn-sm btn-outline-dark" data-range="7days">Last 7 days</button>
+            <button type="button" class="btn btn-sm btn-outline-dark" data-range="month">This month</button>
+            <button type="button" class="btn btn-sm btn-outline-dark" data-range="lastmonth">Last month</button>
+        </div>
+
+        <partial name="_OrdersTable" />
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        // Registered BEFORE the table is created, so even the first load updates the cards
+        $('#ordersTable').on('xhr.dt', function () {
+
+            const f = window.getOrderFilters();
+            f.search = window.ordersTable ? window.ordersTable.search() : '';
+
+            const taka = n => 'BDT ' + Number(n).toLocaleString('en-US');
+
+            $.get('@Url.Action("ReportSummary", "Admin")', f).done(function (s) {
+                $('#sOrders').text(s.orders);
+                $('#sSales').text(taka(s.sales));
+                $('#sPaid').text(taka(s.paid));
+                $('#sUnpaid').text(taka(s.unpaid));
+                $('#sCancelled').text(s.cancelled);
+            });
+
+            // Excel always matches what is on the screen
+            $('#btnExport').attr('href', '@Url.Action("ExportOrders", "Admin")?' + $.param(f));
+        });
+
+        // ---------- Quick date ranges ----------
+        $(function () {
+
+            const pad = n => String(n).padStart(2, '0');
+            const fmt = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+
+            $('[data-range]').on('click', function () {
+
+                const today = new Date();
+                let from = new Date(today);
+                let to = new Date(today);
+
+                switch ($(this).data('range')) {
+                    case '7days':
+                        from.setDate(today.getDate() - 6);
+                        break;
+                    case 'month':
+                        from = new Date(today.getFullYear(), today.getMonth(), 1);
+                        break;
+                    case 'lastmonth':
+                        from = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                        to = new Date(today.getFullYear(), today.getMonth(), 0);
+                        break;
+                }
+
+                $('#fFrom').val(fmt(from));
+                $('#fTo').val(fmt(to));
+
+                window.ordersTable.ajax.reload();
+            });
+
+            $('#printStamp').text('Generated on ' + new Date().toLocaleString());
+        });
+    </script>
+
+    <script src="~/js/admin-orders-table.js" asp-append-version="true"></script>
+}

@@ -99,6 +99,9 @@
         ]
     });
 
+    // The report page needs access to the table (search text, reload)
+    window.ordersTable = table;
+
     $('#fStatus, #fPayment, #fFrom, #fTo').on('change', function () {
         table.ajax.reload();
     });

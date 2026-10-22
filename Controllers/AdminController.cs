@@ -1301,6 +1301,241 @@ namespace EStore.Controllers
         }
 
 
+        // =========================================================
+        //  ORDER REPORT
+        // =========================================================
+
+        [HttpGet]
+        public IActionResult Reports()
+        {
+            return View();
+        }
+
+
+        // Summary cards (follows the same filters as the table)
+        [HttpGet]
+        public async Task<IActionResult> ReportSummary(
+            string? status,
+            string? paymentStatus,
+            DateTime? from,
+            DateTime? to,
+            string? search)
+        {
+            var query = FilterOrders(status, paymentStatus, from, to, search);
+
+            var notCancelled = query.Where(o => o.OrderStatus != "Cancelled");
+
+            var orders = await query.CountAsync();
+
+            var sales = await notCancelled
+                .SumAsync(o => (decimal?)o.TotalAmount) ?? 0;
+
+            var paid = await notCancelled
+                .Where(o => o.PaymentStatus == "Paid")
+                .SumAsync(o => (decimal?)o.TotalAmount) ?? 0;
+
+            var cancelled = await query
+                .CountAsync(o => o.OrderStatus == "Cancelled");
+
+            return Json(new
+            {
+                orders,
+                sales,
+                paid,
+                unpaid = sales - paid,
+                cancelled
+            });
+        }
+
+
+        // Stops Excel from running a customer name like "=1+1" as a formula
+        private static string XlSafe(string? text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return "";
+            }
+
+            return "=+-@".Contains(text[0]) ? "'" + text : text;
+        }
+
+
+        // Excel download: Summary + Orders + Products sheets
+        [HttpGet]
+        public async Task<IActionResult> ExportOrders(
+            string? status,
+            string? paymentStatus,
+            DateTime? from,
+            DateTime? to,
+            string? search)
+        {
+            var query = FilterOrders(status, paymentStatus, from, to, search);
+
+            // Safety limit so a huge export can't hang the server
+            var orders = await query
+                .OrderByDescending(o => o.CreatedAt)
+                .ThenByDescending(o => o.Id)
+                .Take(50000)
+                .Select(o => new
+                {
+                    o.OrderNumber,
+                    o.CreatedAt,
+                    o.CustomerName,
+                    o.CustomerPhone,
+                    o.CustomerEmail,
+                    o.City,
+                    o.ShippingAddress,
+                    o.TotalAmount,
+                    o.PaymentMethod,
+                    o.PaymentStatus,
+                    o.TransactionId,
+                    o.OrderStatus,
+                    Items = o.OrderItems.Sum(i => i.Quantity)
+                })
+                .ToListAsync();
+
+            // Product-wise sales for the same orders (cancelled orders excluded)
+            var orderIds = query.Select(o => o.Id);
+
+            var products = await _context.OrderItems
+                .AsNoTracking()
+                .Where(i => orderIds.Contains(i.OrderId)
+                         && i.Order.OrderStatus != "Cancelled")
+                .GroupBy(i => i.ProductName)
+                .Select(g => new
+                {
+                    Name = g.Key,
+                    Qty = g.Sum(x => x.Quantity),
+                    Revenue = g.Sum(x => x.TotalPrice)
+                })
+                .OrderByDescending(x => x.Revenue)
+                .ToListAsync();
+
+            // Same numbers as the summary cards
+            var valid = orders.Where(o => o.OrderStatus != "Cancelled").ToList();
+            var sales = valid.Sum(o => o.TotalAmount);
+            var paid = valid.Where(o => o.PaymentStatus == "Paid").Sum(o => o.TotalAmount);
+
+            static void StyleHeader(ClosedXML.Excel.IXLRange range)
+            {
+                range.Style.Font.Bold = true;
+                range.Style.Font.FontColor = ClosedXML.Excel.XLColor.White;
+                range.Style.Fill.BackgroundColor = ClosedXML.Excel.XLColor.FromHtml("#1F1F1F");
+            }
+
+            using var wb = new ClosedXML.Excel.XLWorkbook();
+
+            // ---------- Sheet 1: Summary ----------
+            var sm = wb.Worksheets.Add("Summary");
+
+            sm.Cell(1, 1).Value = "Ever Spring - Order Report";
+            sm.Cell(1, 1).Style.Font.Bold = true;
+            sm.Cell(1, 1).Style.Font.FontSize = 16;
+
+            var period =
+                from.HasValue || to.HasValue
+                    ? $"{(from.HasValue ? from.Value.ToString("dd MMM yyyy") : "Beginning")}  to  {(to.HasValue ? to.Value.ToString("dd MMM yyyy") : "Today")}"
+                    : "All time";
+
+            var summaryRows = new (string Label, string Value)[]
+            {
+                ("Generated", ToBd(DateTime.UtcNow).ToString("dd MMM yyyy, hh:mm tt")),
+                ("Period", period),
+                ("Order status filter", string.IsNullOrWhiteSpace(status) ? "All" : status),
+                ("Payment filter", string.IsNullOrWhiteSpace(paymentStatus) ? "All" : paymentStatus),
+                ("Search", string.IsNullOrWhiteSpace(search) ? "-" : XlSafe(search)),
+                ("", ""),
+                ("Total orders", orders.Count.ToString("N0")),
+                ("Sales (excl. cancelled)", "BDT " + sales.ToString("N2")),
+                ("Paid", "BDT " + paid.ToString("N2")),
+                ("Awaiting payment", "BDT " + (sales - paid).ToString("N2")),
+                ("Cancelled orders", orders.Count(o => o.OrderStatus == "Cancelled").ToString("N0"))
+            };
+
+            for (int i = 0; i < summaryRows.Length; i++)
+            {
+                sm.Cell(i + 3, 1).Value = summaryRows[i].Label;
+                sm.Cell(i + 3, 1).Style.Font.Bold = true;
+                sm.Cell(i + 3, 2).Value = summaryRows[i].Value;
+            }
+
+            sm.Columns().AdjustToContents();
+
+            // ---------- Sheet 2: Orders ----------
+            var ws = wb.Worksheets.Add("Orders");
+
+            string[] headers =
+            {
+                "Order #", "Date", "Customer", "Phone", "Email", "City", "Address",
+                "Items", "Total (BDT)", "Payment Method", "Payment Status",
+                "Transaction ID", "Order Status"
+            };
+
+            for (int c = 0; c < headers.Length; c++)
+            {
+                ws.Cell(1, c + 1).Value = headers[c];
+            }
+
+            StyleHeader(ws.Range(1, 1, 1, headers.Length));
+
+            int r = 2;
+            foreach (var o in orders)
+            {
+                ws.Cell(r, 1).Value = o.OrderNumber;
+                ws.Cell(r, 2).Value = ToBd(o.CreatedAt);
+                ws.Cell(r, 3).Value = XlSafe(o.CustomerName);
+                ws.Cell(r, 4).Value = XlSafe(o.CustomerPhone);
+                ws.Cell(r, 5).Value = XlSafe(o.CustomerEmail);
+                ws.Cell(r, 6).Value = XlSafe(o.City);
+                ws.Cell(r, 7).Value = XlSafe(o.ShippingAddress);
+                ws.Cell(r, 8).Value = o.Items;
+                ws.Cell(r, 9).Value = o.TotalAmount;
+                ws.Cell(r, 10).Value = o.PaymentMethod;
+                ws.Cell(r, 11).Value = o.PaymentStatus;
+                ws.Cell(r, 12).Value = o.TransactionId ?? "";
+                ws.Cell(r, 13).Value = o.OrderStatus;
+                r++;
+            }
+
+            ws.Column(2).Style.DateFormat.Format = "dd-MMM-yyyy hh:mm AM/PM";
+            ws.Column(9).Style.NumberFormat.Format = "#,##0.00";
+            ws.SheetView.FreezeRows(1);
+            ws.Columns().AdjustToContents();
+
+            // ---------- Sheet 3: Products ----------
+            var ps = wb.Worksheets.Add("Products");
+
+            ps.Cell(1, 1).Value = "Product";
+            ps.Cell(1, 2).Value = "Qty Sold";
+            ps.Cell(1, 3).Value = "Revenue (BDT)";
+
+            StyleHeader(ps.Range(1, 1, 1, 3));
+
+            int pr = 2;
+            foreach (var p in products)
+            {
+                ps.Cell(pr, 1).Value = XlSafe(p.Name);
+                ps.Cell(pr, 2).Value = p.Qty;
+                ps.Cell(pr, 3).Value = p.Revenue;
+                pr++;
+            }
+
+            ps.Column(3).Style.NumberFormat.Format = "#,##0.00";
+            ps.SheetView.FreezeRows(1);
+            ps.Columns().AdjustToContents();
+
+            using var stream = new MemoryStream();
+            wb.SaveAs(stream);
+
+            var fileName = $"orders-report-{ToBd(DateTime.UtcNow):yyyyMMdd-HHmm}.xlsx";
+
+            return File(
+                stream.ToArray(),
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileName);
+        }
+
+
 
         // =========================================================
         //  OrderDetails

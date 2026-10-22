@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Admin Dashboard";
 
-    string Money(decimal d) => "BDT" + d.ToString("N0");
+    string Money(decimal d) => "BDT " + d.ToString("N0");
 }
 
 <style>
@@ -239,6 +239,7 @@
         <div class="ad-actions">
             <a asp-action="CreateProduct" class="btn btn-dark">+ Add Product</a>
             <a asp-action="Orders" class="btn btn-outline-dark">Orders</a>
+            <a asp-action="Reports" class="btn btn-outline-dark">Reports</a>
             <a asp-action="Products" class="btn btn-outline-dark">Products</a>
             <a asp-action="PageVisits" class="btn btn-outline-dark">Page Visits</a>
         </div>
@@ -457,7 +458,7 @@
             data: {
                 labels: @Json.Serialize(Model.ChartLabels),
                 datasets: [{
-                    label: 'Sales (৳)',
+                    label: 'Sales (BDT )',
                     data: salesData,
                     borderColor: '#1f1f1f',
                     backgroundColor: 'rgba(31,31,31,0.08)',
@@ -477,7 +478,7 @@
                         callbacks: {
                             label: function (ctx) {
                                 const n = orderData[ctx.dataIndex];
-                                return '৳' + Number(ctx.parsed.y).toLocaleString('en-US') +
+                                return 'BDT ' + Number(ctx.parsed.y).toLocaleString('en-US') +
                                     '  (' + n + (n === 1 ? ' order)' : ' orders)');
                             }
                         }
@@ -486,7 +487,7 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: { callback: v => '৳' + Number(v).toLocaleString('en-US') }
+                        ticks: { callback: v => 'BDT ' + Number(v).toLocaleString('en-US') }
                     },
                     x: { ticks: { maxTicksLimit: 8 } }
                 }
