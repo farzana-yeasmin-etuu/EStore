@@ -3,7 +3,9 @@ using EStore.Data;
 using EStore.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
- 
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+
 namespace EStore.Controllers
 {
     public class ProductsController : Controller
@@ -176,9 +178,30 @@ namespace EStore.Controllers
         // Wishlist page action
         // =========================================================
 
-        public IActionResult Wishlist()
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Wishlist()
         {
-            return View();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var items = await _context.WishlistItems
+                .AsNoTracking()
+                .Where(w => w.UserId == userId)
+                .OrderByDescending(w => w.CreatedAt)
+                .Select(w => new WishlistItemViewModel
+                {
+                    Id = w.ProductId,
+                    Name = w.Product.Name,
+                    Category = w.Product.Category,
+                    ImageUrl = w.Product.ImageUrl,
+                    Price = w.Product.Price,
+                    Stock = w.Product.Stock,
+                    IsActive = w.Product.IsActive
+                })
+                .ToListAsync();
+
+            return View(items);
         }
 
         // =========================================================

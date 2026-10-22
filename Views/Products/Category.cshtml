@@ -167,35 +167,35 @@
            ADD TO WISHLIST
            ========================================================= */
 
+
         function addCategoryProductToWishlist(button) {
 
             const product =
                 getCategoryProduct(button);
 
+            if (!window.EverSpringWishlist ||
+                typeof window.EverSpringWishlist.add !== "function") {
 
-            console.log("Wishlist Product:", product);
-
-
-            if (window.EverSpringWishlist &&
-                typeof window.EverSpringWishlist.add === "function") {
-
-                window.EverSpringWishlist.add(product);
-
-                alert(
-                    product.name +
-                    " added to your wishlist."
-                );
-
-            }
-            else {
-
-                alert(
-                    "Wishlist is not available."
-                );
-
+                alert("Wishlist is not available.");
+                return;
             }
 
+            const added = window.EverSpringWishlist.add(product);
+
+            // null = guest, already sent to the login page
+            if (added === null) {
+                return;
+            }
+
+            alert(
+                added
+                    ? product.name + " added to your wishlist."
+                    : product.name + " is already in your wishlist."
+            );
         }
+
+          
+
 
 
         /* =========================================================

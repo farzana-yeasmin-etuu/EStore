@@ -1,11 +1,12 @@
-﻿@{
+﻿@model List<EStore.ViewModels.WishlistItemViewModel>
+
+@{
     ViewData["Title"] = "My Wishlist | Ever Spring";
 }
 
 <div class="container py-5">
 
     <!-- HEADER -->
-
     <div class="text-center mb-5">
 
         <h1 class="fw-bold">
@@ -20,18 +21,97 @@
 
 
     <!-- WISHLIST PRODUCTS -->
+    <div id="wishlistContainer" class="row g-4">
 
-    <div id="wishlistContainer"
-         class="row g-4">
+        @foreach (var p in Model)
+        {
+            var unavailable = !p.IsActive || p.Stock <= 0;
+
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3"
+                 data-wishlist-card
+                 data-id="@p.Id"
+                 data-name="@p.Name"
+                 data-category="@p.Category"
+                 data-image="@p.ImageUrl"
+                 data-price="@p.Price.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)">
+
+                <div class="card h-100 border-0 shadow-sm">
+
+                    <div class="p-3">
+                        <a asp-controller="Products"
+                           asp-action="Details"
+                           asp-route-id="@p.Id">
+
+                            <div style="height:280px; background:#f8f8f8; border-radius:14px; overflow:hidden;">
+                                <img src="@p.ImageUrl"
+                                     alt="@p.Name"
+                                     style="width:100%; height:100%; object-fit:contain;" />
+                            </div>
+
+                        </a>
+                    </div>
+
+                    <div class="card-body pt-0">
+
+                        <div class="small text-muted mb-1">
+                            @p.Category
+                        </div>
+
+                        <h5 class="fw-semibold">
+                            <a asp-controller="Products"
+                               asp-action="Details"
+                               asp-route-id="@p.Id"
+                               class="text-decoration-none text-dark">
+                                @p.Name
+                            </a>
+                        </h5>
+
+                        <div class="fw-bold mb-3" style="color:#a85c78;">
+                            BDT @p.Price.ToString("N0")
+                        </div>
+
+                        <div class="d-flex gap-2">
+
+                            @if (unavailable)
+                            {
+                                <button type="button"
+                                        class="btn btn-secondary flex-grow-1"
+                                        disabled>
+                                    @(p.IsActive ? "Out of stock" : "Unavailable")
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button"
+                                        class="btn btn-dark flex-grow-1"
+                                        onclick="moveToBag(this)">
+                                    Add to Bag
+                                </button>
+                            }
+
+                            <button type="button"
+                                    class="btn btn-outline-danger"
+                                    onclick="removeFromWishlist(this)"
+                                    title="Remove from wishlist">
+                                ♡
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        }
 
     </div>
 
 
     <!-- EMPTY WISHLIST -->
-
     <div id="emptyWishlist"
          class="text-center py-5"
-         style="display:none;">
+         style="display:@(Model.Any() ? "none" : "block");">
 
         <div style="font-size:60px;">
             ♡
@@ -48,9 +128,7 @@
         <a asp-controller="Home"
            asp-action="Index"
            class="btn btn-dark px-4 mt-2">
-
             Continue Shopping
-
         </a>
 
     </div>
@@ -63,229 +141,25 @@
     <script>
 
         // ============================================
-        // GET WISHLIST
-        // ============================================
-
-        function getWishlist()
-        {
-            try
-            {
-                return JSON.parse(
-                    localStorage.getItem(
-                        "everSpringWishlist"
-                    )
-                ) || [];
-            }
-            catch
-            {
-                return [];
-            }
-        }
-
-
-        // ============================================
-        // SAVE WISHLIST
-        // ============================================
-
-        function saveWishlist(items)
-        {
-            localStorage.setItem(
-                "everSpringWishlist",
-                JSON.stringify(items)
-            );
-        }
-
-
-        // ============================================
-        // DISPLAY WISHLIST
-        // ============================================
-
-        function displayWishlist()
-        {
-            const container =
-                document.getElementById(
-                    "wishlistContainer"
-                );
-
-            const emptyWishlist =
-                document.getElementById(
-                    "emptyWishlist"
-                );
-
-
-            const wishlist =
-                getWishlist();
-
-
-            container.innerHTML = "";
-
-
-            // Empty wishlist
-
-            if (wishlist.length === 0)
-            {
-                emptyWishlist.style.display =
-                    "block";
-
-                return;
-            }
-
-
-            emptyWishlist.style.display =
-                "none";
-
-
-            wishlist.forEach(function(product)
-            {
-
-                const card =
-                    document.createElement("div");
-
-                card.className =
-                    "col-12 col-sm-6 col-lg-4 col-xl-3";
-
-
-                card.innerHTML = `
-
-                    <div class="card h-100 border-0 shadow-sm">
-
-                        <!-- IMAGE -->
-
-                        <div class="p-3">
-
-                            <a href="/Products/Details/${product.id}">
-
-                                <div
-                                    style="
-                                        height:280px;
-                                        background:#f8f8f8;
-                                        border-radius:14px;
-                                        overflow:hidden;
-                                    "
-                                >
-
-                                    <img
-                                        src="${product.imageUrl}"
-                                        alt="${escapeHtml(product.name)}"
-                                        style="
-                                            width:100%;
-                                            height:100%;
-                                            object-fit:contain;
-                                        "
-                                    />
-
-                                </div>
-
-                            </a>
-
-                        </div>
-
-
-                        <!-- DETAILS -->
-
-                        <div class="card-body pt-0">
-
-                            <div class="small text-muted mb-1">
-                                ${escapeHtml(product.category || "")}
-                            </div>
-
-
-                            <h5 class="fw-semibold">
-
-                                <a
-                                    href="/Products/Details/${product.id}"
-                                    class="text-decoration-none text-dark"
-                                >
-                                    ${escapeHtml(product.name)}
-                                </a>
-
-                            </h5>
-
-
-                            <div
-                                class="fw-bold mb-3"
-                                style="color:#a85c78;"
-                            >
-
-                                BDT ${Number(product.price || 0).toLocaleString()}
-
-                            </div>
-
-
-                            <!-- ACTIONS -->
-
-                            <div class="d-flex gap-2">
-
-                                <button
-                                    type="button"
-                                    class="btn btn-dark flex-grow-1"
-                                    onclick="moveToBag(${product.id})"
-                                >
-
-                                    Add to Bag
-
-                                </button>
-
-
-                                <button
-                                    type="button"
-                                    class="btn btn-outline-danger"
-                                    onclick="removeFromWishlist(${product.id})"
-                                    title="Remove from wishlist"
-                                >
-
-                                    ♡
-
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                `;
-
-
-                container.appendChild(card);
-
-            });
-
-        }
-
-
-        // ============================================
         // REMOVE FROM WISHLIST
         // ============================================
 
-        function removeFromWishlist(id)
-        {
-            let wishlist =
-                getWishlist();
+        function removeFromWishlist(button) {
 
+            const card = button.closest("[data-wishlist-card]");
 
-            wishlist =
-                wishlist.filter(function(product)
-                {
-                    return Number(product.id) !==
-                           Number(id);
-                });
-
-
-            saveWishlist(wishlist);
-
-
-            // Update navbar count
-
-            if (
-                window.updateWishlistCount
-            )
-            {
-                window.updateWishlistCount();
+            if (!card) {
+                return;
             }
 
+            // Saves to the database and updates the navbar count
+            window.EverSpringWishlist.remove(card.dataset.id);
 
-            displayWishlist();
+            card.remove();
+
+            if (!document.querySelector("[data-wishlist-card]")) {
+                document.getElementById("emptyWishlist").style.display = "block";
+            }
         }
 
 
@@ -293,78 +167,34 @@
         // MOVE TO BAG
         // ============================================
 
-        function moveToBag(id)
-        {
-            const wishlist =
-                getWishlist();
+        function moveToBag(button) {
 
+            const card = button.closest("[data-wishlist-card]");
 
-            const product =
-                wishlist.find(function(item)
-                {
-                    return Number(item.id) ===
-                           Number(id);
-                });
-
-
-            if (!product)
-            {
+            if (!card) {
                 return;
             }
 
+            const product = {
+                id: Number(card.dataset.id),
+                name: card.dataset.name,
+                category: card.dataset.category,
+                imageUrl: card.dataset.image,
+                price: Number(card.dataset.price) || 0
+            };
 
-            if (
-                window.EverSpringCart &&
-                window.EverSpringCart.add
-            )
-            {
-                window.EverSpringCart.add(
-                    product,
-                    1
-                );
+            if (window.EverSpringCart && window.EverSpringCart.add) {
 
+                window.EverSpringCart.add(product, 1);
 
-                alert(
-                    product.name +
-                    " added to your bag."
-                );
+                alert(product.name + " added to your bag.");
+
             }
-            else
-            {
-                alert(
-                    "Shopping bag is not available."
-                );
+            else {
+
+                alert("Shopping bag is not available.");
             }
         }
-
-
-        // ============================================
-        // ESCAPE HTML
-        // ============================================
-
-        function escapeHtml(value)
-        {
-            const div =
-                document.createElement("div");
-
-            div.textContent =
-                value ?? "";
-
-            return div.innerHTML;
-        }
-
-
-        // ============================================
-        // LOAD PAGE
-        // ============================================
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            function()
-            {
-                displayWishlist();
-            }
-        );
 
     </script>
 }

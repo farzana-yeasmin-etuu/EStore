@@ -21,6 +21,8 @@ namespace EStore.Data
 
         public DbSet<OrderItem> OrderItems { get; set; }
 
+        public DbSet<WishlistItem> WishlistItems { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             // Keep Identity tables working
@@ -49,6 +51,22 @@ namespace EStore.Data
             builder.Entity<Product>()
                 .Property(p => p.Price)
                 .HasPrecision(12, 2);
+
+            builder.Entity<WishlistItem>(e =>
+            {
+                // A user can save the same product only once
+                e.HasIndex(w => new { w.UserId, w.ProductId }).IsUnique();
+
+                e.HasOne(w => w.User)
+                    .WithMany()
+                    .HasForeignKey(w => w.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                e.HasOne(w => w.Product)
+                    .WithMany()
+                    .HasForeignKey(w => w.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 }
