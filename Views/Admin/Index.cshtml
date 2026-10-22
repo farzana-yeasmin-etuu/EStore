@@ -1,102 +1,524 @@
-﻿@{
+﻿@model EStore.ViewModels.AdminDashboardViewModel
+
+@{
     ViewData["Title"] = "Admin Dashboard";
+
+    string Money(decimal d) => "BDT" + d.ToString("N0");
 }
 
-<div class="container py-5">
+<style>
+    .ad-page {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 32px 16px 56px;
+    }
 
-    <div class="text-center mb-5">
-        <h1 class="fw-bold">Admin Dashboard</h1>
-        <p class="text-muted">
-            Welcome to Ever Spring administration panel
-        </p>
+    .ad-head {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+        .ad-head small {
+            letter-spacing: 3px;
+            color: #a0668a;
+            font-weight: 600;
+        }
+
+        .ad-head h1 {
+            margin: 4px 0 2px;
+            font-weight: 700;
+        }
+
+        .ad-head p {
+            margin: 0;
+            color: #777;
+        }
+
+    .ad-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .ad-alert {
+        background: #fff4e5;
+        border: 1px solid #ffd8a8;
+        color: #8a5200;
+        padding: 12px 16px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+        .ad-alert a {
+            color: #8a5200;
+            font-weight: 600;
+        }
+
+    .ad-grid {
+        display: grid;
+        gap: 16px;
+        margin-bottom: 20px;
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .ad-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    }
+
+    .ad-kpi span {
+        display: block;
+        color: #333;
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .ad-kpi strong {
+        display: block;
+        font-size: 30px;
+        line-height: 1.2;
+    }
+
+    .ad-kpi small {
+        display: block;
+        margin-top: 8px;
+        color: #666;
+        font-size: 14px;
+    }
+
+    .ad-up {
+        color: #198754 !important;
+        font-weight: 600;
+    }
+
+    .ad-down {
+        color: #dc3545 !important;
+        font-weight: 600;
+    }
+
+    .ad-row {
+        display: grid;
+        gap: 16px;
+        margin-bottom: 20px;
+        grid-template-columns: 2fr 1fr;
+    }
+
+        /* Stops wide content (charts, tables) from pushing the page sideways */
+        .ad-row > * {
+            min-width: 0;
+        }
+
+    /* Fixed-height boxes so charts can never grow too tall */
+    .ad-chart {
+        position: relative;
+        height: 320px;
+    }
+
+    .ad-chart-sm {
+        position: relative;
+        height: 300px;
+    }
+
+    .ad-card h5 {
+        font-weight: 700;
+        margin: 0 0 14px;
+    }
+
+    .ad-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+        .ad-table th {
+            text-align: left;
+            color: #888;
+            font-weight: 600;
+            font-size: 12px;
+            padding: 8px 6px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .ad-table td {
+            padding: 10px 6px;
+            border-bottom: 1px solid #f3f3f3;
+            vertical-align: middle;
+        }
+
+        .ad-table a {
+            color: #111;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+    .ad-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+        .ad-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f3f3f3;
+            font-size: 14px;
+        }
+
+            .ad-list li:last-child {
+                border-bottom: 0;
+            }
+
+        .ad-list img {
+            width: 38px;
+            height: 44px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+    .ad-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+    }
+
+        .ad-item span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+    .ad-empty {
+        color: #999;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    @@media (max-width: 992px) {
+        .ad-row {
+            grid-template-columns: 1fr;
+        }
+
+        .ad-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .ad-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="ad-page">
+
+    <!-- Header -->
+    <div class="ad-head">
+
+        <div>
+            <small>EVER SPRING ADMIN</small>
+            <h1>Dashboard</h1>
+            <p>@Model.TodayLabel</p>
+        </div>
+
+        <div class="ad-actions">
+            <a asp-action="CreateProduct" class="btn btn-dark">+ Add Product</a>
+            <a asp-action="Orders" class="btn btn-outline-dark">Orders</a>
+            <a asp-action="Products" class="btn btn-outline-dark">Products</a>
+            <a asp-action="PageVisits" class="btn btn-outline-dark">Page Visits</a>
+        </div>
+
     </div>
 
-    <div class="row g-4">
 
-        <!-- Products -->
-        <div class="col-md-6 col-lg-4">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center p-4">
+    <!-- Pending orders alert -->
+    @if (Model.PendingOrders > 0)
+    {
+        <div class="ad-alert">
+            <span>
+                You have <strong>@Model.PendingOrders</strong> pending
+                @(Model.PendingOrders == 1 ? "order" : "orders") waiting for confirmation.
+            </span>
+            <a asp-action="Orders">Review orders →</a>
+        </div>
+    }
 
-                    <div class="mb-3" style="font-size: 40px;">
-                        🛍️
-                    </div>
 
-                    <h4 class="fw-bold">
-                        Products
-                    </h4>
+    <!-- KPI cards -->
+    <div class="ad-grid">
 
-                    <p class="text-muted">
-                        Add, edit, delete and manage products.
-                    </p>
-
-                    <a asp-controller="Admin"
-                       asp-action="Products"
-                       class="btn btn-dark">
-                        Manage Products
-                    </a>
-
-                </div>
-            </div>
+        <div class="ad-card ad-kpi">
+            <span>Today's Sales</span>
+            <strong>@Money(Model.TodaySales)</strong>
+            <small>@Model.TodayOrders @(Model.TodayOrders == 1 ? "order" : "orders") today</small>
         </div>
 
-
-        <!-- Page Visits -->
-        <div class="col-md-6 col-lg-4">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center p-4">
-
-                    <div class="mb-3" style="font-size: 40px;">
-                        📊
-                    </div>
-
-                    <h4 class="fw-bold">
-                        Page Visits
-                    </h4>
-
-                    <p class="text-muted">
-                        View customer and visitor activity.
-                    </p>
-
-                    <a asp-controller="Admin"
-                       asp-action="PageVisits"
-                       class="btn btn-outline-dark">
-                        View Analytics
-                    </a>
-
-                </div>
-            </div>
+        <div class="ad-card ad-kpi">
+            <span>This Month</span>
+            <strong>@Money(Model.MonthSales)</strong>
+            @if (Model.MonthGrowthPercent is decimal g)
+            {
+                <small class="@(g >= 0 ? "ad-up" : "ad-down")">
+                    @(g >= 0 ? "▲" : "▼") @Math.Abs(g)% vs last month
+                </small>
+            }
+            else
+            {
+                <small>@Model.MonthOrders @(Model.MonthOrders == 1 ? "order" : "orders") this month</small>
+            }
         </div>
 
-
-        <!-- Orders -->
-    <!-- Orders -->
-<div class="col-md-6 col-lg-4">
-    <div class="card h-100 shadow-sm border-0">
-        <div class="card-body text-center p-4">
-
-            <div class="mb-3" style="font-size: 40px;">
-                📦
-            </div>
-
-            <h4 class="fw-bold">
-                Orders
-            </h4>
-
-            <p class="text-muted">
-                Manage customer orders.
-            </p>
-
-            <a asp-controller="Admin"
-               asp-action="Orders"
-               class="btn btn-outline-dark">
-                Manage Orders
-            </a>
-
+        <div class="ad-card ad-kpi">
+            <span>Revenue Collected</span>
+            <strong>@Money(Model.RevenueCollected)</strong>
+            <small>@Money(Model.AwaitingPayment) awaiting payment</small>
         </div>
+
+        <div class="ad-card ad-kpi">
+            <span>Pending Orders</span>
+            <strong>@Model.PendingOrders</strong>
+            <small>of @Model.TotalOrders total orders</small>
+        </div>
+
+        <div class="ad-card ad-kpi">
+            <span>Customers</span>
+            <strong>@Model.TotalCustomers</strong>
+            <small>Avg order @Money(Model.AvgOrderValue)</small>
+        </div>
+
+        <div class="ad-card ad-kpi">
+            <span>Stock Alerts</span>
+            <strong>@(Model.LowStockCount + Model.OutOfStockCount)</strong>
+            <small>@Model.LowStockCount low · @Model.OutOfStockCount out of @Model.ActiveProducts active products</small>
+        </div>
+
     </div>
+
+
+    <!-- Charts -->
+    <div class="ad-row">
+
+        <div class="ad-card">
+            <h5>Sales – last 30 days</h5>
+            <div class="ad-chart">
+                <canvas id="salesChart"></canvas>
+            </div>
+        </div>
+
+        <div class="ad-card">
+            <h5>Orders by status</h5>
+            <div class="ad-chart-sm">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Tables -->
+    <div class="ad-row">
+
+        <div class="ad-card">
+
+            <h5>Recent orders</h5>
+
+            @if (!Model.RecentOrders.Any())
+            {
+                <p class="ad-empty">No orders yet.</p>
+            }
+            else
+            {
+                <div style="overflow-x:auto;">
+                    <table class="ad-table">
+                        <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Total</th>
+                                <th>Payment</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var o in Model.RecentOrders)
+                            {
+                                <tr>
+                                    <td>
+                                        <a asp-action="OrderDetails" asp-route-id="@o.Id">@o.OrderNumber</a>
+                                    </td>
+                                    <td>@o.CustomerName</td>
+                                    <td>@o.Date</td>
+                                    <td>@Money(o.TotalAmount)</td>
+                                    <td>
+                                        <span class="es-status-badge @(o.PaymentStatus == "Paid" ? "es-status-paid" : (o.PaymentStatus == "Failed" || o.PaymentStatus == "Cancelled") ? "es-status-failed" : "es-status-pending")">
+                                            @o.PaymentStatus
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="es-status-badge @(o.OrderStatus == "Cancelled" ? "es-status-cancelled" : o.OrderStatus == "Pending" ? "es-status-pending" : "es-status-confirmed")">
+                                            @o.OrderStatus
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+        </div>
+
+        <div>
+
+            <div class="ad-card" style="margin-bottom:16px;">
+                <h5>Top products (30 days)</h5>
+
+                @if (!Model.TopProducts.Any())
+                {
+                    <p class="ad-empty">No sales yet.</p>
+                }
+                else
+                {
+                    <ul class="ad-list">
+                        @foreach (var p in Model.TopProducts)
+                        {
+                            <li>
+                                <div class="ad-item"><span>@p.Name</span></div>
+                                <div style="text-align:right;white-space:nowrap;">
+                                    <strong>@p.Qty sold</strong><br />
+                                    <small style="color:#888;">@Money(p.Revenue)</small>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+
+            <div class="ad-card">
+                <h5>Low stock</h5>
+
+                @if (!Model.LowStockProducts.Any())
+                {
+                    <p class="ad-empty">All products are well stocked.</p>
+                }
+                else
+                {
+                    <ul class="ad-list">
+                        @foreach (var p in Model.LowStockProducts)
+                        {
+                            <li>
+                                <div class="ad-item">
+                                    <img src="@p.ImageUrl" alt="" />
+                                    <span>
+                                        <a asp-action="EditProduct" asp-route-id="@p.Id"
+                                           style="color:#111;text-decoration:none;font-weight:600;">@p.Name</a>
+                                    </span>
+                                </div>
+                                <span class="badge @(p.Stock == 0 ? "bg-danger" : "bg-warning text-dark")">
+                                    @(p.Stock == 0 ? "Out of stock" : p.Stock + " left")
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
-    </div>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        // ---------- Sales line chart ----------
+        const salesData = @Json.Serialize(Model.ChartSales);
+        const orderData = @Json.Serialize(Model.ChartOrders);
 
-</div>
+        new Chart(document.getElementById('salesChart'), {
+            type: 'line',
+            data: {
+                labels: @Json.Serialize(Model.ChartLabels),
+                datasets: [{
+                    label: 'Sales (৳)',
+                    data: salesData,
+                    borderColor: '#1f1f1f',
+                    backgroundColor: 'rgba(31,31,31,0.08)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 2
+                }]
+            },
+            
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function (ctx) {
+                                const n = orderData[ctx.dataIndex];
+                                return '৳' + Number(ctx.parsed.y).toLocaleString('en-US') +
+                                    '  (' + n + (n === 1 ? ' order)' : ' orders)');
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { callback: v => '৳' + Number(v).toLocaleString('en-US') }
+                    },
+                    x: { ticks: { maxTicksLimit: 8 } }
+                }
+            }
+        });
+
+        // ---------- Order status doughnut ----------
+        const statusCounts = @Json.Serialize(Model.StatusCounts);
+
+        const statusOrder = ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
+        const statusColors = {
+            Pending: '#f0ad4e', Confirmed: '#5bc0de', Processing: '#0d6efd',
+            Shipped: '#6f42c1', Delivered: '#198754', Cancelled: '#dc3545'
+        };
+
+        const labels = statusOrder.filter(s => statusCounts[s]);
+        const hasOrders = labels.length > 0;
+
+        new Chart(document.getElementById('statusChart'), {
+            type: 'doughnut',
+            data: {
+                labels: hasOrders ? labels : ['No orders yet'],
+                datasets: [{
+                    data: hasOrders ? labels.map(s => statusCounts[s]) : [1],
+                    backgroundColor: hasOrders ? labels.map(s => statusColors[s]) : ['#e5e5e5']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    </script>
+}

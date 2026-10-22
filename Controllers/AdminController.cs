@@ -29,10 +29,205 @@ namespace EStore.Controllers
         // ADMIN DASHBOARD
         // ============================================================
 
-        public IActionResult Index()
-
+        [HttpGet]
+        public async Task<IActionResult> Index()
         {
-            return View();
+            const int lowStockLimit = 5;
+
+            // "Today" and "this month" must follow Bangladesh time, not UTC
+            var nowBd = ToBd(DateTime.UtcNow);
+            var todayStart = BdToUtc(nowBd);
+            var monthStart = BdToUtc(new DateTime(nowBd.Year, nowBd.Month, 1));
+            var lastMonthStart = BdToUtc(new DateTime(nowBd.Year, nowBd.Month, 1).AddMonths(-1));
+            var chartFrom = BdToUtc(nowBd.AddDays(-29));
+
+            var orders = _context.Orders.AsNoTracking();
+            var validOrders = orders.Where(o => o.OrderStatus != "Cancelled");
+
+            // ---------- Sales (all non-cancelled orders) ----------
+            var todaySales = await validOrders
+                .Where(o => o.CreatedAt >= todayStart)
+                .SumAsync(o => (decimal?)o.TotalAmount) ?? 0;
+
+            var todayOrders = await validOrders
+                .CountAsync(o => o.CreatedAt >= todayStart);
+
+            var monthSales = await validOrders
+                .Where(o => o.CreatedAt >= monthStart)
+                .SumAsync(o => (decimal?)o.TotalAmount) ?? 0;
+
+            var monthOrders = await validOrders
+                .CountAsync(o => o.CreatedAt >= monthStart);
+
+            var lastMonthSales = await validOrders
+                .Where(o => o.CreatedAt >= lastMonthStart && o.CreatedAt < monthStart)
+                .SumAsync(o => (decimal?)o.TotalAmount) ?? 0;
+
+            decimal? growth = null;
+            if (lastMonthSales > 0)
+            {
+                growth = Math.Round((monthSales - lastMonthSales) / lastMonthSales * 100, 1);
+            }
+
+            // ---------- Revenue (really paid) ----------
+            var revenue = await validOrders
+                .Where(o => o.PaymentStatus == "Paid")
+                .SumAsync(o => (decimal?)o.TotalAmount) ?? 0;
+
+            var awaiting = await validOrders
+                .Where(o => o.PaymentStatus != "Paid")
+                .SumAsync(o => (decimal?)o.TotalAmount) ?? 0;
+
+            var validCount = await validOrders.CountAsync();
+            var validTotal = revenue + awaiting;
+
+            // ---------- Customers (admins are not customers) ----------
+            var adminRoleId = await _context.Roles
+                .Where(r => r.Name == "Admin")
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync();
+
+            var adminCount = adminRoleId == null
+                ? 0
+                : await _context.UserRoles.CountAsync(ur => ur.RoleId == adminRoleId);
+
+            var customers = await _context.Users.CountAsync() - adminCount;
+
+            // ---------- Orders by status ----------
+            var statusCounts = await orders
+                .GroupBy(o => o.OrderStatus)
+                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.Status, x => x.Count);
+
+            // ---------- 30-day chart ----------
+            // Only the last 30 days are loaded, then grouped by Bangladesh date in memory
+            var last30 = await validOrders
+                .Where(o => o.CreatedAt >= chartFrom)
+                .Select(o => new { o.CreatedAt, o.TotalAmount })
+                .ToListAsync();
+
+            var byDay = last30
+                .GroupBy(o => ToBd(o.CreatedAt).Date)
+                .ToDictionary(
+                    g => g.Key,
+                    g => new { Total = g.Sum(x => x.TotalAmount), Count = g.Count() });
+
+            var vm = new AdminDashboardViewModel
+            {
+                TodayLabel = nowBd.ToString("dddd, dd MMMM yyyy"),
+
+                TodaySales = todaySales,
+                TodayOrders = todayOrders,
+                MonthSales = monthSales,
+                MonthOrders = monthOrders,
+                MonthGrowthPercent = growth,
+
+                RevenueCollected = revenue,
+                AwaitingPayment = awaiting,
+                AvgOrderValue = validCount == 0 ? 0 : validTotal / validCount,
+
+                PendingOrders = statusCounts.GetValueOrDefault("Pending"),
+                TotalOrders = statusCounts.Values.Sum(),
+                TotalCustomers = customers,
+
+                ActiveProducts = await _context.Products.CountAsync(p => p.IsActive),
+                LowStockCount = await _context.Products
+                    .CountAsync(p => p.IsActive && p.Stock > 0 && p.Stock <= lowStockLimit),
+                OutOfStockCount = await _context.Products
+                    .CountAsync(p => p.IsActive && p.Stock == 0),
+
+                StatusCounts = statusCounts
+            };
+
+            for (int i = 29; i >= 0; i--)
+            {
+                var day = nowBd.Date.AddDays(-i);
+
+                vm.ChartLabels.Add(day.ToString("dd MMM"));
+
+                if (byDay.TryGetValue(day, out var row))
+                {
+                    vm.ChartSales.Add(row.Total);
+                    vm.ChartOrders.Add(row.Count);
+                }
+                else
+                {
+                    vm.ChartSales.Add(0);
+                    vm.ChartOrders.Add(0);
+                }
+            }
+
+            // ---------- Top selling products (last 30 days) ----------
+            var top = await _context.OrderItems
+                .AsNoTracking()
+                .Where(i => i.Order.CreatedAt >= chartFrom
+                         && i.Order.OrderStatus != "Cancelled")
+                .GroupBy(i => i.ProductName)
+                .Select(g => new
+                {
+                    Name = g.Key,
+                    Qty = g.Sum(x => x.Quantity),
+                    Revenue = g.Sum(x => x.TotalPrice)
+                })
+                .OrderByDescending(x => x.Qty)
+                .Take(5)
+                .ToListAsync();
+
+            vm.TopProducts = top
+                .Select(x => new TopProductRow
+                {
+                    Name = x.Name,
+                    Qty = x.Qty,
+                    Revenue = x.Revenue
+                })
+                .ToList();
+
+            // ---------- Recent orders ----------
+            var recent = await orders
+                .OrderByDescending(o => o.CreatedAt)
+                .Take(8)
+                .Select(o => new
+                {
+                    o.Id,
+                    o.OrderNumber,
+                    o.CustomerName,
+                    o.TotalAmount,
+                    o.PaymentStatus,
+                    o.OrderStatus,
+                    o.CreatedAt
+                })
+                .ToListAsync();
+
+            vm.RecentOrders = recent
+                .Select(o => new RecentOrderRow
+                {
+                    Id = o.Id,
+                    OrderNumber = o.OrderNumber,
+                    CustomerName = o.CustomerName,
+                    TotalAmount = o.TotalAmount,
+                    PaymentStatus = o.PaymentStatus,
+                    OrderStatus = o.OrderStatus,
+                    Date = ToBd(o.CreatedAt).ToString("dd MMM, hh:mm tt")
+                })
+                .ToList();
+
+            // ---------- Low stock ----------
+            vm.LowStockProducts = await _context.Products
+                .AsNoTracking()
+                .Where(p => p.IsActive && p.Stock <= lowStockLimit)
+                .OrderBy(p => p.Stock)
+                .ThenBy(p => p.Name)
+                .Take(6)
+                .Select(p => new LowStockRow
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Stock = p.Stock,
+                    ImageUrl = p.ImageUrl
+                })
+                .ToListAsync();
+
+            return View(vm);
         }
 
 
