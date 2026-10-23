@@ -29,12 +29,23 @@ namespace EStore.Controllers
         // GET: /Orders/Checkout
         // =========================================================
         [HttpGet]
-        public IActionResult Checkout()
+        public async Task<IActionResult> Checkout()
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Fill the form from the saved profile
+            var user = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
             var model = new CheckoutViewModel
             {
-                CustomerEmail =
-                    User.FindFirstValue(ClaimTypes.Email) ?? ""
+                CustomerName = user?.FullName ?? "",
+                CustomerEmail = User.FindFirstValue(ClaimTypes.Email) ?? user?.Email ?? "",
+                CustomerPhone = user?.PhoneNumber ?? "",
+                ShippingAddress = user?.Address ?? "",
+                City = user?.City ?? "",
+                PostCode = user?.PostCode ?? ""
             };
 
             return View(model);
