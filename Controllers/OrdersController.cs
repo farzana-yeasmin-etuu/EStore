@@ -1,4 +1,5 @@
 ﻿using EStore.Data;
+using EStore.Filters;
 using EStore.Models;
 using EStore.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -25,10 +26,13 @@ namespace EStore.Controllers
             _email = email;
         }
 
+
+
         // =========================================================
         // GET: /Orders/Checkout
         // =========================================================
         [HttpGet]
+        [BlockAdmin]
         public async Task<IActionResult> Checkout()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -52,13 +56,14 @@ namespace EStore.Controllers
         }
 
 
-        // =========================================================
-        // POST: /Orders/CreateOrder
-        // =========================================================
+
+// =========================================================
+// POST: /Orders/CreateOrder
+// =========================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateOrder(
-            [FromBody] CheckoutRequest request)
+        [BlockAdmin]
+        public async Task<IActionResult> CreateOrder([FromBody] CheckoutRequest request)
         {
             // -----------------------------------------------------
             // 1. Validate request

@@ -245,7 +245,12 @@
         </div>
 
     </div>
-
+        @if (TempData["AdminNotice"] != null)
+    {
+        <div class="ad-alert">
+            <span>@TempData["AdminNotice"]</span>
+        </div>
+    }
 
     <!-- Pending orders alert -->
     @if (Model.PendingOrders > 0)

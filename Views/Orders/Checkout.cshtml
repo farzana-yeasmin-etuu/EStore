@@ -56,6 +56,7 @@
                            name="CustomerName"
                            class="es-checkout-input"
                            placeholder="Enter your full name"
+                           value="@Model.CustomerName"
                            required />
 
                 </div>
@@ -91,6 +92,7 @@
                            name="CustomerPhone"
                            class="es-checkout-input"
                            placeholder="01XXXXXXXXX"
+                           value="@Model.CustomerPhone"
                            required />
 
                 </div>
@@ -108,7 +110,7 @@
                               class="es-checkout-input es-checkout-textarea"
                               placeholder="House, Road, Area"
                               rows="4"
-                              required></textarea>
+                              required> @Model.ShippingAddress</textarea>
 
                 </div>
 
@@ -127,6 +129,7 @@
                                name="City"
                                class="es-checkout-input"
                                placeholder="Dhaka"
+                               value="@Model.City"
                                required />
 
                     </div>
@@ -144,6 +147,7 @@
                                name="PostCode"
                                class="es-checkout-input"
                                placeholder="4000"
+                               value="@Model.PostCode"
                                required />
 
                     </div>

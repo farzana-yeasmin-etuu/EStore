@@ -231,22 +231,7 @@ namespace EStore.Controllers
         }
 
 
-        // TEMPORARY: delete this after email test works
-        [HttpGet]
-        public async Task<IActionResult> TestEmail(string to)
-        {
-            if (string.IsNullOrWhiteSpace(to))
-                return Content("Use: /Admin/TestEmail?to=youremail@gmail.com");
-
-            var ok = await _email.SendAsync(
-                to,
-                "Test email from Ever Spring",
-                "<h3>It works!</h3><p>Your email setup is correct.</p>");
-
-            return Content(ok
-                ? "Email sent. Check your inbox (and spam folder)."
-                : "Email FAILED. Look at the terminal for the error message.");
-        }
+       
 
 
         // ============================================================
@@ -667,6 +652,8 @@ namespace EStore.Controllers
         [HttpGet]
         public async Task<IActionResult> ImageManager()
         {
+            if (!_environment.IsDevelopment()) return NotFound();
+
             var products = await _context.Products
                 .OrderBy(p => p.Category)
                 .ThenBy(p => p.Id)
@@ -699,6 +686,7 @@ namespace EStore.Controllers
         public async Task<IActionResult> SaveImageManager(
             ProductImageManagerViewModel model)
         {
+            if (!_environment.IsDevelopment()) return NotFound();
             try
             {
                 if (model.Products == null ||
@@ -752,6 +740,7 @@ namespace EStore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RenameProductImages()
         {
+            if (!_environment.IsDevelopment()) return NotFound();
             try
             {
                 var products = await _context.Products

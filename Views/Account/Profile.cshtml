@@ -59,7 +59,7 @@
                     </div>
 
                     <div class="pf-stat">
-                        <strong>৳@Model.TotalSpent.ToString("N0")</strong>
+                        <strong>BDT @Model.TotalSpent.ToString("N0")</strong>
                         <span>Total spent</span>
                     </div>
 
@@ -173,7 +173,7 @@
                             </div>
 
                             <div class="text-end">
-                                <strong>৳@o.TotalAmount.ToString("N0")</strong><br />
+                                <strong>BDT @o.TotalAmount.ToString("N0")</strong><br />
                                 <span class="es-status-badge @(o.OrderStatus == "Cancelled" ? "es-status-cancelled" : o.OrderStatus == "Pending" ? "es-status-pending" : "es-status-confirmed")">
                                     @o.OrderStatus
                                 </span>

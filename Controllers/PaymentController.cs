@@ -5,6 +5,7 @@ using EStore.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using EStore.Filters;
 
 namespace EStore.Controllers
 {
@@ -38,6 +39,7 @@ namespace EStore.Controllers
         // =====================================================
         [Authorize]
         [HttpGet]
+        [BlockAdmin]
         public async Task<IActionResult> Pay(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

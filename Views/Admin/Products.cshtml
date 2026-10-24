@@ -1,4 +1,6 @@
-﻿@{
+﻿@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
+
+@{
     ViewData["Title"] = "Manage Products";
 
     var categories = ViewBag.Categories as List<string> ?? new List<string>();
@@ -24,24 +26,31 @@
 
         <div class="d-flex gap-2 flex-wrap">
 
-            <a asp-controller="Admin"
-               asp-action="ImageManager"
-               class="btn btn-outline-dark">
-                🖼 Manage Image Names
-            </a>
+                        @* Developer tools: only visible while developing on your own computer *@
+            @if (Env.IsDevelopment())
+            {
+                <a asp-controller="Admin"
+                   asp-action="ImageManager"
+                   class="btn btn-outline-dark">
+                    🖼 Manage Image Names
+                </a>
 
-            <form asp-controller="Admin"
-                  asp-action="RenameProductImages"
-                  method="post"
-                  onsubmit="return confirm('Are you sure you want to rename all product images using their product names?');">
+                <form asp-controller="Admin"
+                      asp-action="RenameProductImages"
+                      method="post"
+                      onsubmit="return confirm('Are you sure you want to rename all product images using their product names?');">
 
-                @Html.AntiForgeryToken()
+                    @Html.AntiForgeryToken()
 
-                <button type="submit" class="btn btn-outline-dark">
-                    Rename Images
-                </button>
+                    <button type="submit" class="btn btn-outline-dark">
+                        Rename Images
+                    </button>
 
-            </form>
+                </form>
+            }
+           
+
+               
 
             <a asp-controller="Admin"
                asp-action="CreateProduct"

@@ -52,6 +52,20 @@
           href="~/css/ever-spring.css"
           asp-append-version="true" />
 
+
+              @if (User.IsInRole("Admin"))
+    {
+        <style>
+            /* Admins do not shop, so hide the cart and wishlist icons */
+            a:has(#wishlistCount),
+            a:has(#cartCount),
+            a:has(#mobileWishlistCount),
+            a:has(#mobileCartCount) {
+                display: none !important;
+            }
+        </style>
+    }
+
 </head>
 
 
@@ -889,7 +903,9 @@
             const IS_AUTH = @(User.Identity?.IsAuthenticated == true ? "true" : "false");
 
             const CSRF_TOKEN = "@(User.Identity?.IsAuthenticated == true ? Antiforgery.GetAndStoreTokens(Context).RequestToken : "")";
+                        const IS_ADMIN = @(User.IsInRole("Admin") ? "true" : "false");
 
+            const USER_ID = "@(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "")";
 
             /* =================================================
                NAVBAR COUNTERS
@@ -1206,6 +1222,14 @@
                 // Returns true = added, false = was already saved, null = sent to login page
                 add: function (product) {
 
+                                        // Admins manage the shop, they do not shop
+                    if (IS_ADMIN) {
+
+                        alert("Admin accounts cannot use the wishlist. Please use a customer account.");
+
+                        return null;
+                    }
+
                     if (!product || !product.id) {
                         return false;
                     }
@@ -1312,6 +1336,14 @@
        ============================================= */
 
     add: function (product, quantity = 1) {
+
+                // Admins manage the shop, they do not shop
+        if (IS_ADMIN) {
+
+            alert("Admin accounts cannot use the shopping bag. Please use a customer account.");
+
+            return false;
+        }
 
         if (!product || !product.id) {
             return false;
@@ -1485,6 +1517,29 @@
                 localStorage.removeItem(WISHLIST_KEY);
             }
             catch (e) { }
+
+                        // The cart belongs to whoever is using the browser right now.
+            // Guest -> logged in keeps the cart. Anything else (logout, another account) clears it.
+            (function () {
+
+                const OWNER_KEY = "everSpringCartOwner";
+
+                const currentOwner = IS_AUTH ? "user:" + USER_ID : "guest";
+
+                try {
+
+                    const savedOwner = localStorage.getItem(OWNER_KEY);
+
+                    if (savedOwner && savedOwner !== currentOwner && savedOwner !== "guest") {
+                        localStorage.removeItem(CART_KEY);
+                    }
+
+                    localStorage.setItem(OWNER_KEY, currentOwner);
+
+                }
+                catch (e) { }
+
+            })();
 
             updateCounters();
 

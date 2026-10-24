@@ -4,6 +4,7 @@ using EStore.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using EStore.Filters;
 
 namespace EStore.Controllers
 {
@@ -45,9 +46,10 @@ namespace EStore.Controllers
             return Json(items);
         }
 
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [BlockAdmin]
         public async Task<IActionResult> Add(int productId)
         {
             var userId = UserId;
@@ -89,6 +91,7 @@ namespace EStore.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [BlockAdmin]
         public async Task<IActionResult> Remove(int productId)
         {
             var userId = UserId;
